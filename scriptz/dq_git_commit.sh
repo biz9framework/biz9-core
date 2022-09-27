@@ -18,7 +18,14 @@ INCREMENT_VERSION ()
         new="${part[*]}"
         echo -e "${new// /.}"
 }
-APP_VERSION_NEW=$(INCREMENT_VERSION ${APP_VERSION});
+echo "Update system version?"
+read n
+yes=$(echo $n | tr -s '[:upper:]' '[:lower:]')
+if [[  "$n" = "yes"  ]] ; then
+    APP_VERSION_NEW=$(INCREMENT_VERSION ${APP_VERSION});
+else
+    APP_VERSION_NEW=${APP_VERSION};
+fi
 G_HAS_APP=false;
 echo 'enter code commit noteZ'
 read commit_notes

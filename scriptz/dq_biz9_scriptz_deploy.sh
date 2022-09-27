@@ -6,7 +6,7 @@ bash ./scriptz/dq_header.sh
 G_PROJECT_FOLDER="$HOME/www/projectz/"
 echo 'Enter Branch'
 read _branch
-G_BIZ_SCRIPT_FOLDER="$HOME/www/opz/productz/biz9/biz9-scriptz/src/${BRANCH}"
+G_BIZ_SCRIPT_FOLDER="$HOME/www/opz/productz/biz9/biz9-scriptz/src/${_branch}"
 G_BIZ_CMS_FOLDER="$HOME/www/opz/productz/biz9/biz9-cms/src/${_branch}"
 G_BIZ_CORE_FOLDER="$HOME/www/opz/productz/biz9/biz9-core/src/${_branch}"
 G_BIZ_DOCZ_FOLDER="$HOME/www/opz/productz/biz9/biz9-docz/src/${_branch}"
