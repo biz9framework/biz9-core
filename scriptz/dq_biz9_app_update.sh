@@ -12,9 +12,10 @@ read folder_id
 # prod end #
 # test start #
 : '
-app_id=92
+app_id=19
 app_type='mobile'
 folder_id='mobile'
+branch='unstable'
 '
 # test end #
 
@@ -40,7 +41,7 @@ if [ "${app_type}" = "service" ]; then
     echo ".biz9_update_bk" > .gitignore
     git add .
     git stash
-    git pull -f ${BIZ9_GIT_SERVICE_URL} ${BRANCH} --allow-unrelated-histories
+    git pull -f ${BIZ9_GIT_URL}/${BIZ9_SERVICE_TITLE,,}-${branch}.git ${GIT_BRANCH} --allow-unrelated-histories
     echo ".biz9_update_bk" > .gitignore
     #get latest version
     source .biz9_config.sh
@@ -75,7 +76,7 @@ if [ "${app_type}" = "mobile" ]; then
     echo ".biz9_update_bk" > .gitignore
     git add .
     git stash
-    git pull -f ${BIZ9_GIT_MOBILE_URL} ${BRANCH} --allow-unrelated-histories
+    git pull -f ${BIZ9_GIT_URL}/${BIZ9_MOBILE_TITLE,,}-${branch}.git ${GIT_BRANCH} --allow-unrelated-histories
     echo ".biz9_update_bk" > .gitignore
     #get latest version
     source .biz9_config.sh
@@ -85,6 +86,7 @@ if [ "${app_type}" = "mobile" ]; then
     cp -rf .biz9_update_bk/.biz9_config.sh  ${G_BIZ_APP_DIR}/
     cp -rf .biz9_update_bk/other/*  ${G_BIZ_APP_DIR}/other/
     source ${G_BIZ_APP_DIR}/.biz9_config.sh
+    echo ${APP_TITLE}
     #config.js
     sed -i "s/APP_TITLE=.*/APP_TITLE='${APP_TITLE}';/" ${G_BIZ_APP_DIR}/www/scripts/biz_scriptz/config.js
     sed -i "s/APP_VERSION=.*/APP_VERSION='${APP_VERSION}';/" ${G_BIZ_APP_DIR}/www/scripts/biz_scriptz/config.js

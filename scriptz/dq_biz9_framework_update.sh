@@ -25,22 +25,17 @@ if [ "${app_type}" = "service" ]; then
     #backup
     rm -rf .biz9_update_bk
     mkdir .biz9_update_bk
-    cp -rf app.js  .biz9_update_bk/
     cp -rf .biz9_config.sh .biz9_update_bk/
     #git pull
     echo ".biz9_update_bk" > .gitignore
-    echo ${BIZ9_GIT_URL}/${BIZ9_SERVICE_TITLE,,}-${source_branch}.git ${GIT_BRANCH} --allow-unrelated-histories
     git add .
     git stash
-    git pull ${BIZ9_GIT_URL}/${BIZ9_SERVICE_TITLE,,}-${source_branch}.git ${GIT_BRANCH} --allow-unrelated-histories
-    echo ".biz9_update_bk" > .gitignore
+    git pull -f ${BIZ9_GIT_URL}/${BIZ9_SERVICE_TITLE,,}-${source_branch}.git ${GIT_BRANCH} --allow-unrelated-histories
+    echo ${BIZ9_GIT_URL}/${BIZ9_SERVICE_TITLE,,}-${source_branch}.git ${GIT_BRANCH} --allow-unrelated-histories
+   echo ".biz9_update_bk" > .gitignore
     #get latest version
     source .biz9_config.sh
     biz9_service_version=${BIZ9_SERVICE_VERSION}
-    echo 'aaaaaa'
-    echo ${biz9_service_version}
-    echo 'bbbbbbbb'
-    : '
     #backup cp
     cp -rf .biz9_update_bk/app.js ${G_BIZ_APP_DIR}/
     cp -rf .biz9_update_bk/.biz9_config.sh ${G_BIZ_APP_DIR}/
@@ -48,7 +43,7 @@ if [ "${app_type}" = "service" ]; then
     echo 'ccccccc'
     echo ${biz9_service_version}
     echo 'ddddddd'
-
+    : '
     #app.js
     sed -i "s/APP_TITLE=.*/APP_TITLE='${APP_TITLE}';/" app.js
     sed -i "s/APP_VERSION=.*/APP_VERSION='${APP_VERSION}';/" app.js
