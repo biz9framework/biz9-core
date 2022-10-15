@@ -14,7 +14,9 @@ module.exports = function(){
         var error=null;
         mongo_client.connect(G_MONGO_FULL_URL,function(error,client){
             if(error){
-                dir = exec("mongod --fork --config /etc/mongod.conf", function(error,stdout,stderr){
+                console.log('MONGO-GET-CONNECT-DB-ERROR');
+                var cmd = "ssh -i "+  aws_config.aws_key_file  + " "+aws_config.aws_user+"@"+ data_config.mongo_ip +" sudo mongod --fork --config /etc/mongod.conf";
+                dir = exec(cmd, function(error,stdout,stderr){
                 });
                 dir.on('exit', function (code) {
                     callback(error,null);
