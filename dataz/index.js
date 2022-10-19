@@ -28,8 +28,10 @@ module.exports = function(data_config){
                         { json:{}},
                         function (error, response, body) {
                             if (!error && response.statusCode == 200) {
-                                console.log('RESTART REMOTE SERVER')
-                                console.log(response);
+                                error='SUCCESS RESTART DB SERVER';
+                                callback(error,null);
+                            }else{
+                                error='ERROR RESTART DB SERVER';
                                 callback(error,null);
                             }
                         }
