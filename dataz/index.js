@@ -20,6 +20,7 @@ module.exports = function(data_config){
                     dir = exec(cmd, function(error,stdout,stderr){
                     });
                     dir.on('exit', function (code) {
+                        console.log('SUCCESS LOCAL RESET DB');
                         callback(error,null);
                     });
                 }else{
@@ -29,9 +30,11 @@ module.exports = function(data_config){
                         function (error, response, body) {
                             if (!error && response.statusCode == 200) {
                                 error='SUCCESS RESTART DB SERVER';
+                                console.log(error);
                                 callback(error,null);
                             }else{
                                 error='ERROR RESTART DB SERVER';
+                                console.log(error);
                                 callback(error,null);
                             }
                         }
