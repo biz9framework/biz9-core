@@ -15,6 +15,9 @@ module.exports = function(data_config){
         mongo_client.connect(MONGO_FULL_URL,function(error,client){
             if(error){
                 //restart mongo local
+                console.log('RESTART-URL-START');
+                console.log(data_config.remote_restart_url);
+                console.log('RESTART-URL-END');
                 if(!data_config.remote_restart_url){
                     var cmd = "sudo mongod --fork --config /etc/mongod.conf";
                     dir = exec(cmd, function(error,stdout,stderr){
