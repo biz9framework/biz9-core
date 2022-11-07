@@ -19,7 +19,8 @@ module.exports = function(data_config){
                 console.log(data_config.remote_restart_url);
                 console.log('RESTART-URL-END');
                 if(!data_config.remote_restart_url){
-                    var cmd = "sudo mongod --fork --config /etc/mongod.conf";
+                    //var cmd = "sudo mongod --fork --config /etc/mongod.conf";
+                    var cmd = "sudo service mongodb restart";
                     dir = exec(cmd, function(error,stdout,stderr){
                     });
                     dir.on('exit', function (code) {
