@@ -1136,13 +1136,13 @@ module.exports = function(app_config){
                 item[item.field_12]=item.value_12;
             }
             if(item.date_1){
-                item[item.date_1]=biz9.get_date_full(item.value_9);
+                item[item.date_1]=item.value_9;
             }
             if(item.date_2){
-                item[item.date_2]=biz9.get_date_full(item.value_10);
+                item[item.date_2]=item.value_10;
             }
             if(item.date_3){
-                item[item.date_3]=biz9.get_date_full(item.value_11);
+                item[item.date_3]=item.value_11;
             }
             if(item.date_value_1){
                 item[item.date_value_1]=biz9.get_date_full(item.date_value_1);
