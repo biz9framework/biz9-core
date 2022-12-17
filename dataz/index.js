@@ -15,8 +15,13 @@ module.exports = function(data_config){
         var error=null;
         mongo_client.connect(MONGO_FULL_URL,{useUnifiedTopology:true,useNewUrlParser:true,socketTimeoutMS:360000,connectTimeoutMS:360000,keepAlive:true},function(error,client){
             if(error){
-                    console.log('ERROR DB');
+                var cmd = "sudo mongod --fork --config /etc/mongod.conf";
+                dir = exec(cmd, function(error,stdout,stderr){
+                });
+                dir.on('exit', function (code) {
+                    console.log('SUCCESS LOCAL RESET DB');
                     callback(error,null);
+                });
             }else{
                 var db = client.db(db_name);
                 db.db_name=db_name;
