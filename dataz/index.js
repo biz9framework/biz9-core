@@ -13,10 +13,10 @@ module.exports = function(data_config){
     }
     _get_mongo_connect_db=async function(db_name,callback){
         var error=null;
-        mongo_client.connect(MONGO_FULL_URL,{useUnifiedTopology:true,useNewUrlParser:true,socketTimeoutMS:360000,connectTimeoutMS:360000,keepAlive:1},function(error,client){
+        mongo_client.connect(MONGO_FULL_URL,{useUnifiedTopology:true,useNewUrlParser:true,socketTimeoutMS:360000,connectTimeoutMS:360000,keepAlive:true},function(error,client){
             if(error){
-                console.log('Error DB Connect');
-                callback(error,null);
+                    console.log('ERROR DB');
+                    callback(error,null);
             }else{
                 var db = client.db(db_name);
                 db.db_name=db_name;
