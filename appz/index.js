@@ -1097,7 +1097,7 @@ module.exports = function(app_config){
             item.date_obj={
                 date:utilityz.get_date_full_obj(item.date_create).date(),
                 month:utilityz.get_month_title_short(utilityz.get_date_full_obj(item.date_create).month()+1),
-                year=biz9.get_datetime_full_obj(item.date_create).year()
+                year:biz9.get_datetime_full_obj(item.date_create).year()
             };
         }
         if(app_config.biz_map==true){
