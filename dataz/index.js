@@ -5,16 +5,12 @@
  * Core-AWZ
  */
 module.exports = function(data_config){
-
-    module.get_mongo_connect_db=function(db_name,callback){
-        _get_mongo_connect_db(db_name,function(err,data){
-            callback(err,data);
-        });
-    }
-    _get_mongo_connect_db=async function(db_name,callback){
+    module.get_mongo_connect_db=async function(db_name,callback){
         var error=null;
         mongo_client.connect(MONGO_FULL_URL,{useUnifiedTopology:true,useNewUrlParser:true,socketTimeoutMS:360000,connectTimeoutMS:360000,keepAlive:true},function(error,client){
             if(error){
+                biz9.o('get_mongo_connect_db',error);
+                biz9.o('get_mongo_connect_db_db_name',db_name);
                 var cmd = "sudo mongod --fork --config /etc/mongod.conf";
                 dir = exec(cmd, function(error,stdout,stderr){
                 });
@@ -32,12 +28,6 @@ module.exports = function(data_config){
     module.set_close_db=function(db_name,callback){
         db.close()
         callback();
-    }
-    _get_item_list_order=function(order){
-        if(!order){
-            var order=0;
-        }
-        return parseInt(order);
     }
     module.update_list=function(db,data_item_list,callback){
         var error=null;
@@ -98,25 +88,21 @@ module.exports = function(data_config){
                 run();
             },
             function(call){
+                delete data_item.photo;
+                delete data_item.date;
                 data_mon.update(db,data_type,data_item,function(error,data){
-                    error=error;
+                    call();
+                });
+            },
+            function(call){
+                data_mon.get(db,data_type,data_item.tbl_id,function(error,data){
                     data_item=data;
                     call();
                 });
             },
             function(call){
-                for (property in data_item) {
-                    if(String(property)){
-                        cache_red.set_cache_string(client_redis,get_cache_item_attr_key(db.db_name,data_type,data_item.tbl_id,property),data_item[property],function(error,data){
-                        });
-                        cache_string_str=cache_string_str+property+',';
-                    }
-                }
+                set_cache_item(client_redis,db.db_name,data_type,data_item.tbl_id,data_item,function(error,data){
                 call();
-            },
-            function(call){
-                cache_red.set_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,data_type,data_item.tbl_id),cache_string_str,function(error,data){
-                    call();
                 });
             },
             function(call){
@@ -218,24 +204,19 @@ module.exports = function(data_config){
                 callback(error,appz.set_biz_item(data_item));
             });
     }
-    module.get_sql_cache=function(db,data_type,sql_obj,sort_by,callback){
-        _get_sql_cache(db,data_type,sql_obj,sort_by,function(error,data_list){
-            callback(error,data_list);
-        });
-    }
     module.get_sql_paging_cache=function(db,data_type,sql_obj,sort_by,current_page,page_size,callback){
-        _get_sql_paging_cache(db,data_type,sql_obj,sort_by,current_page,page_size,function(error,data_list,total_count,page_size){
+        dataz.get_sql_cache_paging_cache(db,data_type,sql_obj,sort_by,current_page,page_size,function(error,data_list,total_count,page_size){
             callback(error,data_list,total_count,page_size);
         });
     }
-    _get_sql_cache=function(db,data_type,sql_obj,sort_by,callback){
+    module.get_sql_cache=function(db,data_type,sql_obj,sort_by,callback){
         var current_page=0;
         var page_size=0;
-        _get_sql_paging_cache(db,data_type,sql_obj,sort_by,current_page,page_size,function(error,data_list,total_count,page_size){
+        dataz.get_sql_cache_paging_cache(db,data_type,sql_obj,sort_by,current_page,page_size,function(error,data_list,total_count,page_size){
             callback(error,data_list);
         });
     }
-    _get_sql_paging_cache=function(db,data_type,sql_obj,sort_by,current_page,page_size,callback){
+    module.get_sql_cache_paging_cache=function(db,data_type,sql_obj,sort_by,current_page,page_size,callback){
         var data_sql_tbl_id_list = [];
         var data_list=[];
         var total_count=0;
@@ -252,7 +233,9 @@ module.exports = function(data_config){
             function(call){
                 if(current_page!=0&&page_size!=0){//db
                     data_mon.paging_sql_tbl_id(db,data_type,sql_obj,sort_by,current_page,page_size,function(error,_total_count,data_list){
+                        if(error){
                         error=error;
+                        }
                         total_count=_total_count;
                         for(a=0;a<data_list.length;a++){
                             data_sql_tbl_id_list.push({
@@ -286,7 +269,7 @@ module.exports = function(data_config){
             },
             function(call){
                 async.forEachOf(data_sql_tbl_id_list,(item,key,go)=>{
-                    cache_red.get_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,data_type,item.tbl_id),function(data){
+                    cache_red.get_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,data_type,item.tbl_id),function(error,data){
                         if(data){
                             item.cache_key_list=data;
                         }
@@ -313,7 +296,7 @@ module.exports = function(data_config){
                     var data_value = {};
                     async.forEachOf(_list,(item2,key2,go2)=>{
                         if(item2){
-                            cache_red.get_cache_string(client_redis,get_cache_item_attr_key(db.db_name,data_type,item.tbl_id,item2),function(data){
+                            cache_red.get_cache_string(client_redis,get_cache_item_attr_key(db.db_name,data_type,item.tbl_id,item2),function(error,data){
                                 if(data){
                                     data_value[item2] = data;
                                     _cache_found=true;
@@ -392,12 +375,6 @@ module.exports = function(data_config){
             });
     }
     module.delete_cache_item=function(db,data_type,tbl_id,callback){
-        _delete_cache_item(db,data_type,tbl_id,function(error,data)
-            {
-                callback(error,data);
-            });
-    }
-    _delete_cache_item=function(db,data_type,tbl_id,callback){
         var data_item=appz.get_new_item(client_redis,data_type,tbl_id);
         var client_redis = redis.createClient(redis_port,redis_url);
         var error=null;
@@ -542,11 +519,6 @@ module.exports = function(data_config){
     }
     module.drop=function(db,data_type,callback){
         data_mon.drop(db,data_type,function(error,data){
-            callback(error,data);
-        });
-    }
-    module.rename=function(db,data_type,new_title,callback){
-        data_mon.rename(db,data_type,new_title,function(error,data){
             callback(error,data);
         });
     }

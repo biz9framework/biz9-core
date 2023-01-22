@@ -4,7 +4,7 @@
  * BiZ9 Framework
  * Core
  */
-module.exports = function(app_config,aws_config,data_config){
+module.exports = function(app_config,data_config){
     async = require('async');
     arraySort = require('array-sort');
     aws = require('aws-sdk');
@@ -16,26 +16,21 @@ module.exports = function(app_config,aws_config,data_config){
     redis = require('redis');
     sharp = require('sharp');
     format = require('format-duration');
+    SibApiV3Sdk = require('sib-api-v3-sdk');
     MONGO_FULL_URL=data_config.mongo_url;
     mongo_client = require('mongodb').MongoClient;
     data_mon = require('./dataz/lib/mongo_db.js')();
     cache_red = require('./dataz/lib/redis_cache.js')();
-    DT_ITEM_MAP='item_map_biz';
-    DT_PRODUCT='product_biz';
-    DT_SUB_PRODUCT='sub_product_biz';
-    DT_BLANK='blank_biz';
-    DT_PHOTO='photo_biz';
     appz = require('./appz/index.js')(app_config);
     dataz = require('./dataz/index.js')(data_config);
     utilityz = require('./utilityz/index.js')();
-    awz = require('./awz/index.js')(aws_config);
+    awz = require('./awz/index.js')();
+    send_in_blue = require('./send_in_blue/index.js')();
+    stripe = require('./stripe/index.js')();
     mailz = require('./mailz/index.js')();
     redis_url = data_config.redis_url;
     redis_port = data_config.redis_port;
     ///////////////// DATA START //////////////////////////////////////////
-    module.cache_flush=function(){
-        return dataz.cache_flush();
-    }
     module.get_connect_db=function(db_name,callback){
         dataz.get_mongo_connect_db(db_name,function(error,db)
             {
@@ -102,14 +97,7 @@ module.exports = function(app_config,aws_config,data_config){
                 callback(error,data);
             });
     }
-    module.rename=function(db,data_type,new_title,callback){
-        dataz.rename(db,data_type,new_title,function(error,data)
-            {
-                callback(error,data);
-            });
-    }
     ///////////////// DATA END //////////////////////////////////////////
-
     ///////////////// MAIL START //////////////////////////////////////////
     module.send_mail=function(mail,callback){
         mailz.send_mail(mail,function(error,data)
@@ -118,7 +106,34 @@ module.exports = function(app_config,aws_config,data_config){
             });
     }
     ///////////////// MAIL END //////////////////////////////////////////
-
+    ///////////////// STRIPE START //////////////////////////////////////////
+    module.get_stripe_redirect_url=function(stripe_config,retail_line_items,callback){
+        stripe.get_stripe_redirect_url(stripe_config,retail_line_items,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
+    module.get_stripe_card_token=function(stripe_key,number,exp_month,exp_year,cvc,callback){
+        stripe.get_stripe_card_token(stripe_key,number,exp_month,exp_year,cvc,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
+    module.get_stripe_card_charge=function(stripe_key,stripe_token,amount,description,callback){
+        stripe.get_stripe_card_charge(stripe_key,stripe_token,amount,description,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
+    ///////////////// STRIPE END //////////////////////////////////////////
+    ///////////////// SEND IN BLUE START //////////////////////////////////////////
+    module.send_order_confirmation=function(send_in_blue_obj,callback){
+        send_in_blue.send_order_confirmation(send_in_blue_obj,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
+    ///////////////// SEND IN BLUE END //////////////////////////////////////////
     ///////////////// AWZ START //////////////////////////////////////////
     module.set_biz_item=function(item){
         return appz.set_biz_item(item);
@@ -135,20 +150,22 @@ module.exports = function(app_config,aws_config,data_config){
                 callback(error,data);
             });
     }
-    module.update_bucket_file=function(bucket,file_path,key,content_type,callback){
-        awz.update_bucket_file(bucket,file_path,key,content_type,function(error,data)
+    module.update_bucket_file=function(aws_config,bucket,file_path,key,content_type,callback){
+        awz.update_bucket_file(aws_config,bucket,file_path,key,content_type,function(error,data)
             {
                 callback(error,data);
             });
     }
     ///////////////// AWZ END //////////////////////////////////////////
-
     ///////////////// APP START //////////////////////////////////////////
     module.set_item_data = function(data_type,tbl_id,item_data) {
         return appz.set_item_data(data_type,tbl_id,item_data);
     }
     module.get_new_item = function(data_type,tbl_id) {
         return appz.get_new_item(data_type,tbl_id);
+    }
+    module.get_new_biz_item = function(data_type,tbl_id) {
+        return appz.get_new_biz_item(data_type,tbl_id);
     }
     module.get_test_user = function(){
         return appz.get_test_user();
@@ -187,15 +204,15 @@ module.exports = function(app_config,aws_config,data_config){
         appz.del_cookie(req,title);
     }
     module.account_validate_password=function(password,callback){
-        appz.account_validate_password(password,function(data)
+        appz.account_validate_password(password,function(error,data)
             {
-                callback(data);
+                callback(error,data);
             });
     }
     module.account_validate_email=function(db,data_type,tbl_id,email,callback){
-        appz.account_validate_email(db,data_type,tbl_id,email,function(data)
+        appz.account_validate_email(db,data_type,tbl_id,email,function(error,data)
             {
-                callback(data);
+                callback(error,data);
             });
     }
     module.account_validate_user_name=function(db,data_type,tbl_id,user_name,callback){
@@ -219,6 +236,9 @@ module.exports = function(app_config,aws_config,data_config){
     module.set_new_blog_post=function(data_type,org_item){
         return appz.set_new_blog_post(data_type,org_item);
     }
+    module.set_new_team=function(data_type,org_item){
+        return appz.set_new_team(data_type,org_item);
+    }
     module.set_new_project=function(data_type,org_item){
         return appz.set_new_project(data_type,org_item);
     }
@@ -230,27 +250,6 @@ module.exports = function(app_config,aws_config,data_config){
     }
     module.set_new_product=function(data_type,org_item){
         return appz.set_new_product(data_type,org_item);
-    }
-    module.set_new_podcast=function(data_type,org_item){
-        return appz.set_new_podcast(data_type,org_item);
-    }
-    module.set_new_video=function(data_type,org_item){
-        return appz.set_new_video(data_type,org_item);
-    }
-    module.set_new_playlist=function(data_type,org_item){
-        return appz.set_new_playlist(data_type,org_item);
-    }
-    module.get_blank_artist=function(){
-        return appz.get_blank_artist();
-    }
-    module.set_new_artist=function(data_type,org_item){
-        return appz.set_new_artist(data_type,org_item);
-    }
-    module.set_new_track=function(data_type,org_item){
-        return appz.set_new_track(data_type,org_item);
-    }
-    module.set_new_album=function(data_type,org_item){
-        return appz.set_new_album(data_type,org_item);
     }
     module.get_key_sort_type=function(key){
         return appz.get_key_sort_type(key)
@@ -270,18 +269,6 @@ module.exports = function(app_config,aws_config,data_config){
                 callback(error,data);
             });
     }
-    module.get_podcast=function(db,title_url,callback){
-        appz.get_podcast(db,title_url,function(error,data)
-            {
-                callback(error,data);
-            });
-    }
-    module.get_podcastz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_podcast_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
-            {
-                callback(error,data_list,total_item_count,page_page_count);
-            });
-    }
     module.get_event=function(db,title_url,callback){
         appz.get_event(db,title_url,function(error,data)
             {
@@ -294,84 +281,47 @@ module.exports = function(app_config,aws_config,data_config){
                 callback(error,data_list,total_item_count,page_page_count);
             });
     }
-    module.get_artist=function(db,title_url,callback){
-        appz.get_artist(db,title_url,function(error,data)
-            {
-                callback(error,data);
-            });
-    }
-    module.get_artistz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_artist_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
-            {
-                callback(error,data_list,total_item_count,page_page_count);
-            });
-    }
-    module.get_album=function(db,title_url,callback){
-        appz.get_album(db,title_url,function(error,data)
-            {
-                callback(error,data);
-            });
-    }
-    module.get_genre_trackz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_genre_track_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
-            {
-                callback(error,data_list,total_item_count,page_page_count);
-            });
-    }
-    module.get_playlist_trackz=function(db,playlist_tbl_id,sort_by,page_current,page_size,callback){
-        appz.get_playlist_trackz(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
-            {
-                callback(error,data_list,total_item_count,page_page_count);
-            });
-    }
-    module.get_videoz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_video_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
-            {
-                callback(error,data_list,total_item_count,page_page_count);
-            });
-    }
-    module.get_video=function(db,title_url,callback){
-        appz.get_video(db,title_url,function(error,data)
-            {
-                callback(error,data);
-            });
-    }
-    module.get_albumz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_album_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
-            {
-                callback(error,data_list,total_item_count,page_page_count);
-            });
-    }
-    module.get_track=function(db,title_url,callback){
-        appz.get_track(db,title_url,function(error,data)
-            {
-                callback(error,data);
-            });
-    }
-    module.get_trackz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_track_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
-            {
-                callback(error,data_list,total_item_count,page_page_count);
-            });
-    }
     module.get_productz=function(db,sql,sort_by,page_current,page_size,callback){
         appz.get_product_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
             {
                 callback(error,data_list,total_item_count,page_page_count);
             });
     }
-    module.get_cart_productz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_product_cart_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+    module.copy_photo_list=function(db,parent_tbl_id,new_parent_tbl_id,callback){
+        appz.copy_photo_list(db,parent_tbl_id,new_parent_tbl_id,function(error,data_list)
             {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data_list);
             });
     }
-    module.get_cart_servicez=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_service_cart_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+    ///////////////// ORDER START //////////////////////////////////////////
+    module.get_cart_itemz=function(db,sql,callback){
+        appz.get_cart_item_list(db,sql,function(error,data_list)
             {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data_list);
             });
     }
+    module.get_order=function(db,order_id,callback){
+        appz.get_order(db,order_id,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
+    module.get_order_status=function(status_id){
+        return appz.get_order_status(status_id);
+    }
+    module.get_cart=function(db,sql,callback){
+        appz.get_cart(db,sql,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
+    module.set_cart=function(item_list,callback){
+        appz.set_cart(item_list,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
+    ///////////////// ORDER END //////////////////////////////////////////
     module.get_commentz=function(db,sql,sort_by,page_current,page_size,callback){
         appz.get_comment_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
             {
@@ -390,22 +340,10 @@ module.exports = function(app_config,aws_config,data_config){
                 callback(error,data_list,total_item_count,page_page_count);
             });
     }
-    module.get_documentz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_document_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
-            {
-                callback(error,data_list,total_item_count,page_page_count);
-            });
-    }
     module.get_galleryz=function(db,sql,sort_by,page_current,page_size,callback){
         appz.get_gallery_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
             {
                 callback(error,data_list,total_item_count,page_page_count);
-            });
-    }
-    module.get_document=function(db,title_url,callback){
-        appz.get_document(db,title_url,function(error,data)
-            {
-                callback(error,data);
             });
     }
     module.get_gallery=function(db,title_url,callback){
@@ -456,11 +394,7 @@ module.exports = function(app_config,aws_config,data_config){
                 callback(error,data);
             });
     }
-    module.get_order_status_by_id=function(status_id){
-        return appz.get_order_status_by_id(status_id);
-    }
     ///////////////// APP END //////////////////////////////////////////
-
     ///////////////// UTILITY START //////////////////////////////////////////
     module.o = function(title,str){
         utilityz.o(title,str);
