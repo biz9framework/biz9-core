@@ -79,6 +79,7 @@ module.exports = function(data_config){
         var cache_string_str='';
         var error=null;
         var client_redis = redis.createClient(redis_port,redis_url);
+        var set_cache=false;
         async.series([
             function(call){
                 const run = async function(a,b){
@@ -88,23 +89,42 @@ module.exports = function(data_config){
                 run();
             },
             function(call){
-                delete data_item.photo;
-                delete data_item.date;
+                if(data_item.photo){
+                    delete data_item.photo;
+                }
+                if(data_item.photo){
+                    delete data_item.date;
+                }
                 data_mon.update(db,data_type,data_item,function(error,data){
                     call();
                 });
             },
             function(call){
+                cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,data_item.data_type,data_item.tbl_id),function(error,data)
+                    {
+                        call();
+                    });
+            },
+            /*
+            function(call){
                 data_mon.get(db,data_type,data_item.tbl_id,function(error,data){
-                    data_item=data;
+                    if(data){
+                        data_item=data;
+                        set_cache=true;
+                    }
                     call();
                 });
             },
             function(call){
+                if(set_cache){
                 set_cache_item(client_redis,db.db_name,data_type,data_item.tbl_id,data_item,function(error,data){
                 call();
                 });
+                }else{
+                    call();
+                }
             },
+            */
             function(call){
                 const run = async function(a,b){
                     await client_redis.disconnect();
@@ -162,8 +182,6 @@ module.exports = function(data_config){
                         go();
                     }
                 }, error => {
-                    if (error)
-                        error=error;
                     if(_cache_found){
                         data_item.source='cache';
                     }
@@ -173,9 +191,6 @@ module.exports = function(data_config){
             function(call){
                 if(!_cache_found){
                     data_mon.get(db,data_type,tbl_id,function(error,data){
-                        if(error){
-                            error=error;
-                        }
                         if(data){
                             set_cache_item(client_redis,db.db_name,data_type,tbl_id,data,function(data){
                                 data_item=data;
@@ -233,9 +248,6 @@ module.exports = function(data_config){
             function(call){
                 if(current_page!=0&&page_size!=0){//db
                     data_mon.paging_sql_tbl_id(db,data_type,sql_obj,sort_by,current_page,page_size,function(error,_total_count,data_list){
-                        if(error){
-                        error=error;
-                        }
                         total_count=_total_count;
                         for(a=0;a<data_list.length;a++){
                             data_sql_tbl_id_list.push({
@@ -250,9 +262,6 @@ module.exports = function(data_config){
                     });
                 }else{//cache
                     data_mon.get_sql_tbl_id(db,data_type,sql_obj,sort_by,function(error,data_list){
-                        if(error){
-                            error=error;
-                        }
                         total_count=data_list.length;
                         for(a=0;a<data_list.length;a++){
                             data_sql_tbl_id_list.push({
@@ -279,9 +288,6 @@ module.exports = function(data_config){
                         go()
                     });
                 },error=>{
-                    if(error){
-                        error=error;
-                    }
                     call();
                 });
             },
@@ -309,9 +315,6 @@ module.exports = function(data_config){
                             go2();
                         }
                     }, error => {
-                        if(error){
-                            error=error;
-                        }
                         if(_cache_found){
                             data_value.source='cache';
                             item.data=data_value;
@@ -319,9 +322,6 @@ module.exports = function(data_config){
                         go();
                     });
                 }, error => {
-                    if(error){
-                        error=error;
-                    }
                     call();
                 });
             },
@@ -329,9 +329,6 @@ module.exports = function(data_config){
                 async.forEachOf(data_sql_tbl_id_list,(item,key,go)=>{
                     if(!item.data){
                         data_mon.get(db,data_type,item.tbl_id,function(error,data){
-                            if(error){
-                                error=error;
-                            }
                             if(data){
                                 set_cache_item(client_redis,db.db_name,item.data_type,item.tbl_id,data,function(data_b){
                                     data_b.source='db';
@@ -348,9 +345,6 @@ module.exports = function(data_config){
                         go();
                     }
                 }, error => {
-                    if(error){
-                        error=error;
-                    }
                     call();
                 });
             },
@@ -397,9 +391,6 @@ module.exports = function(data_config){
             function (call){
                 data_mon.delete(db,data_type,tbl_id,function(error,data)
                     {
-                        if(error){
-                            error=error;
-                        }
                         data_item.data_del=true;
                         data_item.data=data;
                         call();
@@ -430,7 +421,6 @@ module.exports = function(data_config){
             },
             function(call){
                 data_mon.get_sql_tbl_id(db,data_type,sql_obj,{},function(error,data_list){
-                    error=error;
                     if(data_list.length>0){
                         async.forEachOf(data_list,(item,key,go)=>{
                             if(item){
@@ -445,9 +435,6 @@ module.exports = function(data_config){
                                 go();
                             }
                         }, error => {
-                            if(error){
-                                error=error;
-                            }
                             call();
                         });
                     }
@@ -458,9 +445,6 @@ module.exports = function(data_config){
             },
             function(call){
                 data_mon.delete_sql(db,data_type,sql_obj,function(error,data){
-                    if(error){
-                        error=error;
-                    }
                     call();
                 });
             },
@@ -493,15 +477,11 @@ module.exports = function(data_config){
                     cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,item.data_type,item.tbl_id),function(error,data){
                         data_mon.delete(db,item.data_type,item.tbl_id,function(error,data)
                             {
-                                error=error;
                                 data_list.push(data);
                                 go();
                             });
                     });
                 }, error => {
-                    if(error){
-                        error=error;
-                    }
                     call();
                 });
             },

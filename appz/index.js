@@ -20,7 +20,10 @@ module.exports = function(app_config){
     DT_ADMIN='admin_biz';
     DT_PROJECT='project_biz';
     DT_GALLERY='gallery_biz';
+    DT_VIDEO='video_biz';
+    DT_EVENT='event_biz';
     DT_PRODUCT='product_biz';
+    DT_CATEGORY='category_biz';
     DT_CART_ITEM="cart_item_biz";
     DT_ORDER="order_biz";
     DT_ORDER_ITEM="order_item_biz";
@@ -274,7 +277,7 @@ module.exports = function(app_config){
     module.get_helper = function(req) {
         var helper = {};
         helper.url = req.protocol+"://"+req.headers.host+req.originalUrl;
-        helper.error=null;
+        helper.validation_message=null;
         if(req.query){
             for (var key in  req.query) {
                 helper[key] = req.query[key].trim();
@@ -307,7 +310,7 @@ module.exports = function(app_config){
         var helper = {};
         helper.url = req.protocol+"://"+req.headers.host+req.originalUrl;
         helper.user = appz.get_user(req);
-        helper.error=null;
+        helper.validation_message=null;
         if(req.query){
             for (var key in  req.query) {
                 helper[key] = req.query[key].trim();
@@ -339,6 +342,19 @@ module.exports = function(app_config){
             }
         }
         return helper;
+    }
+    module.convert_biz_item=function(item,item_list) {
+        max=12;
+        for(var a=0;a<item_list.length;a++){
+            if(a!=max){
+                if(item[item_list[a]]){
+                item['field_'+String(parseInt(a)+1)] = item_list[a];
+                item['value_'+String(parseInt(a)+1)] = item[item_list[a]];
+                delete item[item_list[a]];
+                }
+            }
+        }
+        return item;
     }
     module.set_new_sub_item_parent=function(data_type,org_item){
         var _sub_item = appz.get_new_item(data_type,0);
@@ -570,6 +586,50 @@ module.exports = function(app_config){
         _event.search=org_item.search;
         return _event;
     }
+
+    module.set_new_category=function(data_type,org_item){
+        var _category = appz.get_new_item(data_type,0);
+        _category.title='copy_'+org_item.title;
+        _category.title_url='copy_'+org_item.title_url;
+        _category.type=org_item.type;
+        _category.photofilename=org_item.photofilename;
+        _category.visible=org_item.visible;
+        _category.order=org_item.order;
+        _category.note=org_item.note;
+        _category.sub_note=org_item.sub_note;
+        _category.html=org_item.html;
+        _category.field_2=org_item.field_2;
+        _category.field_3=org_item.field_3;
+        _category.field_4=org_item.field_4;
+        _category.field_5=org_item.field_5;
+        _category.field_6=org_item.field_6;
+        _category.field_7=org_item.field_7;
+        _category.field_8=org_item.field_8;
+        _category.field_9=org_item.field_9;
+        _category.field_10=org_item.field_10;
+        _category.field_11=org_item.field_11;
+        _category.field_12=org_item.field_12;
+        _category.value_1=org_item.value_1;
+        _category.value_2=org_item.value_2;
+        _category.value_3=org_item.value_3;
+        _category.value_4=org_item.value_4;
+        _category.value_5=org_item.value_5;
+        _category.value_6=org_item.value_6;
+        _category.value_7=org_item.value_7;
+        _category.value_8=org_item.value_8;
+        _category.value_9=org_item.value_9;
+        _category.value_10=org_item.value_10;
+        _category.value_11=org_item.value_11;
+        _category.value_12=org_item.value_12;
+        _category.date_1=org_item.date_1;
+        _category.date_2=org_item.date_2;
+        _category.date_3=org_item.date_3;
+        _category.date_value_1=org_item.date_value_1;
+        _category.date_value_2=org_item.date_value_2;
+        _category.date_value_3=org_item.date_value_3;
+        _category.search=org_item.search;
+        return _category;
+    }
     module.set_new_product=function(data_type,org_item){
         var _product = appz.get_new_item(data_type,0);
         _product.title='copy_'+org_item.title;
@@ -745,6 +805,44 @@ module.exports = function(app_config){
         }
         return sort;
     }
+    module.get_category_title_list=function(){
+            return[
+                {value:DT_BLOG_POST,title:'Blog Post'},
+                {value:DT_SERVICE,title:'Service'},
+                {value:DT_PRODUCT,title:'Product'},
+                {value:DT_PROJECT,title:'Project'},
+                {value:DT_GALLERY,title:'Gallery'},
+                {value:DT_VIDEO,title:'Video'},
+                {value:DT_EVENT,title:'Event'}
+            ]
+    }
+    module.get_category_title=function(type){
+        switch (type) {
+            case DT_BLOG_POST:
+                return 'Blog Post';
+                break;
+            case DT_SERVICE:
+                return 'Service';
+                break;
+            case DT_PRODUCT:
+                return 'Product';
+                break;
+            case DT_PROJECT:
+                return 'Project';
+                break;
+            case DT_GALLERY:
+                return 'Gallery';
+                break;
+            case DT_EVENT:
+                return 'Event';
+                break;
+            case DT_VIDEO:
+                return 'Video';
+                break;
+            default:
+                return '';
+        }
+    }
     module.set_biz_item=function(item){
         var no_photo=true;
         _photo_size_album='';
@@ -888,14 +986,12 @@ module.exports = function(app_config){
         var blog_post=appz.get_new_item(DT_BLOG_POST,0);
         var full_photo_list=[];
         var other_list=[];
+        var error=null;
         async.series([
             function(call){
                 sql = {title_url:title_url};
                 sort={};
                 dataz.get_sql_cache(db,DT_BLOG_POST,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     if(data_list.length>0){
                         if(data_list[0].tbl_id!=0 &&data_list[0]){
                             blog_post=data_list[0];
@@ -910,9 +1006,6 @@ module.exports = function(app_config){
                 sql = {};
                 sort={};
                 dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     for(a=0;a<data_list.length;a++){
                         full_photo_list.push(data_list[a]);
                     }
@@ -923,9 +1016,6 @@ module.exports = function(app_config){
                 sql={parent_tbl_id:blog_post.tbl_id};
                 sort={order:1};
                 dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     top_list=data_list;
                     call();
                 });
@@ -941,9 +1031,6 @@ module.exports = function(app_config){
                 sql = {parent_data_type:DT_BLOG_POST};
                 sort={order:1};
                 dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     other_list=data_list;
                     call();
                 });
@@ -1017,14 +1104,12 @@ module.exports = function(app_config){
         var product=appz.get_new_item(DT_PRODUCT,0);
         var full_photo_list=[];
         var other_list=[];
+        var error=null;
         async.series([
             function(call){
                 sql = {title_url:title_url};
                 sort={};
                 dataz.get_sql_cache(db,DT_PRODUCT,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     if(data_list.length>0){
                         if(data_list[0].tbl_id!=0 &&data_list[0]){
                             product=data_list[0];
@@ -1040,9 +1125,6 @@ module.exports = function(app_config){
                 sql = {};
                 sort={};
                 dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     for(a=0;a<data_list.length;a++){
                         full_photo_list.push(data_list[a]);
                     }
@@ -1053,9 +1135,6 @@ module.exports = function(app_config){
                 sql={parent_tbl_id:product.tbl_id};
                 sort={order:1};
                 dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     top_list=data_list;
                     call();
                 });
@@ -1072,9 +1151,6 @@ module.exports = function(app_config){
                 sql = {parent_data_type:DT_PRODUCT};
                 sort={order:1};
                 dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     other_list=data_list;
                     call();
                 });
@@ -1160,10 +1236,233 @@ module.exports = function(app_config){
     //
     //	paging_return=dt_total;
     //	paging_return=page_page_total;
+    module.get_item_map_page=function(db,item_map_title_url,page_title_url,setting,callback){
+        var item_map_page=appz.get_new_item(DT_ITEM_MAP,0);
+        var page=appz.get_new_item(item_map_title_url,0);
+        var dt_total=0;
+        var page_page_total=0;
+        var full_photo_list=[];
+        var top_list=[];
+        var other_list=[];
+        var error=null;
+        async.series([
+            function(call){
+                sql = {title_url:page_title_url};
+                sort={};
+                dataz.get_sql_cache(db,item_map_page_title_url,sql,sort,function(error,data_list) {
+                    if(data_list.length>0){
+                        item_map_page=data_list[0];
+                    }
+                    call();
+                });
+            },
+            function(call){
+                item_map_page.photos=[];
+                item_map_page.items=[];
+                page.title_url=sub_page_title_url;
+                page.photos=[];
+                page.items=[];
+                call();
+            },
+            function(call){
+                if(item_map_page.tbl_id!=0){
+                    sql = {title_url:sub_page_title_url};
+                    sort={};
+                    dataz.get_sql_cache(db,item_map_page.title_url,sql,sort,function(error,data_list) {
+                        if(data_list.length>0){
+                            page=data_list[0];
+                        }
+                        page.photos=[];
+                        page.items=[];
+                        call();
+                    });
+                }else{
+                    call();
+                }
+            },
+            function(call){
+                if(item_map_page.tbl_id!=0&&page.tbl_id!=0){
+                    sql = {};
+                    sort={};
+                    dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
+                        for(a=0;a<data_list.length;a++){
+                            full_photo_list.push(data_list[a]);
+                        }
+                        call();
+                    });
+                }else{
+                    call();
+                }
+            },
+            function(call){
+                if(item_map_page.tbl_id!=0&&page.tbl_id!=0){
+                    sort=appz.get_key_sort_type(page);
+                    if(!setting.filter_category){
+                        sql={parent_tbl_id:page.tbl_id};
+                    }else{
+                        sql={parent_tbl_id:page.tbl_id,category:setting.filter_category};
+                    }
+                    if(setting.filter_search){
+                        sql.search=setting.filter_search;
+                    }
+                    if(setting.count){
+                        dataz.get_sql_paging_cache(db,item_map_page.title_url,sql,sort,1,setting.count,function(error,data_list,_dt_total,_page_page_total) {
+                            top_list=data_list;
+                            dt_total=_dt_total;
+                            page_page_total=_page_page_total;
+                            call();
+                        });
+                    }else if(setting.page_size){
+                        if(!setting.page_current){
+                            setting.page_current=1;
+                        }
+                        dataz.get_sql_paging_cache(db,item_map_page.title_url,sql,sort,setting.page_current,setting.page_size,function(error,data_list,_dt_total,_page_page_total) {
+                            top_list=data_list;
+                            dt_total=_dt_total;
+                            page_page_total=_page_page_total;
+                            call();
+                        });
+                    }else{
+                        dataz.get_sql_cache(db,item_map_page.title_url,sql,sort,function(error,data_list) {
+                            if(data_list.length>0){
+                                top_list=data_list;
+                                call();
+                            }else{
+                                call()
+                            }
+                        });
+                    }
+                }else{
+                    call();
+                }
+            },
+            function(call){
+                for(a=0;a<top_list.length;a++){
+                    top_list[a].items=[];
+                    top_list[a].photos=[];
+                }
+                call();
+            },
+            function(call){
+                if(item_map_page.tbl_id!=0&&page.tbl_id!=0){
+                    sql = {};
+                    sort=appz.get_key_sort_type(page);
+                    dataz.get_sql_cache(db,item_map_page.title_url,sql,sort,function(error,data_list) {
+                        other_list=data_list;
+                        call();
+                    });
+                }
+                else{
+                    call();
+                }
+            },
+            function(call){
+                for(a=0;a<other_list.length;a++){
+                    other_list[a].items=[];
+                    other_list[a].photos=[];
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<full_photo_list.length;a++){
+                    if(page.tbl_id==full_photo_list[a].parent_tbl_id){
+                        page.photos.push(full_photo_list[a]);
+                    }
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<top_list.length;a++){
+                    for(b=0;b<full_photo_list.length;b++){
+                        if(top_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                            top_list[a].photos.push(full_photo_list[b]);
+                        }
+                    }
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<other_list.length;a++){
+                    for(b=0;b<full_photo_list.length;b++){
+                        if(other_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                            other_list[a].photos.push(full_photo_list[b]);
+                        }
+                    }
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<top_list.length;a++){
+                    for(b=0;b<other_list.length;b++){
+                        if(top_list[a].tbl_id==other_list[b].parent_tbl_id){
+                            for(c=0;c<other_list.length;c++){
+                                if(other_list[b].tbl_id==other_list[c].parent_tbl_id){
+                                    for(d=0;d<other_list.length;d++){
+                                        if(other_list[c].tbl_id==other_list[d].parent_tbl_id){
+                                            other_list[c][other_list[d].title_url]=other_list[d];
+                                            other_list[c].items.push(other_list[d]);
+                                        }
+                                    }
+                                    other_list[b][other_list[c].title_url]=other_list[c];
+                                    other_list[b].items.push(other_list[c]);
+                                }
+                            }
+                            top_list[a][other_list[b].title_url]=other_list[b];
+                            top_list[a].items.push(other_list[b]);
+                        }
+                    }
+                    page[top_list[a].title_url]=top_list[a];
+                    page['dt_total']=dt_total;
+                    page['page_page_total']=page_page_total;
+                    page.items.push(top_list[a]);
+                }
+                call();
+            },
+            function(call){
+                page.items=appz.get_item_list_sort(page,page.items);
+                call();
+            },
+            function(call){
+                async.forEachOf(page.items,(top_item,key,go)=>{
+                    top_item.items=appz.get_item_list_sort(top_item,top_item.items);
+                    async.forEachOf(top_item.items,(sub_item,key,go2)=>{
+                        sub_item.items=appz.get_item_list_sort(sub_item,sub_item.items);
+                        async.forEachOf(page.items,(item,key,go3)=>{
+                            item.items=appz.get_item_list_sort(item,item.items);
+                            go3();
+                        }, error => {
+                            go2();
+                        });
+                    }, error => {
+                        go();
+                    });
+                }, error => {
+                    call();
+                });
+            },
+        ],
+            function(err, result){
+                callback(error,page);
+            });
+    }
+    //setting
+    //
+    //setting.filter_category
+    //setting.filter_search
+    //setting.count
+    //
+    //paging
+    //
+    //setting.page_size
+    //setting.page_current
+    //
+    //paging_return
+    //
+    //	paging_return=dt_total;
+    //	paging_return=page_page_total;
     module.get_sub_page=function(db,page_title_url,sub_page_title_url,setting,callback){
         var item_map=appz.get_new_item(DT_ITEM_MAP,0);
         var sub_page=appz.get_new_item(DT_BLANK,0);
-        sub_page.title_url=sub_page_title_url;
         var dt_total=0;
         var page_page_total=0;
         var full_photo_list=[];
@@ -1175,25 +1474,25 @@ module.exports = function(app_config){
                 sql = {title_url:page_title_url};
                 sort={};
                 dataz.get_sql_cache(db,DT_ITEM_MAP,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     if(data_list.length>0){
                         item_map=data_list[0];
                     }
-                    item_map.photos=[];
-                    item_map.items=[];
                     call();
                 });
+            },
+            function(call){
+                item_map.photos=[];
+                item_map.items=[];
+                sub_page.title_url=sub_page_title_url;
+                sub_page.photos=[];
+                sub_page.items=[];
+                call();
             },
             function(call){
                 if(item_map.tbl_id!=0){
                     sql = {title_url:sub_page_title_url};
                     sort={};
                     dataz.get_sql_cache(db,item_map.title_url,sql,sort,function(error,data_list) {
-                        if(error){
-                            error=error;
-                        }
                         if(data_list.length>0){
                             sub_page=data_list[0];
                         }
@@ -1207,12 +1506,9 @@ module.exports = function(app_config){
             },
             function(call){
                 if(item_map.tbl_id!=0&&sub_page.tbl_id!=0){
-                    sql = {item_map_tbl_id:item_map.tbl_id};
+                    sql = {};
                     sort={};
                     dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                        if(error){
-                            error=error;
-                        }
                         for(a=0;a<data_list.length;a++){
                             full_photo_list.push(data_list[a]);
                         }
@@ -1235,9 +1531,6 @@ module.exports = function(app_config){
                     }
                     if(setting.count){
                         dataz.get_sql_paging_cache(db,item_map.title_url,sql,sort,1,setting.count,function(error,data_list,_dt_total,_page_page_total) {
-                            if(error){
-                                error=error;
-                            }
                             top_list=data_list;
                             dt_total=_dt_total;
                             page_page_total=_page_page_total;
@@ -1248,9 +1541,6 @@ module.exports = function(app_config){
                             setting.page_current=1;
                         }
                         dataz.get_sql_paging_cache(db,item_map.title_url,sql,sort,setting.page_current,setting.page_size,function(error,data_list,_dt_total,_page_page_total) {
-                            if(error){
-                                error=error;
-                            }
                             top_list=data_list;
                             dt_total=_dt_total;
                             page_page_total=_page_page_total;
@@ -1258,9 +1548,6 @@ module.exports = function(app_config){
                         });
                     }else{
                         dataz.get_sql_cache(db,item_map.title_url,sql,sort,function(error,data_list) {
-                            if(error){
-                                error=error;
-                            }
                             if(data_list.length>0){
                                 top_list=data_list;
                                 call();
@@ -1285,9 +1572,6 @@ module.exports = function(app_config){
                     sql = {};
                     sort=appz.get_key_sort_type(sub_page);
                     dataz.get_sql_cache(db,item_map.title_url,sql,sort,function(error,data_list) {
-                        if(error){
-                            error=error;
-                        }
                         other_list=data_list;
                         call();
                     });
@@ -1352,8 +1636,8 @@ module.exports = function(app_config){
                         }
                     }
                     sub_page[top_list[a].title_url]=top_list[a];
-                    sub_page['dt_total']=dt_total;
-                    sub_page['page_page_total']=page_page_total;
+                    sub_page['total_item_count']=dt_total;
+                    sub_page['page_page_count']=page_page_total;
                     sub_page.items.push(top_list[a]);
                 }
                 call();
@@ -1371,21 +1655,12 @@ module.exports = function(app_config){
                             item.items=appz.get_item_list_sort(item,item.items);
                             go3();
                         }, error => {
-                            if(error){
-                                error=error;
-                            }
                             go2();
                         });
                     }, error => {
-                        if(error){
-                            error=error;
-                        }
                         go();
                     });
                 }, error => {
-                    if(error){
-                        error=error;
-                    }
                     call();
                 });
             },
@@ -1438,9 +1713,6 @@ module.exports = function(app_config){
             function(call){
                 sql={id:order_id};
                 dataz.get_sql_cache(db,DT_ORDER,sql,{},function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     if(data_list.length>0){
                         order=data_list[0];
                     }
@@ -1450,9 +1722,6 @@ module.exports = function(app_config){
             function(call){
                 sql={order_id:order_id};
                 dataz.get_sql_cache(db,DT_ORDER_ITEM,sql,{},function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     order.cart={};
                     order.cart=caculate_cart(data_list);
                     call();
@@ -1469,9 +1738,6 @@ module.exports = function(app_config){
         async.series([
             function(call){
                 dataz.get_sql_cache(db,DT_CART_ITEM,sql,{},function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     cart=caculate_cart(data_list);
                     call();
                 });
@@ -1513,9 +1779,6 @@ module.exports = function(app_config){
         async.series([
             function(call){
                 dataz.get_sql_cache(db,DT_CART_ITEM,sql,{},function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     cart_list=data_list;
                     call();
                 });
@@ -1594,9 +1857,6 @@ module.exports = function(app_config){
         async.series([
             function(call){
                 dataz.get_sql_paging_cache(db,DT_EVENT,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                    if(error){
-                        error=error;
-                    }
                     event_list=data_list;
                     dt_total=_dt_total;
                     page_page_total=_page_page_total;
@@ -1607,9 +1867,6 @@ module.exports = function(app_config){
                 sql = {};
                 sort={};
                 dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     full_photo_list=data_list;
                     call();
                 });
@@ -1619,6 +1876,7 @@ module.exports = function(app_config){
                     event_list[a].photos=[];
                     event_list[a].date_full= biz9.get_date_full(event_list[a].start_date);
                     event_list[a].time_full= biz9.get_time_full(event_list[a].start_time);
+                    event_list[a].price= biz9.get_money(event_list[a].price);
                     for(b=0;b<full_photo_list.length;b++){
                         if(event_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
                             event_list[a].photos.push(full_photo_list[b]);
@@ -1643,12 +1901,12 @@ module.exports = function(app_config){
                 sql = {title_url:title_url};
                 sort={};
                 dataz.get_sql_cache(db,DT_EVENT,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     if(data_list.length>0){
                         if(data_list[0].tbl_id!=0 &&data_list[0]){
                             event=data_list[0];
+                            event.date_full= biz9.get_date_full(event.start_date);
+                            event.time_full= biz9.get_time_full(event.start_time);
+                            event.money_price=get_money(event.price);
                         }
                     }
                     event.photos=[];
@@ -1659,9 +1917,6 @@ module.exports = function(app_config){
                 sql = {parent_tbl_id:event.tbl_id};
                 sort={};
                 dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     for(a=0;a<data_list.length;a++){
                         event.photos.push(data_list[a]);
                     }
@@ -1681,9 +1936,6 @@ module.exports = function(app_config){
         async.series([
             function(call){
                 dataz.get_sql_paging_cache(db,DT_PRODUCT,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                    if(error){
-                        error=error;
-                    }
                     product_list=data_list;
                     dt_total=_dt_total;
                     page_page_total=_page_page_total;
@@ -1694,9 +1946,6 @@ module.exports = function(app_config){
                 sql = {parent_data_type:DT_PRODUCT};
                 sort={};
                 dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     sub_product_list=data_list;
                     call();
                 });
@@ -1705,9 +1954,6 @@ module.exports = function(app_config){
                 sql = {};
                 sort={};
                 dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     full_photo_list=data_list;
                     call();
                 });
@@ -1717,7 +1963,6 @@ module.exports = function(app_config){
                     product_list[a].photos=[];
                     product_list[a].items=[];
                     product_list[a].money_price=utilityz.get_money(product_list[a].price);
-
                     for(b=0;b<full_photo_list.length;b++){
                         if(product_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
                             product_list[a].photos.push(full_photo_list[b]);
@@ -1766,6 +2011,42 @@ module.exports = function(app_config){
                 callback(error,product_list,dt_total,page_page_total);
             });
     }
+    module.get_category_list=function(db,data_type,sort_by,page_current,page_size,callback) {
+        var category_list=[];
+        var item_list=[];
+        var error=null;
+        async.series([
+            function(call){
+                sql={type:data_type};
+                dataz.get_sql_paging_cache(db,DT_CATEGORY,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
+                    category_list=data_list;
+                    dt_total=_dt_total;
+                    page_page_total=_page_page_total;
+                    call();
+                });
+            },
+            function(call){
+                dataz.get_sql_cache(db,data_type,{},{},function(error,data_list) {
+                    item_list=data_list;
+                    call();
+                });
+            },
+            function(call){
+                for(a=0;a<category_list.length;a++){
+                    category_list[a].item_count=0;
+                    for(b=0;b<item_list.length;b++){
+                        if(category_list[a].title_url==item_list[b].category){
+                            category_list[a].item_count=category_list[a].item_count+1;
+                        }
+                    }
+                }
+                call();
+            },
+        ],
+            function(err, result){
+                callback(error,category_list,dt_total,page_page_total);
+            });
+    }
     module.get_service=function(db,title_url,callback){
         var service=appz.get_new_item(DT_SERVICE,0);
         var full_photo_list=[];
@@ -1775,9 +2056,6 @@ module.exports = function(app_config){
                 sql = {title_url:title_url};
                 sort={};
                 dataz.get_sql_cache(db,DT_SERVICE,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     if(data_list.length>0){
                         if(data_list[0].tbl_id!=0 &&data_list[0]){
                             service=data_list[0];
@@ -1793,9 +2071,6 @@ module.exports = function(app_config){
                 sql = {};
                 sort={};
                 dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     for(a=0;a<data_list.length;a++){
                         full_photo_list.push(data_list[a]);
                     }
@@ -1806,9 +2081,6 @@ module.exports = function(app_config){
                 sql={parent_tbl_id:service.tbl_id};
                 sort={order:1};
                 dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     top_list=data_list;
                     call();
                 });
@@ -1825,9 +2097,6 @@ module.exports = function(app_config){
                 sql = {parent_data_type:DT_SERVICE};
                 sort={order:1};
                 dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     other_list=data_list;
                     call();
                 });
@@ -1898,250 +2167,226 @@ module.exports = function(app_config){
                 callback(error,service);
             });
     }
-    module.get_comment_list=function(db,sql,sort_by,page_current,page_size,callback) {
-        var comment_list=[];
-        var error=null;
-        async.series([
-            function(call){
-                dataz.get_sql_paging_cache(db,DT_COMMENT,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                    if(error){
-                        error=error;
-                    }
-                    comment_list=data_list;
-                    dt_total=_dt_total;
-                    page_page_total=_page_page_total;
-                    call();
-                });
-            },
-        ],
-            function(err, result){
-                callback(error,comment_list,dt_total,page_page_total);
+module.get_comment_list=function(db,sql,sort_by,page_current,page_size,callback) {
+    var comment_list=[];
+    var error=null;
+    async.series([
+        function(call){
+            dataz.get_sql_paging_cache(db,DT_COMMENT,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
+                comment_list=data_list;
+                dt_total=_dt_total;
+                page_page_total=_page_page_total;
+                call();
             });
-    }
-    module.get_service_list=function(db,sql,sort_by,page_current,page_size,callback) {
-        var service_list=[];
-        var full_photo_list=[];
-        var sub_service_list=[];
-        var error=null;
-        async.series([
-            function(call){
-                dataz.get_sql_paging_cache(db,DT_SERVICE,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                    if(error){
-                        error=error;
-                    }
-                    service_list=data_list;
-                    dt_total=_dt_total;
-                    page_page_total=_page_page_total;
-                    call();
-                });
-            },
-            function(call){
-                sql = {parent_data_type:DT_SERVICE};
-                sort={};
-                dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
-                    sub_service_list=data_list;
-                    call();
-                });
-            },
-            function(call){
-                sql = {};
-                sort={};
-                dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
-                    full_photo_list=data_list;
-                    call();
-                });
-            },
-            function(call){
-                for(a=0;a<service_list.length;a++){
-                    service_list[a].photos=[];
-                    service_list[a].items=[];
-                    for(b=0;b<full_photo_list.length;b++){
-                        if(service_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
-                            service_list[a].photos.push(full_photo_list[b]);
-                        }
+        },
+    ],
+        function(err, result){
+            callback(error,comment_list,dt_total,page_page_total);
+        });
+}
+module.get_service_list=function(db,sql,sort_by,page_current,page_size,callback) {
+    var service_list=[];
+    var full_photo_list=[];
+    var sub_service_list=[];
+    var error=null;
+    async.series([
+        function(call){
+            dataz.get_sql_paging_cache(db,DT_SERVICE,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
+                service_list=data_list;
+                dt_total=_dt_total;
+                page_page_total=_page_page_total;
+                call();
+            });
+        },
+        function(call){
+            sql = {parent_data_type:DT_SERVICE};
+            sort={};
+            dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
+                sub_service_list=data_list;
+                call();
+            });
+        },
+        function(call){
+            sql = {};
+            sort={};
+            dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
+                full_photo_list=data_list;
+                call();
+            });
+        },
+        function(call){
+            for(a=0;a<service_list.length;a++){
+                service_list[a].photos=[];
+                service_list[a].items=[];
+                for(b=0;b<full_photo_list.length;b++){
+                    if(service_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                        service_list[a].photos.push(full_photo_list[b]);
                     }
                 }
-                call();
-            },
-            function(call){
-                for(a=0;a<sub_service_list.length;a++){
-                    sub_service_list[a].photos=[];
-                    sub_service_list[a].items=[];
-                    for(b=0;b<full_photo_list.length;b++){
-                        if(sub_service_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
-                            sub_service_list[a].photos.push(full_photo_list[b]);
-                        }
+            }
+            call();
+        },
+        function(call){
+            for(a=0;a<sub_service_list.length;a++){
+                sub_service_list[a].photos=[];
+                sub_service_list[a].items=[];
+                for(b=0;b<full_photo_list.length;b++){
+                    if(sub_service_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                        sub_service_list[a].photos.push(full_photo_list[b]);
                     }
                 }
-                call();
-            },
-            function(call){
-                for(a=0;a<service_list.length;a++){
-                    for(b=0;b<sub_service_list.length;b++){
-                        if(service_list[a].tbl_id==sub_service_list[b].parent_tbl_id){
-                            for(c=0;c<sub_service_list.length;c++){
-                                if(sub_service_list[b].tbl_id==sub_service_list[c].parent_tbl_id){
-                                    for(d=0;d<sub_service_list.length;d++){
-                                        if(sub_service_list[c].tbl_id==sub_service_list[d].parent_tbl_id){
-                                            sub_service_list[c][sub_service_list[d].title_url]=sub_service_list[d];
-                                            sub_service_list[c].items.push(sub_service_list[d]);
-                                        }
+            }
+            call();
+        },
+        function(call){
+            for(a=0;a<service_list.length;a++){
+                for(b=0;b<sub_service_list.length;b++){
+                    if(service_list[a].tbl_id==sub_service_list[b].parent_tbl_id){
+                        for(c=0;c<sub_service_list.length;c++){
+                            if(sub_service_list[b].tbl_id==sub_service_list[c].parent_tbl_id){
+                                for(d=0;d<sub_service_list.length;d++){
+                                    if(sub_service_list[c].tbl_id==sub_service_list[d].parent_tbl_id){
+                                        sub_service_list[c][sub_service_list[d].title_url]=sub_service_list[d];
+                                        sub_service_list[c].items.push(sub_service_list[d]);
                                     }
-                                    sub_service_list[b][sub_service_list[c].title_url]=sub_service_list[c];
-                                    sub_service_list[b].items.push(sub_service_list[c]);
                                 }
+                                sub_service_list[b][sub_service_list[c].title_url]=sub_service_list[c];
+                                sub_service_list[b].items.push(sub_service_list[c]);
                             }
-                            service_list[a][sub_service_list[b].title_url]=sub_service_list[b];
-                            service_list[a].items.push(sub_service_list[b]);
                         }
+                        service_list[a][sub_service_list[b].title_url]=sub_service_list[b];
+                        service_list[a].items.push(sub_service_list[b]);
                     }
                 }
+            }
+            call();
+        },
+    ],
+        function(err, result){
+            callback(error,service_list,dt_total,page_page_total);
+        });
+}
+module.get_project=function(db,title_url,callback){
+    var project=appz.get_new_item(DT_PROJECT,0);
+    var full_photo_list=[];
+    var other_list=[];
+    var error=null;
+    async.series([
+        function(call){
+            sql = {title_url:title_url};
+            sort={};
+            dataz.get_sql_cache(db,DT_PROJECT,sql,sort,function(error,data_list) {
+                if(data_list.length>0){
+                    if(data_list[0].tbl_id!=0 &&data_list[0]){
+                        project=data_list[0];
+                    }
+                }
+                project.money_price=utilityz.get_money(project.price);
+                project.photos=[];
+                project.items=[];
                 call();
-            },
-        ],
-            function(err, result){
-                callback(error,service_list,dt_total,page_page_total);
             });
-    }
-    module.get_project=function(db,title_url,callback){
-        var project=appz.get_new_item(DT_PROJECT,0);
-        var full_photo_list=[];
-        var other_list=[];
-        var error=null;
-        async.series([
-            function(call){
-                sql = {title_url:title_url};
-                sort={};
-                dataz.get_sql_cache(db,DT_PROJECT,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
-                    if(data_list.length>0){
-                        if(data_list[0].tbl_id!=0 &&data_list[0]){
-                            project=data_list[0];
-                        }
-                    }
-                    project.money_price=utilityz.get_money(project.price);
-                    project.photos=[];
-                    project.items=[];
-                    call();
-                });
-            },
-            function(call){
-                sql = {};
-                sort={};
-                dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
-                    for(a=0;a<data_list.length;a++){
-                        full_photo_list.push(data_list[a]);
-                    }
-                    call();
-                });
-            },
-            function(call){
-                sql={parent_tbl_id:project.tbl_id};
-                sort={order:1};
-                dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
-                    top_list=data_list;
-                    call();
-                });
-            },
-            function(call){
-                for(a=0;a<top_list.length;a++){
-                    top_list[a]=top_list[a];
-                    top_list[a].items=[];
-                    top_list[a].photos=[];
+        },
+        function(call){
+            sql = {};
+            sort={};
+            dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
+                for(a=0;a<data_list.length;a++){
+                    full_photo_list.push(data_list[a]);
                 }
                 call();
-            },
-            function(call){
-                sql = {parent_data_type:DT_PROJECT};
-                sort={order:1};
-                dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
-                    other_list=data_list;
-                    call();
-                });
-            },
-            function(call){
-                for(a=0;a<other_list.length;a++){
-                    other_list[a]=other_list[a];
-                    other_list[a].items=[];
-                    other_list[a].photos=[];
-                }
+            });
+        },
+        function(call){
+            sql={parent_tbl_id:project.tbl_id};
+            sort={order:1};
+            dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
+                top_list=data_list;
                 call();
-            },
-            function(call){
-                for(a=0;a<full_photo_list.length;a++){
-                    if(project.tbl_id==full_photo_list[a].parent_tbl_id){
-                        project.photos.push(full_photo_list[a]);
+            });
+        },
+        function(call){
+            for(a=0;a<top_list.length;a++){
+                top_list[a]=top_list[a];
+                top_list[a].items=[];
+                top_list[a].photos=[];
+            }
+            call();
+        },
+        function(call){
+            sql = {parent_data_type:DT_PROJECT};
+            sort={order:1};
+            dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
+                other_list=data_list;
+                call();
+            });
+        },
+        function(call){
+            for(a=0;a<other_list.length;a++){
+                other_list[a]=other_list[a];
+                other_list[a].items=[];
+                other_list[a].photos=[];
+            }
+            call();
+        },
+        function(call){
+            for(a=0;a<full_photo_list.length;a++){
+                if(project.tbl_id==full_photo_list[a].parent_tbl_id){
+                    project.photos.push(full_photo_list[a]);
+                }
+            }
+            call();
+        },
+        function(call){
+            for(a=0;a<top_list.length;a++){
+                for(b=0;b<full_photo_list.length;b++){
+                    if(top_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                        top_list[a].photos.push(full_photo_list[b]);
                     }
                 }
-                call();
-            },
-            function(call){
-                for(a=0;a<top_list.length;a++){
-                    for(b=0;b<full_photo_list.length;b++){
-                        if(top_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
-                            top_list[a].photos.push(full_photo_list[b]);
-                        }
+            }
+            call();
+        },
+        function(call){
+            for(a=0;a<other_list.length;a++){
+                for(b=0;b<full_photo_list.length;b++){
+                    if(other_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                        other_list[a].photos.push(full_photo_list[b]);
                     }
                 }
-                call();
-            },
-            function(call){
-                for(a=0;a<other_list.length;a++){
-                    for(b=0;b<full_photo_list.length;b++){
-                        if(other_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
-                            other_list[a].photos.push(full_photo_list[b]);
-                        }
-                    }
-                }
-                call();
-            },
-            function(call){
-                for(a=0;a<top_list.length;a++){
-                    for(b=0;b<other_list.length;b++){
-                        if(top_list[a].tbl_id==other_list[b].parent_tbl_id){
-                            for(c=0;c<other_list.length;c++){
-                                if(other_list[b].tbl_id==other_list[c].parent_tbl_id){
-                                    for(d=0;d<other_list.length;d++){
-                                        if(other_list[c].tbl_id==other_list[d].parent_tbl_id){
-                                            other_list[c][other_list[d].title_url]=other_list[d];
-                                            other_list[c].items.push(other_list[d]);
-                                        }
+            }
+            call();
+        },
+        function(call){
+            for(a=0;a<top_list.length;a++){
+                for(b=0;b<other_list.length;b++){
+                    if(top_list[a].tbl_id==other_list[b].parent_tbl_id){
+                        for(c=0;c<other_list.length;c++){
+                            if(other_list[b].tbl_id==other_list[c].parent_tbl_id){
+                                for(d=0;d<other_list.length;d++){
+                                    if(other_list[c].tbl_id==other_list[d].parent_tbl_id){
+                                        other_list[c][other_list[d].title_url]=other_list[d];
+                                        other_list[c].items.push(other_list[d]);
                                     }
-                                    other_list[b][other_list[c].title_url]=other_list[c];
-                                    other_list[b].items.push(other_list[c]);
                                 }
+                                other_list[b][other_list[c].title_url]=other_list[c];
+                                other_list[b].items.push(other_list[c]);
                             }
-                            top_list[a][other_list[b].title_url]=other_list[b];
-                            top_list[a].items.push(other_list[b]);
                         }
+                        top_list[a][other_list[b].title_url]=other_list[b];
+                        top_list[a].items.push(other_list[b]);
                     }
-                    project[top_list[a].title_url]=top_list[a];
-                    project.items.push(top_list[a]);
                 }
-                call();
-            },
-        ],
-            function(err, result){
-                callback(error,project);
-            });
-    }
+                project[top_list[a].title_url]=top_list[a];
+                project.items.push(top_list[a]);
+            }
+            call();
+        },
+    ],
+        function(err, result){
+            callback(error,project);
+        });
+}
 module.get_project_list=function(db,sql,sort_by,page_current,page_size,callback) {
     var project_list=[];
     var full_photo_list=[];
@@ -2150,9 +2395,6 @@ module.get_project_list=function(db,sql,sort_by,page_current,page_size,callback)
     async.series([
         function(call){
             dataz.get_sql_paging_cache(db,DT_PROJECT,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                if(error){
-                    error=error;
-                }
                 project_list=data_list;
                 dt_total=_dt_total;
                 page_page_total=_page_page_total;
@@ -2163,9 +2405,6 @@ module.get_project_list=function(db,sql,sort_by,page_current,page_size,callback)
             sql = {};
             sort={};
             dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                if(error){
-                    error=error;
-                }
                 full_photo_list=data_list;
                 call();
             });
@@ -2196,9 +2435,6 @@ module.get_gallery=function(db,title_url,callback){
             sql = {title_url:title_url};
             sort={};
             dataz.get_sql_cache(db,DT_GALLERY,sql,sort,function(error,data_list) {
-                if(error){
-                    error=error;
-                }
                 if(data_list.length>0){
                     if(data_list[0].tbl_id!=0 &&data_list[0]){
                         gallery=data_list[0];
@@ -2212,9 +2448,6 @@ module.get_gallery=function(db,title_url,callback){
             sql = {parent_tbl_id:gallery.tbl_id};
             sort={};
             dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                if(error){
-                    error=error;
-                }
                 for(a=0;a<data_list.length;a++){
                     gallery.photos.push(data_list[a]);
                 }
@@ -2234,9 +2467,6 @@ module.get_gallery_list=function(db,sql,sort_by,page_current,page_size,callback)
     async.series([
         function(call){
             dataz.get_sql_paging_cache(db,DT_GALLERY,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                if(error){
-                    error=error;
-                }
                 gallery_list=data_list;
                 dt_total=_dt_total;
                 page_page_total=_page_page_total;
@@ -2247,9 +2477,6 @@ module.get_gallery_list=function(db,sql,sort_by,page_current,page_size,callback)
             sql = {};
             sort={};
             dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                if(error){
-                    error=error;
-                }
                 full_photo_list=data_list;
                 call();
             });
@@ -2283,9 +2510,6 @@ module.get_page=function(db,title_url,setting,callback){
             sql = {title_url:title_url};
             sort={};
             dataz.get_sql_cache(db,DT_ITEM_MAP,sql,sort,function(error,data_list) {
-                if(error){
-                    error=error;
-                }
                 if(data_list.length>0){
                     if(data_list[0].tbl_id!=0 &&data_list[0]){
                         item_map=data_list[0];
@@ -2299,12 +2523,14 @@ module.get_page=function(db,title_url,setting,callback){
             });
         },
         function(call){
-            sql = {item_map_tbl_id:item_map.tbl_id};
+            item_map.photos=[];
+            item_map.items=[];
+            call();
+        },
+        function(call){
+            sql = {};
             sort={};
             dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                if(error){
-                    error=error;
-                }
                 for(a=0;a<data_list.length;a++){
                     full_photo_list.push(data_list[a]);
                 }
@@ -2316,17 +2542,11 @@ module.get_page=function(db,title_url,setting,callback){
             sort={order:1};
             if(setting.count){
                 dataz.get_sql_paging_cache(db,item_map.title_url,sql,sort,1,setting.count,function(error,data_list,dt_total,page_page_total) {
-                    if(error){
-                        error=error;
-                    }
                     top_list=data_list;
                     call();
                 });
             }else{
                 dataz.get_sql_cache(db,item_map.title_url,sql,sort,function(error,data_list) {
-                    if(error){
-                        error=error;
-                    }
                     top_list=data_list;
                     call();
                 });
@@ -2343,9 +2563,6 @@ module.get_page=function(db,title_url,setting,callback){
             sql = {};
             sort={order:1};
             dataz.get_sql_cache(db,item_map.title_url,sql,sort,function(error,data_list) {
-                if(error){
-                    error=error;
-                }
                 other_list=data_list;
                 call();
             });
@@ -2423,21 +2640,12 @@ module.get_page=function(db,title_url,setting,callback){
                         item.items=appz.get_item_list_sort(item,item.items);
                         go3();
                     }, error => {
-                        if(error){
-                            error=error;
-                        }
                         go2();
                     });
                 }, error => {
-                    if(error){
-                        error=error;
-                    }
                     go();
                 });
             }, error => {
-                if(error){
-                    error=error;
-                }
                 call();
             });
         },
@@ -2454,9 +2662,6 @@ module.copy_photo_list=function(db,parent_tbl_id,new_parent_tbl_id,callback) {
         function(call){
             sql={parent_tbl_id:parent_tbl_id};
             dataz.get_sql_cache(db,DT_PHOTO,sql,{},function(error,data_list) {
-                if(error){
-                    error=error;
-                }
                 photo_list=data_list;
                 call();
             });
@@ -2474,9 +2679,6 @@ module.copy_photo_list=function(db,parent_tbl_id,new_parent_tbl_id,callback) {
         function(call){
             dataz.update_list(db,copy_photo_list,function(error,data_list) {
                 copy_photo_list=data_list;
-                if(error){
-                    error=error;
-                }
                 call();
             });
         },
@@ -2493,9 +2695,6 @@ module.get_page_list=function(db,sql,sort_by,page_current,page_size,callback) {
     async.series([
         function(call){
             dataz.get_sql_paging_cache(db,DT_PAGE,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                if(error){
-                    error=error;
-                }
                 page_list=data_list;
                 dt_total=_dt_total;
                 page_page_total=_page_page_total;
@@ -2506,9 +2705,6 @@ module.get_page_list=function(db,sql,sort_by,page_current,page_size,callback) {
             sql = {};
             sort={};
             dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                if(error){
-                    error=error;
-                }
                 full_photo_list=data_list;
                 call();
             });
@@ -2540,9 +2736,6 @@ module.get_team_member=function(db,title_url,callback){
             sql = {title_url:title_url};
             sort={};
             dataz.get_sql_cache(db,DT_TEAM,sql,sort,function(error,data_list) {
-                if(error){
-                    error=error;
-                }
                 if(data_list.length>0){
                     if(data_list[0].tbl_id!=0 &&data_list[0]){
                         team_member=data_list[0];
@@ -2562,9 +2755,6 @@ module.get_teamz=function(db,sql,sort_by,page_current,page_size,callback) {
     async.series([
         function(call){
             dataz.get_sql_paging_cache(db,DT_TEAM,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                if(error){
-                    error=error;
-                }
                 team_list=data_list;
                 dt_total=_dt_total;
                 page_page_total=_page_page_total;
@@ -2576,6 +2766,89 @@ module.get_teamz=function(db,sql,sort_by,page_current,page_size,callback) {
             callback(error,team_list,dt_total,page_page_total);
         });
 }
+module.get_video_list=function(db,sql,sort_by,page_current,page_size,callback) {
+    var video_list=[];
+    var full_photo_list=[];
+    var sub_video_list=[];
+    var error=null;
+    async.series([
+        function(call){
+            dataz.get_sql_paging_cache(db,DT_VIDEO,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
+                video_list=data_list;
+                dt_total=_dt_total;
+                page_page_total=_page_page_total;
+                call();
+            });
+        },
+        function(call){
+            sql = {parent_data_type:DT_VIDEO};
+            sort={};
+            dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
+                sub_video_list=data_list;
+                call();
+            });
+        },
+        function(call){
+            sql = {};
+            sort={};
+            dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
+                full_photo_list=data_list;
+                call();
+            });
+        },
+        function(call){
+            for(a=0;a<video_list.length;a++){
+                video_list[a].photos=[];
+                video_list[a].items=[];
+                for(b=0;b<full_photo_list.length;b++){
+                    if(video_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                        video_list[a].photos.push(full_photo_list[b]);
+                    }
+                }
+            }
+            call();
+        },
+        function(call){
+            for(a=0;a<sub_video_list.length;a++){
+                sub_video_list[a].photos=[];
+                sub_video_list[a].items=[];
+                for(b=0;b<full_photo_list.length;b++){
+                    if(sub_video_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                        sub_video_list[a].photos.push(full_photo_list[b]);
+                    }
+                }
+            }
+            call();
+        },
+        function(call){
+            for(a=0;a<video_list.length;a++){
+                for(b=0;b<sub_video_list.length;b++){
+                    if(video_list[a].tbl_id==sub_video_list[b].parent_tbl_id){
+                        for(c=0;c<sub_video_list.length;c++){
+                            if(sub_video_list[b].tbl_id==sub_video_list[c].parent_tbl_id){
+                                for(d=0;d<sub_video_list.length;d++){
+                                    if(sub_video_list[c].tbl_id==sub_video_list[d].parent_tbl_id){
+                                        sub_video_list[c][sub_video_list[d].title_url]=sub_video_list[d];
+                                        sub_video_list[c].items.push(sub_video_list[d]);
+                                    }
+                                }
+                                sub_video_list[b][sub_video_list[c].title_url]=sub_video_list[c];
+                                sub_video_list[b].items.push(sub_video_list[c]);
+                            }
+                        }
+                        video_list[a][sub_video_list[b].title_url]=sub_video_list[b];
+                        video_list[a].items.push(sub_video_list[b]);
+                    }
+                }
+            }
+            call();
+        },
+    ],
+        function(err, result){
+            callback(error,video_list,dt_total,page_page_total);
+        });
+}
+
 module.get_blog_post_list=function(db,sql,sort_by,page_current,page_size,callback) {
     var blog_post_list=[];
     var full_photo_list=[];
@@ -2584,9 +2857,6 @@ module.get_blog_post_list=function(db,sql,sort_by,page_current,page_size,callbac
     async.series([
         function(call){
             dataz.get_sql_paging_cache(db,DT_BLOG_POST,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                if(error){
-                    error=error;
-                }
                 blog_post_list=data_list;
                 dt_total=_dt_total;
                 page_page_total=_page_page_total;
@@ -2597,9 +2867,6 @@ module.get_blog_post_list=function(db,sql,sort_by,page_current,page_size,callbac
             sql = {parent_data_type:DT_BLOG_POST};
             sort={};
             dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                if(error){
-                    error=error;
-                }
                 sub_blog_post_list=data_list;
                 call();
             });
@@ -2608,9 +2875,6 @@ module.get_blog_post_list=function(db,sql,sort_by,page_current,page_size,callbac
             sql = {};
             sort={};
             dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                if(error){
-                    error=error;
-                }
                 full_photo_list=data_list;
                 call();
             });
@@ -2667,5 +2931,5 @@ module.get_blog_post_list=function(db,sql,sort_by,page_current,page_size,callbac
             callback(error,blog_post_list,dt_total,page_page_total);
         });
 }
-return module;
+ return module;
 }

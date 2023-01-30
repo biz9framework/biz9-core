@@ -13,20 +13,13 @@ module.exports = function(){
         else{//update
             item.date_save = new moment().toISOString();
             db.collection(data_type).updateOne({tbl_id:item.tbl_id},{$set: item},function(error,data){
-                if(error){
                     callback(error,item);
-                }else{
-                    callback(error,item);
-                }
             });
         }
     }
     module.get=function(db,data_type,tbl_id,callback){
         var error=null;
         db.collection(data_type).findOne({tbl_id:tbl_id},function(error,data) {
-            if(error){
-                error=error;
-            }
             callback(error,data);
         });
     }
@@ -58,23 +51,19 @@ module.exports = function(){
         async.series([
             function(call){
                 const run = async function(a,b){
-                   total_count= await db.collection(data_type).countDocuments(sql_obj);
+                    total_count= await db.collection(data_type).countDocuments(sql_obj);
                     call();
                 }
                 run();
             },
         ],
             function(errors,result){
-                if(error){
-                    callback(error,total_count,data);
-                }else {
-                    db.collection(data_type).find(sql_obj,{tbl_id:1,data_type:1}).sort(sort_by)
-                        .skip(current_page>0?((current_page-1)*page_size):0)
-                        .limit(page_size).collation({locale:"en_US",numericOrdering:true})
-                        .toArray(function(error,_data) {
-                            callback(error,total_count,_data);
-                        });
-                }
+                db.collection(data_type).find(sql_obj,{tbl_id:1,data_type:1}).sort(sort_by)
+                    .skip(current_page>0?((current_page-1)*page_size):0)
+                    .limit(page_size).collation({locale:"en_US",numericOrdering:true})
+                    .toArray(function(error,_data) {
+                        callback(error,total_count,_data);
+                    });
             });
     }
     module.drop=function(db,data_type,callback){
@@ -91,4 +80,3 @@ module.exports = function(){
     }
     return module;
 }
-

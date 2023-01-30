@@ -30,6 +30,9 @@ module.exports = function(){
         return file_name.replace(/^.*\./, '');
     }
     module.get_title_url=function(title){
+        if(!title){
+            title='';
+        }
         return title.replace(/[^a-z0-9]+/ig, "_").toLowerCase();
     }
     module.get_id=function(max){
