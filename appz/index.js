@@ -652,6 +652,14 @@ module.exports = function(app_config){
         _product.shipping_price_1=org_item.shipping_price_1;
         _product.shipping_title_2=org_item.shipping_title_2;
         _product.shipping_price_2=org_item.shipping_price_2;
+        _product.shipping_title_3=org_item.shipping_title_3;
+        _product.shipping_price_3=org_item.shipping_price_3;
+        _product.option_title_1=org_item.option_title_1;
+        _product.option_price_1=org_item.option_price_1;
+        _product.option_title_2=org_item.option_title_2;
+        _product.option_price_2=org_item.option_price_2;
+        _product.option_title_3=org_item.option_title_3;
+        _product.option_price_3=org_item.option_price_3;
         _product.field_1=org_item.field_1;
         _product.field_2=org_item.field_2;
         _product.field_3=org_item.field_3;
@@ -751,6 +759,12 @@ module.exports = function(app_config){
         _service.html=org_item.html;
         _service.regular_price=org_item.regular_price;
         _service.sale_price=org_item.sale_price;
+        _service.option_title_1=org_item.option_title_1;
+        _service.option_price_1=org_item.option_price_1;
+        _service.option_title_2=org_item.option_title_2;
+        _service.option_price_2=org_item.option_price_2;
+        _service.option_title_3=org_item.option_title_3;
+        _service.option_price_3=org_item.option_price_3;
         _service.field_1=org_item.field_1;
         _service.field_2=org_item.field_2;
         _service.field_3=org_item.field_3;
@@ -808,16 +822,16 @@ module.exports = function(app_config){
     module.get_category_title_list=function(){
             return[
                 {value:DT_BLOG_POST,title:'Blog Post'},
-                {value:DT_SERVICE,title:'Service'},
+                {value:DT_EVENT,title:'Event'},
+                {value:DT_GALLERY,title:'Gallery'},
                 {value:DT_PRODUCT,title:'Product'},
                 {value:DT_PROJECT,title:'Project'},
-                {value:DT_GALLERY,title:'Gallery'},
+                {value:DT_SERVICE,title:'Service'},
                 {value:DT_VIDEO,title:'Video'},
-                {value:DT_EVENT,title:'Event'}
             ]
     }
-    module.get_category_title=function(type){
-        switch (type) {
+    module.get_data_type_title=function(data_type){
+        switch (data_type) {
             case DT_BLOG_POST:
                 return 'Blog Post';
                 break;
@@ -840,8 +854,53 @@ module.exports = function(app_config){
                 return 'Video';
                 break;
             default:
-                return '';
+                return 'Blank';
         }
+    }
+    module.set_biz_product=function(product){
+        product.money_price=biz9.get_money(product.price);
+        product.photos=[];
+        product.items=[];
+        product.shipping_list=[];
+        product.option_list=[];
+        if(product.shipping_title_1){
+            if(isNaN(product.shipping_price_1)){
+                product.shipping_price_1='0.00';
+            }
+            product.shipping_list.push({title:product.shipping_title_1,price:product.shipping_price_1,money_price:biz9.get_money(product.shipping_price_1)});
+        }
+        if(product.shipping_title_2){
+            if(isNaN(product.shipping_price_2)){
+                product.shipping_price_2='0.00';
+            }
+            product.shipping_list.push({title:product.shipping_title_2,price:product.shipping_price_2,money_price:biz9.get_money(product.shipping_price_2)});
+        }
+        if(product.shipping_title_3){
+            if(isNaN(product.shipping_price_3)){
+                product.shipping_price_3='0.00';
+            }
+            product.shipping_list.push({title:product.shipping_title_3,price:product.shipping_price_3,money_price:biz9.get_money(product.shipping_price_3)});
+        }
+        if(product.option_title_1){
+            if(isNaN(product.option_price_1)){
+                product.option_price_1='0.00';
+            }
+            product.option_list.push({title:product.option_title_1,price:product.option_price_1,money_price:biz9.get_money(product.option_price_1)});
+        }
+
+        if(product.option_title_2){
+            if(isNaN(product.option_price_2)){
+                product.option_price_2='0.00';
+            }
+            product.option_list.push({title:product.option_title_2,price:product.option_price_2,money_price:biz9.get_money(product.option_price_2)});
+        }
+        if(product.option_title_3){
+            if(isNaN(product.option_price_3)){
+                product.option_price_3='0.00';
+            }
+            product.option_list.push({title:product.option_title_3,price:product.option_price_3,money_price:biz9.get_money(product.option_price_3)});
+        }
+        return product;
     }
     module.set_biz_item=function(item){
         var no_photo=true;
@@ -1115,9 +1174,7 @@ module.exports = function(app_config){
                             product=data_list[0];
                         }
                     }
-                    product.money_price=utilityz.get_money(product.price);
-                    product.photos=[];
-                    product.items=[];
+                    product = appz.set_biz_product(product);
                     call();
                 });
             },
@@ -1906,7 +1963,7 @@ module.exports = function(app_config){
                             event=data_list[0];
                             event.date_full= biz9.get_date_full(event.start_date);
                             event.time_full= biz9.get_time_full(event.start_time);
-                            event.money_price=get_money(event.price);
+                            event.money_price=biz9.get_money(event.price);
                         }
                     }
                     event.photos=[];
@@ -1960,9 +2017,7 @@ module.exports = function(app_config){
             },
             function(call){
                 for(a=0;a<product_list.length;a++){
-                    product_list[a].photos=[];
-                    product_list[a].items=[];
-                    product_list[a].money_price=utilityz.get_money(product_list[a].price);
+                    product_list[a]=appz.set_biz_product(product_list[a]);
                     for(b=0;b<full_photo_list.length;b++){
                         if(product_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
                             product_list[a].photos.push(full_photo_list[b]);
@@ -2017,7 +2072,11 @@ module.exports = function(app_config){
         var error=null;
         async.series([
             function(call){
-                sql={type:data_type};
+                if(data_type=='all'){
+                    sql={};
+                }else{
+                    sql={type:data_type};
+                }
                 dataz.get_sql_paging_cache(db,DT_CATEGORY,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
                     category_list=data_list;
                     dt_total=_dt_total;
@@ -2034,6 +2093,7 @@ module.exports = function(app_config){
             function(call){
                 for(a=0;a<category_list.length;a++){
                     category_list[a].item_count=0;
+                    category_list[a].type_title=biz9.get_data_type_title(category_list[a].type);
                     for(b=0;b<item_list.length;b++){
                         if(category_list[a].title_url==item_list[b].category){
                             category_list[a].item_count=category_list[a].item_count+1;
@@ -2045,6 +2105,125 @@ module.exports = function(app_config){
         ],
             function(err, result){
                 callback(error,category_list,dt_total,page_page_total);
+            });
+    }
+    module.get_category=function(db,title_url,callback){
+        var category=appz.get_new_item(DT_CATEGORY,0);
+        var full_photo_list=[];
+        var other_list=[];
+        async.series([
+            function(call){
+                sql = {title_url:title_url};
+                sort={};
+                dataz.get_sql_cache(db,DT_CATEGORY,sql,sort,function(error,data_list) {
+                    if(data_list.length>0){
+                        if(data_list[0].tbl_id!=0 &&data_list[0]){
+                            category=data_list[0];
+                        }
+                    }
+                    category.photos=[];
+                    category.items=[];
+                    call();
+                });
+            },
+            function(call){
+                sql = {};
+                sort={};
+                dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
+                    for(a=0;a<data_list.length;a++){
+                        full_photo_list.push(data_list[a]);
+                    }
+                    call();
+                });
+            },
+            function(call){
+                sql={parent_tbl_id:category.tbl_id};
+                sort={order:1};
+                dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
+                    top_list=data_list;
+                    call();
+                });
+            },
+            function(call){
+                for(a=0;a<top_list.length;a++){
+                    top_list[a]=top_list[a];
+                    top_list[a].items=[];
+                    top_list[a].photos=[];
+                }
+                call();
+            },
+            function(call){
+                sql = {parent_data_type:DT_CATEGORY};
+                sort={order:1};
+                dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
+                    other_list=data_list;
+                    call();
+                });
+            },
+            function(call){
+                for(a=0;a<other_list.length;a++){
+                    other_list[a]=other_list[a];
+                    other_list[a].items=[];
+                    other_list[a].photos=[];
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<full_photo_list.length;a++){
+                    if(category.tbl_id==full_photo_list[a].parent_tbl_id){
+                        category.photos.push(full_photo_list[a]);
+                    }
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<top_list.length;a++){
+                    for(b=0;b<full_photo_list.length;b++){
+                        if(top_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                            top_list[a].photos.push(full_photo_list[b]);
+                        }
+                    }
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<other_list.length;a++){
+                    for(b=0;b<full_photo_list.length;b++){
+                        if(other_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                            other_list[a].photos.push(full_photo_list[b]);
+                        }
+                    }
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<top_list.length;a++){
+                    for(b=0;b<other_list.length;b++){
+                        if(top_list[a].tbl_id==other_list[b].parent_tbl_id){
+                            for(c=0;c<other_list.length;c++){
+                                if(other_list[b].tbl_id==other_list[c].parent_tbl_id){
+                                    for(d=0;d<other_list.length;d++){
+                                        if(other_list[c].tbl_id==other_list[d].parent_tbl_id){
+                                            other_list[c][other_list[d].title_url]=other_list[d];
+                                            other_list[c].items.push(other_list[d]);
+                                        }
+                                    }
+                                    other_list[b][other_list[c].title_url]=other_list[c];
+                                    other_list[b].items.push(other_list[c]);
+                                }
+                            }
+                            top_list[a][other_list[b].title_url]=other_list[b];
+                            top_list[a].items.push(other_list[b]);
+                        }
+                    }
+                    category[top_list[a].title_url]=top_list[a];
+                    category.items.push(top_list[a]);
+                }
+                call();
+            },
+        ],
+            function(err, result){
+                callback(error,category);
             });
     }
     module.get_service=function(db,title_url,callback){
@@ -2061,7 +2240,7 @@ module.exports = function(app_config){
                             service=data_list[0];
                         }
                     }
-                    service.money_price=utilityz.get_money(service.price);
+                    service.money_price=biz9.get_money(service.price);
                     service.photos=[];
                     service.items=[];
                     call();
@@ -2281,7 +2460,7 @@ module.get_project=function(db,title_url,callback){
                         project=data_list[0];
                     }
                 }
-                project.money_price=utilityz.get_money(project.price);
+                project.money_price=biz9.get_money(project.price);
                 project.photos=[];
                 project.items=[];
                 call();
@@ -2931,5 +3110,6 @@ module.get_blog_post_list=function(db,sql,sort_by,page_current,page_size,callbac
             callback(error,blog_post_list,dt_total,page_page_total);
         });
 }
+
  return module;
 }

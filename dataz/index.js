@@ -41,6 +41,18 @@ module.exports = function(data_config){
                 run();
             },
             function(call){
+                for(a=0;a<data_item_list.length;a++){
+                    for(property in data_item_list[a]){
+                        if(property!='tbl_id'&&property!='data_type'){
+                            if(!data_item_list[a][property]){
+                                delete data_item_list[a][property];
+                            }
+                        }
+                    }
+                }
+                call();
+            },
+            function(call){
                 async.forEachOf(data_item_list,(item,key,go)=>{
                     if(item){
                         item.db_name=db.db_name;
@@ -87,6 +99,16 @@ module.exports = function(data_config){
                     call();
                 }
                 run();
+            },
+            function(call){
+                for(property in data_item){
+                    if(property!='tbl_id'&&property!='data_type'){
+                        if(!data_item[property]){
+                            delete data_item[property];
+                        }
+                    }
+                }
+                call();
             },
             function(call){
                 if(data_item.photo){
