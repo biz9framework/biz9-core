@@ -61,16 +61,27 @@ module.exports = function(){
     module.get_datetime_full=function(date) {
         if(date){
             var t = moment(date);
-            return t.format("MMMM DD, YYYY @ h:mm:ssa");
+            return t.format("MMMM DD, YYYY");
         }
         else{
             var t = moment();
-            return t.format("MMMM DD, YYYY @ h:mm:ssa");
+            return t.format("MMMM DD, YYYY");
+        }
+    }
+    module.get_time_full_by_date=function(date) {
+        if(date){
+            var t = moment(date);
+            return t.format("h:mma");
+        }
+        else{
+            var t = moment();
+            return t.format("h:mma");
         }
     }
     module.get_time_full=function(time) {
         if(time){
-            return moment(time, 'HH:mm').format('hh:mm a');
+            //return moment(time, 'HH:mm').format('hh:mm a');
+            return moment(time, 'HH:mm').format('LT');
         }
         else{
             return '';
@@ -110,6 +121,15 @@ module.exports = function(){
             return null;
         }
     }
+    module.get_datetime_iso_format=function(date,time) {
+        if(date){
+            return moment(date+ ' ' + time).toISOString();
+        }
+        else{
+            return moment().toISOString();
+        }
+    }
+
     module.get_slug=function(str){
         if(!str)
             return "";
