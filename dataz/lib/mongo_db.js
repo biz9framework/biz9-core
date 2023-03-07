@@ -13,7 +13,7 @@ module.exports = function(){
         else{//update
             item.date_save = new moment().toISOString();
             db.collection(data_type).updateOne({tbl_id:item.tbl_id},{$set: item},function(error,data){
-                    callback(error,item);
+                callback(error,item);
             });
         }
     }
@@ -72,11 +72,21 @@ module.exports = function(){
             callback(error,0);
         });
     }
-    module.rename=function(db,data_type,new_title,callback){
+    module.count=function(db,data_type,sql,callback){
+        var total_count=0;
         var error=null;
-        db.collection(data_type).rename(new_title,function(error,newColl) {
-            callback(error,0);
-        });
+        async.series([
+            function(call){
+                const run = async function(a,b){
+                    total_count= await db.collection(data_type).find(sql).count();
+                    call();
+                }
+                run();
+            },
+        ],
+            function(errors,result){
+                callback(error,total_count);
+            });
     }
     return module;
 }

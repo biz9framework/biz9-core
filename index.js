@@ -22,6 +22,8 @@ module.exports = function(app_config,data_config){
     data_mon = require('./dataz/lib/mongo_db.js')();
     cache_red = require('./dataz/lib/redis_cache.js')();
     appz = require('./appz/index.js')(app_config);
+    order = require('./order/index.js')(app_config);
+    statz = require('./statz/index.js')();
     dataz = require('./dataz/index.js')(data_config);
     utilityz = require('./utilityz/index.js')();
     awz = require('./awz/index.js')();
@@ -87,6 +89,12 @@ module.exports = function(app_config,data_config){
     }
     module.delete_list = function(db,data_type,data_item_list,callback){
         dataz.delete_cache_list(db,data_type,data_item_list,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
+    module.count=function(db,data_type,sql,callback){
+        dataz.count(db,data_type,sql,function(error,data)
             {
                 callback(error,data);
             });
@@ -157,7 +165,23 @@ module.exports = function(app_config,data_config){
             });
     }
     ///////////////// AWZ END //////////////////////////////////////////
-    ///////////////// APP START //////////////////////////////////////////
+    ///////////////// STATZ START //////////////////////////////////////////
+    module.update_item_view_count = function(db,item_data_type,item_tbl_id,customer_id,callback) {
+        statz.update_item_view_count(db,item_data_type,item_tbl_id,customer_id,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
+    ///////////////// STATZ START //////////////////////////////////////////
+    ///////////////// ORDER START //////////////////////////////////////////
+    module.cart_checkout_product_order_add = function(db,customer,shipping,billing,cart,callback) {
+        order.cart_checkout_product_order_add(db,customer,shipping,billing,cart,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
+    ///////////////// ORDER END //////////////////////////////////////////
+    ///////////////// APPZ START //////////////////////////////////////////
     module.set_item_data = function(data_type,tbl_id,item_data) {
         return appz.set_item_data(data_type,tbl_id,item_data);
     }
@@ -257,6 +281,9 @@ module.exports = function(app_config,data_config){
     module.get_key_sort_type=function(key){
         return appz.get_key_sort_type(key)
     }
+    module.get_test_sub_note=function(){
+        return appz.get_test_sub_note();
+    }
     module.get_test_note=function(){
         return appz.get_test_note();
     }
@@ -320,8 +347,21 @@ module.exports = function(app_config,data_config){
                 callback(error,data_list);
             });
     }
+    module.get_item_biz_review=function(db,item_tbl_id,callback){
+        appz.get_item_biz_review(db,item_tbl_id,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
+    module.get_product_visible_option_list = function() {
+        return appz.get_product_visible_option_list();
+    }
+    module.get_product_visible_str = function(product_visible_id) {
+        return appz.get_product_visible_option_list(product_visible_id);
+    }
+    ///////////////// APPZ END //////////////////////////////////////////
     ///////////////// ORDER START //////////////////////////////////////////
-    module.get_cart_itemz=function(db,sql,callback){
+   module.get_cart_itemz=function(db,sql,callback){
         appz.get_cart_item_list(db,sql,function(error,data_list)
             {
                 callback(error,data_list);
@@ -329,6 +369,12 @@ module.exports = function(app_config,data_config){
     }
     module.get_order=function(db,order_id,callback){
         appz.get_order(db,order_id,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
+    module.get_order_by_tbl_id=function(db,tbl_id,callback){
+        appz.get_order_by_tbl_id(db,tbl_id,function(error,data)
             {
                 callback(error,data);
             });
@@ -349,8 +395,8 @@ module.exports = function(app_config,data_config){
             });
     }
     ///////////////// ORDER END //////////////////////////////////////////
-    module.get_commentz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_comment_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+    module.get_reviewz=function(db,sql,sort_by,page_current,page_size,callback){
+        appz.get_review_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
             {
                 callback(error,data_list,total_item_count,page_page_count);
             });
@@ -385,8 +431,8 @@ module.exports = function(app_config,data_config){
                 callback(error,data);
             });
     }
-    module.get_teamz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_teamz(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+    module.get_team_list=function(db,sql,sort_by,page_current,page_size,callback){
+        appz.get_team_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
             {
                 callback(error,data_list,total_item_count,page_page_count);
             });
@@ -459,29 +505,23 @@ module.exports = function(app_config,data_config){
     {
         return utilityz.get_query(window);
     }
-    module.get_time_full=function(time) {
-        return utilityz.get_time_full(time);
+    module.get_date_time_str=function(date) {
+        return utilityz.get_date_time_str(date);
     }
-    module.get_time_full=function(time) {
-        return utilityz.get_time_full(time);
+    module.get_date_str=function(date) {
+        return utilityz.get_date_str(date);
     }
-    module.get_datetime_full=function(date) {
-        return utilityz.get_datetime_full(date);
+    module.get_time_str=function(date) {
+        return utilityz.get_time_str(date);
     }
-    module.get_time_full_by_date=function(date) {
-        return utilityz.get_time_full_by_date(date);
+    module.get_date_time_obj=function(date) {
+        return utilityz.get_date_time_obj(date);
     }
-    module.get_date_full=function(date) {
-        return utilityz.get_date_full(date);
+    module.get_date_time_pretty=function(date) {
+        return utilityz.get_date_time_pretty(date);
     }
-    module.get_datetime_full_obj=function(date) {
-        return utilityz.get_datetime_full_obj(date);
-    }
-    module.get_date_full_obj=function(date) {
-        return utilityz.get_date_full_obj(date);
-    }
-    module.get_date_pretty=function(date) {
-        return utilityz.get_date_pretty(date);
+    module.get_iso_str_by_date_time=function(date,time) {
+        return utilityz.get_iso_str_by_date_time(date,time);
     }
     module.get_slug=function(str){
         return utilityz.get_slug(str);

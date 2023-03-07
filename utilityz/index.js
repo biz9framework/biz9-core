@@ -5,10 +5,10 @@
  * Core-Utility
  */
 module.exports = function(){
-   module.o = function(title,str){
+    module.o = function(title,str){
         if(!str){
             str=title;
-            title='print_me';
+            title='';
         }
         if(!str){
             str='null value';
@@ -16,9 +16,9 @@ module.exports = function(){
         write(title,str);
     }
     function write(title,str){
-        console.log('--- '+title.toUpperCase()+' ---');
+        console.log('________BIZ-PRINT---' +title.toUpperCase()+ '---START__________________');
         console.error(str);
-        console.log('_____________________');
+        console.log('________BIZ-PRINT---' +title.toUpperCase()+ '---END_____________________');
     }
     module.get_guid=function(){
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -40,7 +40,7 @@ module.exports = function(){
             max = 99999;
         }
         var r=Math.floor(Math.random()*max)+1;
-        return r.toString();
+        return r;
     }
     module.get_query=function(window)
     {
@@ -58,46 +58,35 @@ module.exports = function(){
         }
         return vars;
     }
-    module.get_datetime_full=function(date) {
+    module.get_date_time_str=function(date) {
+        //Tuesday, February 14th 2023,  at 2:39 am
+        if(date){
+            return String(moment(date).format("dddd MMMM Do, YYYY")) + " at " +  String(moment(date).format("h:mm a")) ;
+        }
+        else{
+            return 'Invalid Date Format';
+        }
+    }
+    module.get_date_str=function(date) {
+        //Tuesday, February 14th 2023
+        if(date){
+            return String(moment(date).format("dddd MMMM Do, YYYY"));
+        }
+        else{
+            return 'Invalid Date Format';
+        }
+    }
+    module.get_time_str=function(date) {
         if(date){
             var t = moment(date);
-            return t.format("MMMM DD, YYYY");
+            return t.format("h:mm a");
         }
         else{
             var t = moment();
-            return t.format("MMMM DD, YYYY");
+            return t.format("h:mm a");
         }
     }
-    module.get_time_full_by_date=function(date) {
-        if(date){
-            var t = moment(date);
-            return t.format("h:mma");
-        }
-        else{
-            var t = moment();
-            return t.format("h:mma");
-        }
-    }
-    module.get_time_full=function(time) {
-        if(time){
-            //return moment(time, 'HH:mm').format('hh:mm a');
-            return moment(time, 'HH:mm').format('LT');
-        }
-        else{
-            return '';
-        }
-    }
-    module.get_date_full=function(date) {
-        if(date){
-            var t = moment(date);
-            return t.format("MMMM DD, YYYY");
-        }
-        else{
-            var t = moment();
-            return t.format("MMMM DD, YYYY");
-        }
-    }
-    module.get_datetime_full_obj=function(date) {
+    module.get_date_time_obj=function(date) {
         if(date){
             return moment(date);
         }
@@ -105,15 +94,7 @@ module.exports = function(){
             return moment();
         }
     }
-    module.get_date_full_obj=function(date) {
-        if(date){
-            return moment(date);
-        }
-        else{
-            return moment();
-        }
-    }
-    module.get_date_pretty=function(date) {
+    module.get_date_time_pretty=function(date) {
         if(date){
             return prettydate.format(new Date(date));
         }
@@ -121,7 +102,7 @@ module.exports = function(){
             return null;
         }
     }
-    module.get_datetime_iso_format=function(date,time) {
+    module.get_iso_str_by_date_time=function(date,time) {
         if(date){
             return moment(date+ ' ' + time).toISOString();
         }
@@ -129,7 +110,6 @@ module.exports = function(){
             return moment().toISOString();
         }
     }
-
     module.get_slug=function(str){
         if(!str)
             return "";
@@ -143,7 +123,7 @@ module.exports = function(){
         if(!n || isNaN(n)){
             n = 0;
         }
-      return "$" + n.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,");
+        return "$" + n.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,");
     }
     module.get_currency = function(amount) {
         return Math.round(100 * parseFloat(typeof amount === 'string' ? amount.replace(/[$,]/g, '') : amount));
@@ -303,7 +283,7 @@ module.exports = function(){
     }
     module.get_file_buffer=function(file_path,callback){
         fs.readFile(file_path,function(error, buffer){
-                callback(error,buffer);
+            callback(error,buffer);
         })
     }
     module.get_mp3_duration=function(secs){
@@ -312,14 +292,21 @@ module.exports = function(){
         return duration;
     }
     module.get_paging_list=function(data_list,current_page,page_size,callback){
-    if(current_page>=1||!current_page){
-        current_page=1;
-    }
-    total_count = data_list.length;
-    skip = page_size * (current_page - 1);
-    page_page_count = Math.ceil(total_count / page_size);
-    new_data_list = data_list.slice(skip, skip + page_size);
+        if(current_page>=1||!current_page){
+            current_page=1;
+        }
+        total_count = data_list.length;
+        skip = page_size * (current_page - 1);
+        page_page_count = Math.ceil(total_count / page_size);
+        new_data_list = data_list.slice(skip, skip + page_size);
         callback(new_data_list,total_count,page_page_count);
+    }
+    module.get_older_date=function(date_1,date_2){
+        if(date_1.getTime() < date_2.getTime()){
+            return 'date1';
+        }else{
+            return 'date2';
+        }
     }
     return module;
 }

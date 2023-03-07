@@ -111,11 +111,11 @@ module.exports = function(data_config){
                 call();
             },
             function(call){
-                if(data_item.photo){
-                    delete data_item.photo;
+                if(data_item.photo_obj){
+                    delete data_item.photo_obj;
                 }
-                if(data_item.photo){
-                    delete data_item.date;
+                if(data_item.date_obj){
+                    delete data_item.date_obj;
                 }
                 data_mon.update(db,data_type,data_item,function(error,data){
                     call();
@@ -391,7 +391,7 @@ module.exports = function(data_config){
             });
     }
     module.delete_cache_item=function(db,data_type,tbl_id,callback){
-        var data_item=appz.get_new_item(client_redis,data_type,tbl_id);
+        var data_item=appz.get_new_item(data_type,tbl_id);
         var client_redis = redis.createClient(redis_port,redis_url);
         var error=null;
         async.series([
@@ -521,6 +521,11 @@ module.exports = function(data_config){
     }
     module.drop=function(db,data_type,callback){
         data_mon.drop(db,data_type,function(error,data){
+            callback(error,data);
+        });
+    }
+    module.count=function(db,data_type,sql,callback){
+        data_mon.count(db,data_type,sql,function(error,data){
             callback(error,data);
         });
     }

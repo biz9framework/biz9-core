@@ -37,7 +37,7 @@ module.exports = function(){
                         stripe_redirect_url=session.url;
                     } catch (e) {
                         error = e.message;
-                        console.log(error);
+                        biz9.o('biz9-core-stripe-get_stripe_redirect-url',error);
                         call();
                     } finally {
                         call();
@@ -69,8 +69,7 @@ module.exports = function(){
                                       last4:charge.source.last4};
                     } catch (e) {
                         error = e.message;
-                        console.log(error);
-                        //call();
+                        biz9.o('biz9-core-stripe-get_stripe_card-charge',error);
                     } finally {
                         call();
                     }
@@ -101,8 +100,7 @@ module.exports = function(){
                         stripe_token=token.id;
                     } catch (e) {
                         error = e.message;
-                        console.log(error);
-                        call();
+                        biz9.o('biz9-core-stripe-get_stripe_token-error',error);
                     } finally {
                         call();
                     }

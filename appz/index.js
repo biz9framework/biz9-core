@@ -29,8 +29,9 @@ module.exports = function(app_config){
     DT_ORDER_ITEM="order_item_biz";
     DT_BLOG_POST='blog_post_biz';
     DT_SERVICE='service_biz';
-    DT_COMMENT='comment_biz';
-    module.set_item_data = function(data_type,tbl_id,item_data){
+    DT_REVIEW='review_biz';
+    DT_STAT='stat_biz';
+    module.set_item_data=function(data_type,tbl_id,item_data){
         var item = {};
         for (key in  item_data) {
             item[key] = item_data[key].trim();
@@ -48,6 +49,9 @@ module.exports = function(app_config){
         }
         item = {data_type:data_type,tbl_id:tbl_id};
         return item;
+    }
+    get_new_review_obj=function() {
+        return {rating_avg:'0',review_list:[]}
     }
     module.get_test_item = function(data_type,tbl_id){
         if(!tbl_id){
@@ -356,48 +360,43 @@ module.exports = function(app_config){
         }
         return item;
     }
-    module.old_set_new_sub_item_parent=function(data_type,org_item){
-        var _sub_item = appz.get_new_item(data_type,0);
-        _sub_item.title=org_item.title;
-        _sub_item.title_url=org_item.title_url;
-        _sub_item.field_1=org_item.field_1;
-        _sub_item.field_2=org_item.field_2;
-        _sub_item.field_3=org_item.field_3;
-        _sub_item.field_4=org_item.field_4;
-        _sub_item.field_5=org_item.field_5;
-        _sub_item.field_6=org_item.field_6;
-        _sub_item.field_7=org_item.field_7;
-        _sub_item.field_8=org_item.field_8;
-        _sub_item.field_9=org_item.field_9;
-        _sub_item.field_10=org_item.field_10;
-        _sub_item.field_11=org_item.field_11;
-        _sub_item.field_12=org_item.field_12;
-        _sub_item.value_1=org_item.value_1;
-        _sub_item.value_2=org_item.value_2;
-        _sub_item.value_3=org_item.value_3;
-        _sub_item.value_4=org_item.value_4;
-        _sub_item.value_5=org_item.value_5;
-        _sub_item.value_6=org_item.value_6;
-        _sub_item.value_7=org_item.value_7;
-        _sub_item.value_8=org_item.value_8;
-        _sub_item.value_9=org_item.value_9;
-        _sub_item.value_10=org_item.value_10;
-        _sub_item.value_11=org_item.value_11;
-        _sub_item.value_12=org_item.value_12;
-        _sub_item.date_1=org_item.date_1;
-        _sub_item.date_2=org_item.date_2;
-        _sub_item.date_3=org_item.date_3;
-        _sub_item.date_value_1=org_item.date_value_1;
-        _sub_item.date_value_2=org_item.date_value_2;
-        _sub_item.date_value_3=org_item.date_value_3;
-        _sub_item.order=org_item.order;
-        _sub_item.category=org_item.category;
-        _sub_item.sub_note=org_item.sub_note;
-        _sub_item.visible=org_item.visible;
-        _sub_item.photofilename=org_item.photofilename;
-        _sub_item.parent_tbl_id=org_item.parent_tbl_id;
-        _sub_item.org_tbl_id=org_item.tbl_id;
-        return _sub_item;
+    bind_biz_item = function(item,org_item){
+        item.field_1=org_item.field_1;
+        item.field_2=org_item.field_2;
+        item.field_3=org_item.field_3;
+        item.field_4=org_item.field_4;
+        item.field_5=org_item.field_5;
+        item.field_6=org_item.field_6;
+        item.field_7=org_item.field_7;
+        item.field_8=org_item.field_8;
+        item.field_9=org_item.field_9;
+        item.field_10=org_item.field_10;
+        item.field_11=org_item.field_11;
+        item.field_12=org_item.field_12;
+        item.value_1=org_item.value_1;
+        item.value_2=org_item.value_2;
+        item.value_3=org_item.value_3;
+        item.value_4=org_item.value_4;
+        item.value_5=org_item.value_5;
+        item.value_6=org_item.value_6;
+        item.value_7=org_item.value_7;
+        item.value_8=org_item.value_8;
+        item.value_9=org_item.value_9;
+        item.value_10=org_item.value_10;
+        item.value_11=org_item.value_11;
+        item.value_12=org_item.value_12;
+        item.value_12=org_item.value_12;
+        item.value_13=org_item.value_13;
+        item.value_14=org_item.value_14;
+        item.value_15=org_item.value_15;
+        item.value_16=org_item.value_16;
+        item.date_1=org_item.date_1;
+        item.date_2=org_item.date_2;
+        item.date_3=org_item.date_3;
+        item.date_value_1=org_item.date_value_1;
+        item.date_value_2=org_item.date_value_2;
+        item.date_value_3=org_item.date_value_3;
+        return item;
     }
     module.set_new_sub_item = function(data_type,org_item){
         var _sub_item = appz.get_new_item(data_type,0);
@@ -408,38 +407,9 @@ module.exports = function(app_config){
             _sub_item.title=org_item.title;
             _sub_item.title_url=org_item.title_url;
         }
+        _sub_item=bind_biz_item(_sub_item,org_item);
         _sub_item.note=org_item.note;
         _sub_item.html=org_item.html;
-        _sub_item.field_1=org_item.field_1;
-        _sub_item.field_2=org_item.field_2;
-        _sub_item.field_3=org_item.field_3;
-        _sub_item.field_4=org_item.field_4;
-        _sub_item.field_5=org_item.field_5;
-        _sub_item.field_6=org_item.field_6;
-        _sub_item.field_7=org_item.field_7;
-        _sub_item.field_8=org_item.field_8;
-        _sub_item.field_9=org_item.field_9;
-        _sub_item.field_10=org_item.field_10;
-        _sub_item.field_11=org_item.field_11;
-        _sub_item.field_12=org_item.field_12;
-        _sub_item.value_1=org_item.value_1;
-        _sub_item.value_2=org_item.value_2;
-        _sub_item.value_3=org_item.value_3;
-        _sub_item.value_4=org_item.value_4;
-        _sub_item.value_5=org_item.value_5;
-        _sub_item.value_6=org_item.value_6;
-        _sub_item.value_7=org_item.value_7;
-        _sub_item.value_8=org_item.value_8;
-        _sub_item.value_9=org_item.value_9;
-        _sub_item.value_10=org_item.value_10;
-        _sub_item.value_11=org_item.value_11;
-        _sub_item.value_12=org_item.value_12;
-        _sub_item.date_1=org_item.date_1;
-        _sub_item.date_2=org_item.date_2;
-        _sub_item.date_3=org_item.date_3;
-        _sub_item.date_value_1=org_item.date_value_1;
-        _sub_item.date_value_2=org_item.date_value_2;
-        _sub_item.date_value_3=org_item.date_value_3;
         _sub_item.order=org_item.order;
         _sub_item.category=org_item.category;
         _sub_item.visible=org_item.visible;
@@ -453,6 +423,7 @@ module.exports = function(app_config){
     }
     module.set_new_blog_post=function(data_type,org_item){
         var _blog_post = appz.get_new_item(data_type,0);
+        _blog_post = bind_biz_item(_blog_post,org_item);
         _blog_post.title='_copy_'+org_item.title;
         _blog_post.title_url='_copy_'+org_item.title_url;
         _blog_post.photofilename=org_item.photofilename;
@@ -463,41 +434,13 @@ module.exports = function(app_config){
         _blog_post.tags=org_item.tags;
         _blog_post.html=org_item.html;
         _blog_post.sub_note=org_item.sub_note;
+        _blog_post.author=org_item.author;
         _blog_post.search=org_item.search;
-        _blog_post.field_1=org_item.field_1;
-        _blog_post.field_2=org_item.field_2;
-        _blog_post.field_3=org_item.field_3;
-        _blog_post.field_4=org_item.field_4;
-        _blog_post.field_5=org_item.field_5;
-        _blog_post.field_6=org_item.field_6;
-        _blog_post.field_7=org_item.field_7;
-        _blog_post.field_8=org_item.field_8;
-        _blog_post.field_9=org_item.field_9;
-        _blog_post.field_10=org_item.field_10;
-        _blog_post.field_11=org_item.field_11;
-        _blog_post.field_12=org_item.field_12;
-        _blog_post.date_1=org_item.date_1;
-        _blog_post.date_2=org_item.date_2;
-        _blog_post.date_3=org_item.date_3;
-        _blog_post.date_value_1=org_item.date_value_1;
-        _blog_post.date_value_2=org_item.date_value_2;
-        _blog_post.date_value_3=org_item.date_value_3;
-        _blog_post.value_1=org_item.value_1;
-        _blog_post.value_2=org_item.value_2;
-        _blog_post.value_3=org_item.value_3;
-        _blog_post.value_4=org_item.value_4;
-        _blog_post.value_5=org_item.value_5;
-        _blog_post.value_6=org_item.value_6;
-        _blog_post.value_7=org_item.value_7;
-        _blog_post.value_8=org_item.value_8;
-        _blog_post.value_9=org_item.value_9;
-        _blog_post.value_10=org_item.value_10;
-        _blog_post.value_11=org_item.value_11;
-        _blog_post.value_12=org_item.value_12;
         return _blog_post;
     }
     module.set_new_team=function(data_type,org_item){
         var _team = appz.get_new_item(data_type,0);
+        _team = bind_biz_item(_team,org_item);
         _team.title='_copy_'+org_item.title;
         _team.title_url='_copy_'+org_item.title_url;
         _team.photofilename=org_item.photofilename;
@@ -507,40 +450,11 @@ module.exports = function(app_config){
         _team.order=org_item.order;
         _team.note=org_item.note;
         _team.search=org_item.search;
-        _team.field_1=org_item.field_1;
-        _team.field_2=org_item.field_2;
-        _team.field_3=org_item.field_3;
-        _team.field_4=org_item.field_4;
-        _team.field_5=org_item.field_5;
-        _team.field_6=org_item.field_6;
-        _team.field_7=org_item.field_7;
-        _team.field_8=org_item.field_8;
-        _team.field_9=org_item.field_9;
-        _team.field_10=org_item.field_10;
-        _team.field_11=org_item.field_11;
-        _team.field_12=org_item.field_12;
-        _team.date_1=org_item.date_1;
-        _team.date_2=org_item.date_2;
-        _team.date_3=org_item.date_3;
-        _team.date_value_1=org_item.date_value_1;
-        _team.date_value_2=org_item.date_value_2;
-        _team.date_value_3=org_item.date_value_3;
-        _team.value_1=org_item.value_1;
-        _team.value_2=org_item.value_2;
-        _team.value_3=org_item.value_3;
-        _team.value_4=org_item.value_4;
-        _team.value_5=org_item.value_5;
-        _team.value_6=org_item.value_6;
-        _team.value_7=org_item.value_7;
-        _team.value_8=org_item.value_8;
-        _team.value_9=org_item.value_9;
-        _team.value_10=org_item.value_10;
-        _team.value_11=org_item.value_11;
-        _team.value_12=org_item.value_12;
         return _team;
     }
     module.set_new_event=function(data_type,org_item){
         var _event = appz.get_new_item(data_type,0);
+        _event = bind_biz_item(_event,org_item);
         _event.title='copy_'+org_item.title;
         _event.title_url='copy_'+org_item.title_url;
         _event.photofilename=org_item.photofilename;
@@ -556,36 +470,6 @@ module.exports = function(app_config){
         _event.sub_note=org_item.sub_note;
         _event.html=org_item.html;
         _event.tags=org_item.tags;
-        _event.field_1=org_item.field_1;
-        _event.field_2=org_item.field_2;
-        _event.field_3=org_item.field_3;
-        _event.field_4=org_item.field_4;
-        _event.field_5=org_item.field_5;
-        _event.field_6=org_item.field_6;
-        _event.field_7=org_item.field_7;
-        _event.field_8=org_item.field_8;
-        _event.field_9=org_item.field_9;
-        _event.field_10=org_item.field_10;
-        _event.field_11=org_item.field_11;
-        _event.field_12=org_item.field_12;
-        _event.value_1=org_item.value_1;
-        _event.value_2=org_item.value_2;
-        _event.value_3=org_item.value_3;
-        _event.value_4=org_item.value_4;
-        _event.value_5=org_item.value_5;
-        _event.value_6=org_item.value_6;
-        _event.value_7=org_item.value_7;
-        _event.value_8=org_item.value_8;
-        _event.value_9=org_item.value_9;
-        _event.value_10=org_item.value_10;
-        _event.value_11=org_item.value_11;
-        _event.value_12=org_item.value_12;
-        _event.date_1=org_item.date_1;
-        _event.date_2=org_item.date_2;
-        _event.date_3=org_item.date_3;
-        _event.date_value_1=org_item.date_value_1;
-        _event.date_value_2=org_item.date_value_2;
-        _event.date_value_3=org_item.date_value_3;
         _event.search=org_item.search;
         return _event;
     }
@@ -601,40 +485,12 @@ module.exports = function(app_config){
         _category.note=org_item.note;
         _category.sub_note=org_item.sub_note;
         _category.html=org_item.html;
-        _category.field_2=org_item.field_2;
-        _category.field_3=org_item.field_3;
-        _category.field_4=org_item.field_4;
-        _category.field_5=org_item.field_5;
-        _category.field_6=org_item.field_6;
-        _category.field_7=org_item.field_7;
-        _category.field_8=org_item.field_8;
-        _category.field_9=org_item.field_9;
-        _category.field_10=org_item.field_10;
-        _category.field_11=org_item.field_11;
-        _category.field_12=org_item.field_12;
-        _category.value_1=org_item.value_1;
-        _category.value_2=org_item.value_2;
-        _category.value_3=org_item.value_3;
-        _category.value_4=org_item.value_4;
-        _category.value_5=org_item.value_5;
-        _category.value_6=org_item.value_6;
-        _category.value_7=org_item.value_7;
-        _category.value_8=org_item.value_8;
-        _category.value_9=org_item.value_9;
-        _category.value_10=org_item.value_10;
-        _category.value_11=org_item.value_11;
-        _category.value_12=org_item.value_12;
-        _category.date_1=org_item.date_1;
-        _category.date_2=org_item.date_2;
-        _category.date_3=org_item.date_3;
-        _category.date_value_1=org_item.date_value_1;
-        _category.date_value_2=org_item.date_value_2;
-        _category.date_value_3=org_item.date_value_3;
-        _category.search=org_item.search;
+        _category=bind_biz_item(_category,org_item);
         return _category;
     }
     module.set_new_product=function(data_type,org_item){
         var _product = appz.get_new_item(data_type,0);
+        _product = bind_biz_item(_product,org_item);
         _product.title='copy_'+org_item.title;
         _product.title_url='copy_'+org_item.title_url;
         _product.photofilename=org_item.photofilename;
@@ -663,41 +519,12 @@ module.exports = function(app_config){
         _product.option_price_2=org_item.option_price_2;
         _product.option_title_3=org_item.option_title_3;
         _product.option_price_3=org_item.option_price_3;
-        _product.field_1=org_item.field_1;
-        _product.field_2=org_item.field_2;
-        _product.field_3=org_item.field_3;
-        _product.field_4=org_item.field_4;
-        _product.field_5=org_item.field_5;
-        _product.field_6=org_item.field_6;
-        _product.field_7=org_item.field_7;
-        _product.field_8=org_item.field_8;
-        _product.field_9=org_item.field_9;
-        _product.field_10=org_item.field_10;
-        _product.field_11=org_item.field_11;
-        _product.field_12=org_item.field_12;
-        _product.value_1=org_item.value_1;
-        _product.value_2=org_item.value_2;
-        _product.value_3=org_item.value_3;
-        _product.value_4=org_item.value_4;
-        _product.value_5=org_item.value_5;
-        _product.value_6=org_item.value_6;
-        _product.value_7=org_item.value_7;
-        _product.value_8=org_item.value_8;
-        _product.value_9=org_item.value_9;
-        _product.value_10=org_item.value_10;
-        _product.value_11=org_item.value_11;
-        _product.value_12=org_item.value_12;
-        _product.date_1=org_item.date_1;
-        _product.date_2=org_item.date_2;
-        _product.date_3=org_item.date_3;
-        _product.date_value_1=org_item.date_value_1;
-        _product.date_value_2=org_item.date_value_2;
-        _product.date_value_3=org_item.date_value_3;
         _product.search=org_item.search;
         return _product;
     }
     module.set_new_project=function(data_type,org_item){
         var _project=appz.get_new_item(data_type,0);
+        _project = bind_biz_item(_project,org_item);
         _project.title='copy_'+org_item.title;
         _project.title_url='copy_'+org_item.title_url;
         _project.visible=org_item.visible;
@@ -712,41 +539,12 @@ module.exports = function(app_config){
         _project.html=org_item.html;
         _project.regular_price=org_item.regular_price;
         _project.sale_price=org_item.sale_price;
-        _project.field_1=org_item.field_1;
-        _project.field_2=org_item.field_2;
-        _project.field_3=org_item.field_3;
-        _project.field_4=org_item.field_4;
-        _project.field_5=org_item.field_5;
-        _project.field_6=org_item.field_6;
-        _project.field_7=org_item.field_7;
-        _project.field_8=org_item.field_8;
-        _project.field_9=org_item.field_9;
-        _project.field_10=org_item.field_10;
-        _project.field_11=org_item.field_11;
-        _project.field_12=org_item.field_12;
-        _project.value_1=org_item.value_1;
-        _project.value_2=org_item.value_2;
-        _project.value_3=org_item.value_3;
-        _project.value_4=org_item.value_4;
-        _project.value_5=org_item.value_5;
-        _project.value_6=org_item.value_6;
-        _project.value_7=org_item.value_7;
-        _project.value_8=org_item.value_8;
-        _project.value_9=org_item.value_9;
-        _project.value_10=org_item.value_10;
-        _project.value_11=org_item.value_11;
-        _project.value_12=org_item.value_12;
-        _project.date_1=org_item.date_1;
-        _project.date_2=org_item.date_2;
-        _project.date_3=org_item.date_3;
-        _project.date_value_1=org_item.date_value_1;
-        _project.date_value_2=org_item.date_value_2;
-        _project.date_value_3=org_item.date_value_3;
         _project.search=org_item.search;
         return _project;
     }
     module.set_new_service=function(data_type,org_item){
         var _service=appz.get_new_item(data_type,0);
+        _service = bind_biz_item(_service,org_item);
         _service.title='copy_'+org_item.title;
         _service.title_url='copy_'+org_item.title_url;
         _service.visible=org_item.visible;
@@ -768,36 +566,6 @@ module.exports = function(app_config){
         _service.option_price_2=org_item.option_price_2;
         _service.option_title_3=org_item.option_title_3;
         _service.option_price_3=org_item.option_price_3;
-        _service.field_1=org_item.field_1;
-        _service.field_2=org_item.field_2;
-        _service.field_3=org_item.field_3;
-        _service.field_4=org_item.field_4;
-        _service.field_5=org_item.field_5;
-        _service.field_6=org_item.field_6;
-        _service.field_7=org_item.field_7;
-        _service.field_8=org_item.field_8;
-        _service.field_9=org_item.field_9;
-        _service.field_10=org_item.field_10;
-        _service.field_11=org_item.field_11;
-        _service.field_12=org_item.field_12;
-        _service.value_1=org_item.value_1;
-        _service.value_2=org_item.value_2;
-        _service.value_3=org_item.value_3;
-        _service.value_4=org_item.value_4;
-        _service.value_5=org_item.value_5;
-        _service.value_6=org_item.value_6;
-        _service.value_7=org_item.value_7;
-        _service.value_8=org_item.value_8;
-        _service.value_9=org_item.value_9;
-        _service.value_10=org_item.value_10;
-        _service.value_11=org_item.value_11;
-        _service.value_12=org_item.value_12;
-        _service.date_1=org_item.date_1;
-        _service.date_2=org_item.date_2;
-        _service.date_3=org_item.date_3;
-        _service.date_value_1=org_item.date_value_1;
-        _service.date_value_2=org_item.date_value_2;
-        _service.date_value_3=org_item.date_value_3;
         _service.search=org_item.search;
         return _service;
     }
@@ -822,6 +590,35 @@ module.exports = function(app_config){
         }
         return sort;
     }
+    get_category_title=function(category_data_type,callback) {
+        switch(category_data_type) {
+            case DT_BLOG_POST:
+                return  'Blog Post';
+            case DT_EVENT:
+                return 'Event';
+                break;
+            case DT_GALLERY:
+                return 'Gallery';
+                break;
+            case DT_PRODUCT:
+                return 'Product';
+                break;
+            case DT_PROJECT:
+                return 'Project';
+                break;
+            case DT_SERVICE:
+                return 'Service';
+                break;
+            case DT_VIDEO:
+                return 'Video';
+                break;
+            case DT_TEAM:
+                return 'Team';
+                break;
+            default:
+                return 'Blank';
+        }
+    }
     module.get_category_title_list=function(){
         return[
             {value:DT_BLOG_POST,title:'Blog Post'},
@@ -829,6 +626,7 @@ module.exports = function(app_config){
             {value:DT_GALLERY,title:'Gallery'},
             {value:DT_PRODUCT,title:'Product'},
             {value:DT_PROJECT,title:'Project'},
+            {value:DT_TEAM,title:'Team'},
             {value:DT_SERVICE,title:'Service'},
             {value:DT_VIDEO,title:'Video'},
         ]
@@ -839,17 +637,12 @@ module.exports = function(app_config){
         _photo_size_thumb='thumb_size_';
         _photo_size_mid='mid_size_';
         _photo_size_large='large_size_';
-
         _photo_size_square_thumb='square_thumb_size_';
         _photo_size_square_mid='square_mid_size_';
         _photo_size_square_large='square_large_size_';
-
-        if(!item){
-            biz9.o('_set_biz_item_not_found',item);
-        }
         if(item.photofilename){
             no_photo=false;
-            item.photo={
+            item.photo_obj={
                 album_url:FILE_URL+item.photofilename,
                 thumb_url:FILE_URL+_photo_size_thumb+item.photofilename,
                 mid_url:FILE_URL+_photo_size_mid+item.photofilename,
@@ -863,7 +656,7 @@ module.exports = function(app_config){
         if(no_photo){
             str='/images/no_image.png';
             item.photofilename=null;
-            item.photo={
+            item.photo_obj={
                 album_url:str,
                 thumb_url:str,
                 mid_url:str,
@@ -872,82 +665,116 @@ module.exports = function(app_config){
                 square_mid_url:str
             };
         }
+        if(item.price){
+            item=set_biz_money(item);
+        }
+        if(!item.review_count){
+            item.review_count='0';
+        }
+        if(!item.view_count){
+            item.view_count='0';
+        }
         if(item.date_create){
-            item.date={
-                pretty_create:utilityz.get_date_pretty(item.date_create),
-                pretty_update:utilityz.get_date_pretty(item.date_save),
-                full_create:utilityz.get_datetime_full(item.date_create),
-                full_update:utilityz.get_datetime_full(item.date_save),
-                month_create:biz9.get_month_title_short(1+biz9.get_datetime_full_obj(item.date_create).month()),
-                month_update:biz9.get_month_title_short(1+biz9.get_datetime_full_obj(item.date_save).month()),
-                date_create:biz9.get_datetime_full_obj(item.date_create).date(),
-                date_update:biz9.get_datetime_full_obj(item.date_save).date(),
-                year_create:biz9.get_datetime_full_obj(item.date_create).year(),
-                time_create:biz9.get_time_full_by_date(item.date_create),
-                time_update:utilityz.get_time_full_by_date(item.date_save)
+            item.date_obj={
+                pretty_create:utilityz.get_date_time_pretty(item.date_create),
+                pretty_update:utilityz.get_date_time_pretty(item.date_save),
+                full_date_create:utilityz.get_date_str(item.date_create),
+                full_date_update:utilityz.get_date_str(item.date_save),
+                full_date_time_create:utilityz.get_date_time_str(item.date_create),
+                full_date_time_update:utilityz.get_date_time_str(item.date_save),
+                month_create:biz9.get_month_title_short(1+biz9.get_date_time_obj(item.date_create).month()),
+                month_update:biz9.get_month_title_short(1+biz9.get_date_time_obj(item.date_save).month()),
+                mo_create:(1+biz9.get_date_time_obj(item.date_create).month()),
+                mo_update:(1+biz9.get_date_time_obj(item.date_save).month()),
+                date_create:biz9.get_date_time_obj(item.date_create).date(),
+                date_update:biz9.get_date_time_obj(item.date_save).date(),
+                year_create:biz9.get_date_time_obj(item.date_create).year(),
+                year_update:biz9.get_date_time_obj(item.date_save).year(),
+                time_create:biz9.get_time_str(item.date_create),
+                time_update:utilityz.get_time_str(item.date_save),
             }
         }
         if(BIZ_MAP==true){
-            if(item.field_1){
-                item[item.field_1]=item.value_1;
-            }
-            if(item.field_2){
-                item[item.field_2]=item.value_2;
-            }
-            if(item.field_3){
-                item[item.field_3]=item.value_3;
-            }
-            if(item.field_4){
-                item[item.field_4]=item.value_4;
-            }
-            if(item.field_5){
-                item[item.field_5]=item.value_5;
-            }
-            if(item.field_6){
-                item[item.field_6]=item.value_6;
-            }
-            if(item.field_7){
-                item[item.field_7]=item.value_7;
-            }
-            if(item.field_8){
-                item[item.field_8]=item.value_8;
-            }
-            if(item.field_9){
-                item[item.field_9]=item.value_9;
-            }
-            if(item.field_10){
-                item[item.field_10]=item.value_10;
-            }
-            if(item.field_11){
-                item[item.field_11]=item.value_11;
-            }
-            if(item.field_12){
-                item[item.field_12]=item.value_12;
-            }
-            if(item.date_1){
-                item[item.date_1]=item.value_9;
-            }
-            if(item.date_2){
-                item[item.date_2]=item.value_10;
-            }
-            if(item.date_3){
-                item[item.date_3]=item.value_11;
-            }
-            if(item.date_value_1){
-                item[item.date_value_1]=biz9.get_date_full(item.date_value_1);
-            }
-            if(item.date_value_2){
-                item[item.date_value_2]=biz9.get_date_full(item.date_value_2);
-            }
-            if(item.date_value_3){
-                item[item.date_value_3]=biz9.get_date_full(item.date_value_3);
+            if(item.field_1 || item.date_1){
+                if(item.field_1){
+                    item[item.field_1]=item.value_1;
+                }
+                if(item.field_2){
+                    item[item.field_2]=item.value_2;
+                }
+                if(item.field_3){
+                    item[item.field_3]=item.value_3;
+                }
+                if(item.field_4){
+                    item[item.field_4]=item.value_4;
+                }
+                if(item.field_5){
+                    item[item.field_5]=item.value_5;
+                }
+                if(item.field_6){
+                    item[item.field_6]=item.value_6;
+                }
+                if(item.field_7){
+                    item[item.field_7]=item.value_7;
+                }
+                if(item.field_8){
+                    item[item.field_8]=item.value_8;
+                }
+                if(item.field_9){
+                    item[item.field_9]=item.value_9;
+                }
+                if(item.field_10){
+                    item[item.field_10]=item.value_10;
+                }
+                if(item.field_11){
+                    item[item.field_11]=item.value_11;
+                }
+                if(item.field_12){
+                    item[item.field_12]=item.value_12;
+                }
+                if(item.field_13){
+                    item[item.field_13]=item.value_13;
+                }
+                if(item.field_14){
+                    item[item.field_14]=item.value_14;
+                }
+                if(item.field_15){
+                    item[item.field_15]=item.value_15;
+                }
+                if(item.field_16){
+                    item[item.field_16]=item.value_16;
+                }
+                if(item.date_1){
+                    item[item.date_1]=item.value_9;
+                }
+                if(item.date_2){
+                    item[item.date_2]=item.value_10;
+                }
+                if(item.date_3){
+                    item[item.date_3]=item.value_11;
+                }
+                if(item.date_value_1){
+                    item[item.date_value_1]=biz9.get_date_full(item.date_value_1);
+                }
+                if(item.date_value_2){
+                    item[item.date_value_2]=biz9.get_date_full(item.date_value_2);
+                }
+                if(item.date_value_3){
+                    item[item.date_value_3]=biz9.get_date_full(item.date_value_3);
+                }
             }
         }
         return item;
     }
+    module.get_test_sub_note=function(){
+        var str = "sub note " + biz9.get_id(9999)+ " Lorem Ipsum is simply dummy text of the printing and"+
+            "typesetting industry. Lorem Ipsum has been the industry's standard "+
+            "dummy text ever since the 1500s.";
+        return str;
+    }
     module.get_test_note=function(){
         var str = "<div>"+
-            "<h2>What is Lorem Ipsum?</h2>"+
+            "<h2> note " + biz9.get_id(9999)+  " What is Lorem Ipsum?</h2>"+
             "<p><strong>Lorem Ipsum</strong> is simply dummy text of the printing and"+
             "typesetting industry. Lorem Ipsum has been the industry's standard "+
             "dummy text ever since the 1500s, when an unknown printer took a galley "+
@@ -972,6 +799,7 @@ module.exports = function(app_config){
             "	injected humour, or non-characteristic words etc.</p>";
         return str;
     }
+
     module.get_blog_post=function(db,title_url,callback){
         var blog_post=appz.get_new_item(DT_BLOG_POST,0);
         var full_photo_list=[];
@@ -987,8 +815,17 @@ module.exports = function(app_config){
                             blog_post=data_list[0];
                         }
                     }
-                    blog_post.photos=[];
-                    blog_post.items=[];
+                    call();
+                });
+            },
+            function(call){
+                blog_post.photos=[];
+                blog_post.items=[];
+                call();
+            },
+            function(call){
+                appz.get_item_biz_review(db,blog_post.tbl_id,function(error,data){
+                    blog_post.review_obj=review_obj;
                     call();
                 });
             },
@@ -1093,6 +930,7 @@ module.exports = function(app_config){
     module.get_product=function(db,title_url,callback){
         var product=appz.get_new_item(DT_PRODUCT,0);
         var full_photo_list=[];
+        var comment_list=[];
         var other_list=[];
         var error=null;
         async.series([
@@ -1109,10 +947,16 @@ module.exports = function(app_config){
                 });
             },
             function(call){
-                product=set_biz_money(product);
+                product.visible=appz.get_product_visible_str(product.visible);
                 product.photos=[];
                 product.items=[];
                 call();
+            },
+            function(call){
+                appz.get_item_biz_review(db,product.tbl_id,function(error,data){
+                    product.review_obj=review_obj;
+                    call();
+                });
             },
             function(call){
                 sql = {top_tbl_id:product.tbl_id};
@@ -1690,14 +1534,34 @@ module.exports = function(app_config){
                 return  'Open';
             case '1':
                 return 'Paid';
-                break;
             case '2':
                 return 'Canceled';
-                break;
             default:
                 return 'Open';
         }
-
+    }
+    module.get_order_by_tbl_id=function(db,tbl_id,callback) {
+        var error=null;
+        var order = biz9.get_new_item(DT_ORDER,0);
+        async.series([
+            function(call){
+                biz9.get_item(db,DT_ORDER,tbl_id,function(error,data) {
+                    order=data;
+                    call();
+                });
+            },
+            function(call){
+                sql={order_tbl_id:order.tbl_id};
+                dataz.get_sql_cache(db,DT_ORDER_ITEM,sql,{},function(error,data_list) {
+                    order.cart={};
+                    order.cart=caculate_cart(data_list);
+                    call();
+                });
+            },
+        ],
+            function(err, result){
+                callback(error,order);
+            });
     }
     module.get_order=function(db,order_id,callback) {
         var error=null;
@@ -1709,14 +1573,14 @@ module.exports = function(app_config){
                     if(data_list.length>0){
                         order=data_list[0];
                     }
+                    order.order_item_list=[];
                     call();
                 });
             },
             function(call){
-                sql={order_id:order_id};
+                sql={order_tbl_id:order.tbl_id};
                 dataz.get_sql_cache(db,DT_ORDER_ITEM,sql,{},function(error,data_list) {
-                    order.cart={};
-                    order.cart=caculate_cart(data_list);
+                    order.order_item_list=data_list;
                     call();
                 });
             },
@@ -1744,27 +1608,102 @@ module.exports = function(app_config){
         callback(0,caculate_cart(item_list));
     }
     caculate_cart=function(cart_list){
-        sub_total=0;
-        grand_total=0;
-        shipping_total=0;
-        quantity=0;
-        for(a=0;a<cart_list.length;a++){
-            cart_list[a] = set_cart_item(cart_list[a]);
-            sub_total = (parseFloat(sub_total+cart_list[a].item_sub_total));
-            shipping_total = (parseFloat(shipping_total+cart_list[a].item_shipping_total));
-            grand_total = (parseFloat(grand_total+cart_list[a].item_grand_total));
-            quantity = quantity+parseInt(cart_list[a].item_quantity);
+        var sub_total=0;
+        var grand_total=0;
+        var shipping_total=0;
+        var discount_total=0;
+        var quantity=0;
+        var cart_checkout_list=[]
+        for(var a=0;a<cart_list.length;a++){
+            cart_item = set_cart_item(cart_list[a]);
+            sub_total = (parseFloat(sub_total)+parseFloat(cart_item.sub_total)).toFixed(2) ;
+            shipping_total = (parseFloat(shipping_total)+parseFloat(cart_item.shipping_total)).toFixed(2);
+            grand_total = (parseFloat(grand_total)+parseFloat(cart_item.grand_total)).toFixed(2);
+            discount_total= parseInt(discount_total)+parseInt(cart_item.discount);
+            quantity = parseInt(quantity)+parseInt(cart_item.quantity);
+            cart_item.sub_total=biz9.get_money(cart_item.sub_total);
+            cart_item.grand_total=biz9.get_money(cart_item.grand_total);
+            cart_item.shipping_total=biz9.get_money(cart_item.shipping_total);
+            cart_checkout_list.push(biz9.set_biz_item(cart_item));
         }
-        cart={item_list:cart_list,
-            price:{sub_total:biz9.get_money(sub_total),
+        if(isNaN(grand_total)){
+            grand_total=0;
+        }
+        discount_total=(parseInt(discount_total/quantity));
+        if(isNaN(discount_total)){
+            discount_total=0;
+        }
+        discount_total=String(parseInt(discount_total))+"%";
+        cart={item_list:cart_checkout_list,
+            price:{
+                sub_total:biz9.get_money(sub_total),
                 grand_total:biz9.get_money(grand_total),
-                shipping_total: biz9.get_money(shipping_total),
+                shipping_total:biz9.get_money(shipping_total),
+                discount_total:discount_total,
                 quantity:quantity,
                 cents:biz9.get_cents(grand_total),
-                cart_item_count:cart_list.length
+                cart_count:cart_checkout_list.length
             }
         };
         return cart;
+    }
+    function set_cart_item(cart_item){
+        var has_option=false;
+        var r_cart_item = biz9.get_new_item(DT_CART_ITEM,cart_item.tbl_id);
+        r_cart_item.sub_total=0;
+        r_cart_item.grand_total=0;
+        r_cart_item.shipping_total=0;
+        r_cart_item.option_note='';
+        for(var a=0;a<6;a++){
+            if(cart_item['item_option_'+a+'_tbl_id']){
+                if(cart_item['item_option_'+a+'_price']){
+                    has_option=true;
+                    r_cart_item.sub_total=r_cart_item.sub_total+parseFloat(cart_item['item_option_'+a+'_price']);
+                }
+                if(cart_item['item_option_'+a+'_title'].toLowerCase().includes('ship')){
+                    r_cart_item.shipping_total=r_cart_item.shipping_total + parseFloat(cart_item['item_option_'+a+'_price']);
+                }
+                r_cart_item.option_note=r_cart_item.option_note+cart_item['item_option_'+a+'_title']+"-"+biz9.get_money(cart_item['item_option_'+a+'_price'])+", ";
+            }
+        }
+        if(r_cart_item.option_note){
+            r_cart_item.option_note=r_cart_item.option_note.substr(0,r_cart_item.option_note.length-2);
+        }
+        if(!has_option){
+            r_cart_item.sub_total = cart_item.price;
+        }
+        r_cart_item.shipping_total=(parseFloat(r_cart_item.shipping_total)*parseFloat(cart_item.quantity));
+        r_cart_item.grand_total=(parseFloat(r_cart_item.sub_total)*parseFloat(cart_item.quantity))+ r_cart_item.shipping_total ;
+
+        if(!cart_item.customer_id){
+            cart_item.customer_id=0;
+        }
+        r_cart_item.title=cart_item.title;
+        r_cart_item.parent_tbl_id=cart_item.parent_tbl_id;
+        r_cart_item.parent_data_type=cart_item.parent_data_type;
+        r_cart_item.title_url=cart_item.title_url;
+        r_cart_item.photofilename=cart_item.photofilename;
+        r_cart_item.price=biz9.get_money(cart_item.price);
+        r_cart_item.old_price=biz9.get_money(cart_item.old_price);
+        r_cart_item.category=cart_item.category;
+        r_cart_item.quantity=cart_item.quantity;
+        discount = cart_item.old_price - cart_item.price;
+        if(r_cart_item.parent_data_type==DT_SERVICE){
+            r_cart_item.date=cart_item.date;
+            r_cart_item.time=cart_item.time;
+            r_cart_item.date_time=cart_item.date_time;
+        }
+        if(r_cart_item.parent_data_type==DT_EVENT){
+            r_cart_item.start_date=cart_item.start_date;
+            r_cart_item.start_time=cart_item.start_time;
+            r_cart_item.start_date_full=cart_item.start_date_full;
+            r_cart_item.start_time_full=cart_item.start_time_full;
+        }
+        if(isNaN(discount)){
+            discount="0%";
+        }
+        r_cart_item.discount= String(parseInt(((discount / cart_item.old_price) * 100)))+"%";
+        return r_cart_item;
     }
     module.get_cart_item_list=function(db,sql,callback) {
         var cart_list=[];
@@ -1787,65 +1726,12 @@ module.exports = function(app_config){
                 callback(error,caculate_cart(cart_list));
             });
     }
-    function set_cart_item(cart_item){
 
-        if(isNaN(cart_item.item_shipping_price)){
-            cart_item.item_shipping_price=0;
-        }
-
-        if(isNaN(cart_item.item_shipping_title)){
-            cart_item.item_shipping_title='Standard';
-        }
-
-        if(isNaN(cart_item.item_price)){
-            cart_item.item_price=0;
-        }
-        if(isNaN(cart_item.item_quantity)){
-            cart_item.item_quantity=1;
-        }
-        if(!cart_item.customer_id){
-            cart_item.customer_id=0;
-            cart_item.customer_is_guest=true;
-        }
-        cart_item.item_sub_total=0;
-        cart_item.item_shipping_total=0;
-        cart_item.item_grand_total=0;
-        if(cart_item.item_price){
-            cart_item.item_sub_total=(parseFloat(cart_item.item_price)*parseFloat(cart_item.item_quantity));
-        }
-        if(cart_item.item_shipping_price){
-            cart_item.item_shipping_total=(parseFloat(cart_item.item_shipping_price)*parseFloat(cart_item.item_quantity));
-        }
-        cart_item.item_grand_total= (parseFloat(cart_item.item_sub_total) +parseFloat(cart_item.item_shipping_total));
-        cart_item.customer=
-            {
-                customer_id:cart_item.customer_id,
-                is_guest:cart_item.customer_is_guest,
-            }
-        cart_item.item=
-            {
-                tbl_id:cart_item.item_tbl_id,
-                title:cart_item.item_title,
-                data_type:cart_item.item_data_type,
-                price:cart_item.item_price,
-                sub_note:cart_item.item_sub_note,
-                category:cart_item.item_category,
-                title_url:cart_item.item_title_url,
-                quantity:cart_item.item_quantity,
-                sub_total:biz9.get_money(cart_item.item_sub_total),
-                shipping_total:biz9.get_money(cart_item.item_shipping_total),
-                grand_total:biz9.get_money(cart_item.item_grand_total)
-            }
-        cart_item.shipping=
-            {
-                title:cart_item.item_shipping_title,
-                price:biz9.get_money(cart_item.item_shipping_price),
-            }
-        return cart_item;
-    }
     module.get_event_list=function(db,sql,sort_by,page_current,page_size,callback) {
         var event_list=[];
         var full_photo_list=[];
+        var sub_event_list=[];
+        var review_list=[];
         var error=null;
         async.series([
             function(call){
@@ -1857,11 +1743,12 @@ module.exports = function(app_config){
                 });
             },
             function(call){
-                for(a=0;a<event_list.length;a++){
-                    event_list[a] =set_biz_money(event_list[a]);
-                    event_list[a] =set_biz_event(event_list[a]);
-                }
-                call();
+                async.forEachOf(event_list,(item,key,go)=>{
+                    item = set_biz_event(item)
+                    go();
+                }, error => {
+                    call();
+                });
             },
         ],
             function(err, result){
@@ -1883,10 +1770,18 @@ module.exports = function(app_config){
                             event=data_list[0];
                         }
                     }
-                    event = set_biz_money(event);
-                    event = set_biz_event(event);
-                    event.photos=[];
-                    event.items=[];
+                    call();
+                });
+            },
+            function(call){
+                event = set_biz_event(event)
+                event.photos=[];
+                event.items=[];
+                call();
+            },
+            function(call){
+                appz.get_item_biz_review(db,event.tbl_id,function(error,data){
+                    event.review_obj=review_obj;
                     call();
                 });
             },
@@ -1910,6 +1805,7 @@ module.exports = function(app_config){
             },
             function(call){
                 for(a=0;a<top_list.length;a++){
+                    top_list[a]=top_list[a];
                     top_list[a].items=[];
                     top_list[a].photos=[];
                 }
@@ -1925,6 +1821,7 @@ module.exports = function(app_config){
             },
             function(call){
                 for(a=0;a<other_list.length;a++){
+                    other_list[a]=other_list[a];
                     other_list[a].items=[];
                     other_list[a].photos=[];
                 }
@@ -1992,6 +1889,7 @@ module.exports = function(app_config){
         var product_list=[];
         var full_photo_list=[];
         var sub_product_list=[];
+        var review_list=[];
         var error=null;
         async.series([
             function(call){
@@ -2004,7 +1902,7 @@ module.exports = function(app_config){
             },
             function(call){
                 for(a=0;a<product_list.length;a++){
-                    product_list[a]=set_biz_money(product_list[a]);
+                    product_list[a].visible=appz.get_product_visible_str(product_list[a].visible);
                 }
                 call();
             },
@@ -2013,188 +1911,206 @@ module.exports = function(app_config){
                 callback(error,product_list,dt_total,page_page_total);
             });
     }
-module.get_category_biz_list=function(db,data_type,sort_by,page_current,page_size,callback) {
-    var category_list=[];
-    var item_list=[];
-    var error=null;
-    async.series([
-        function(call){
-            if(data_type=='all'){
-                sql={};
-            }else{
-                sql={type:data_type};
-            }
-            dataz.get_sql_paging_cache(db,DT_CATEGORY,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                category_list=data_list;
-                dt_total=_dt_total;
-                page_page_total=_page_page_total;
-                call();
-            });
-        },
-        function(call){
-            dataz.get_sql_cache(db,data_type,{},{},function(error,data_list) {
-                item_list=data_list;
-                call();
-            });
-        },
-        function(call){
-            for(a=0;a<category_list.length;a++){
-                category_list[a].item_count=0;
-                for(b=0;b<item_list.length;b++){
-                    if(category_list[a].title==item_list[b].category){
-                        category_list[a].item_count=category_list[a].item_count+1;
-                    }
+    module.get_category_biz_list=function(db,data_type,sort_by,page_current,page_size,callback) {
+        var category_list=[];
+        var item_list=[];
+        var error=null;
+        async.series([
+            function(call){
+                if(data_type=='all'){
+                    sql={};
+                }else{
+                    sql={type:data_type};
                 }
-            }
-            call();
-        },
-    ],
-        function(err, result){
-            callback(error,category_list,dt_total,page_page_total);
-        });
-}
-module.get_category_list=function(db,data_type,sort_by,page_current,page_size,callback) {
-    var category_list=[];
-    var item_list=[];
-    var error=null;
-    async.series([
-        function(call){
-            if(data_type=='all'){
-                sql={};
-            }else{
-                sql={type:data_type};
-            }
-            dataz.get_sql_paging_cache(db,DT_CATEGORY,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                category_list=data_list;
-                dt_total=_dt_total;
-                page_page_total=_page_page_total;
-                call();
-            });
-        },
-    ],
-        function(err, result){
-            callback(error,category_list,dt_total,page_page_total);
-        });
-}
-module.get_category=function(db,title_url,callback){
-    var category=appz.get_new_item(DT_CATEGORY,0);
-    var full_photo_list=[];
-    var other_list=[];
-    async.series([
-        function(call){
-            sql = {title_url:title_url};
-            sort={};
-            dataz.get_sql_cache(db,DT_CATEGORY,sql,sort,function(error,data_list) {
-                if(data_list.length>0){
-                    if(data_list[0].tbl_id!=0 &&data_list[0]){
-                        category=data_list[0];
-                    }
-                }
-                category.photos=[];
-                category.items=[];
-                call();
-            });
-        },
-        function(call){
-            sql = {top_tbl_id:category.tbl_id};
-            sort={};
-            dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                for(a=0;a<data_list.length;a++){
-                    full_photo_list.push(data_list[a]);
-                }
-                call();
-            });
-        },
-        function(call){
-            sql={parent_tbl_id:category.tbl_id};
-            sort={order:1};
-            dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                top_list=data_list;
-                call();
-            });
-        },
-        function(call){
-            for(a=0;a<top_list.length;a++){
-                top_list[a]=top_list[a];
-                top_list[a].items=[];
-                top_list[a].photos=[];
-            }
-            call();
-        },
-        function(call){
-            sql = {top_tbl_id:category.tbl_id};
-            sort={order:1};
-            dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                other_list=data_list;
-                call();
-            });
-        },
-        function(call){
-            for(a=0;a<other_list.length;a++){
-                other_list[a]=other_list[a];
-                other_list[a].items=[];
-                other_list[a].photos=[];
-            }
-            call();
-        },
-        function(call){
-            for(a=0;a<full_photo_list.length;a++){
-                if(category.tbl_id==full_photo_list[a].parent_tbl_id){
-                    category.photos.push(full_photo_list[a]);
-                }
-            }
-            call();
-        },
-        function(call){
-            for(a=0;a<top_list.length;a++){
-                for(b=0;b<full_photo_list.length;b++){
-                    if(top_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
-                        top_list[a].photos.push(full_photo_list[b]);
-                    }
-                }
-            }
-            call();
-        },
-        function(call){
-            for(a=0;a<other_list.length;a++){
-                for(b=0;b<full_photo_list.length;b++){
-                    if(other_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
-                        other_list[a].photos.push(full_photo_list[b]);
-                    }
-                }
-            }
-            call();
-        },
-        function(call){
-            for(a=0;a<top_list.length;a++){
-                for(b=0;b<other_list.length;b++){
-                    if(top_list[a].tbl_id==other_list[b].parent_tbl_id){
-                        for(c=0;c<other_list.length;c++){
-                            if(other_list[b].tbl_id==other_list[c].parent_tbl_id){
-                                for(d=0;d<other_list.length;d++){
-                                    if(other_list[c].tbl_id==other_list[d].parent_tbl_id){
-                                        other_list[c][other_list[d].title_url]=other_list[d];
-                                        other_list[c].items.push(other_list[d]);
-                                    }
+                dataz.get_sql_paging_cache(db,DT_CATEGORY,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
+                    category_list=data_list;
+                    dt_total=_dt_total;
+                    page_page_total=_page_page_total;
+                    call();
+                });
+            },
+            function(call){
+                dataz.get_sql_cache(db,data_type,{},{},function(error,data_list) {
+                    item_list=data_list;
+                    call();
+                });
+            },
+            function(call){
+                for(a=0;a<category_list.length;a++){
+                    category_list[a].item_count=0;
+                    category_list[a].type_title=get_category_title(category_list[a].type);
+                    category_list[a].last_item_create={};
+                    add=true;
+                    for(b=0;b<item_list.length;b++){
+                        if(category_list[a].title==item_list[b].category){
+                            category_list[a].item_count=category_list[a].item_count+1;
+                            if(category_list[a].last_item_create.tbl_id){
+                                //compare
+                                date_1=new Date(item_list[b].date_obj.year_create,item_list[b].date_obj.mo_create,item_list[b].date_obj.date_create)
+                                date_2=new Date(category_list[a].last_item_create.date_obj.year_create,category_list[a].last_item_create.date_obj.mo_create,category_list[a].last_item_create.date_obj.date_create)
+                                update = utilityz.get_older_date(date_1,date_2);
+                                if('date2'==update){
+                                    add=true;
                                 }
-                                other_list[b][other_list[c].title_url]=other_list[c];
-                                other_list[b].items.push(other_list[c]);
+                            }
+                            else{
+                            }
+                            if(add){
+                                category_list[a].last_item_create = item_list[b];
+                                add=false;
                             }
                         }
-                        top_list[a][other_list[b].title_url]=other_list[b];
-                        top_list[a].items.push(other_list[b]);
                     }
                 }
-                category[top_list[a].title_url]=top_list[a];
-                category.items.push(top_list[a]);
-            }
-            call();
-        },
-    ],
-        function(err, result){
-            callback(error,category);
-        });
-}
+                call();
+            },
+        ],
+            function(err, result){
+                callback(error,category_list,dt_total,page_page_total);
+            });
+    }
+    module.get_category_list=function(db,data_type,sort_by,page_current,page_size,callback) {
+        var category_list=[];
+        var item_list=[];
+        var error=null;
+        async.series([
+            function(call){
+                if(data_type=='all'){
+                    sql={};
+                }else{
+                    sql={type:data_type};
+                }
+                dataz.get_sql_paging_cache(db,DT_CATEGORY,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
+                    category_list=data_list;
+                    dt_total=_dt_total;
+                    page_page_total=_page_page_total;
+                    call();
+                });
+            },
+        ],
+            function(err, result){
+                callback(error,category_list,dt_total,page_page_total);
+            });
+    }
+    module.get_category=function(db,title_url,callback){
+        var category=appz.get_new_item(DT_CATEGORY,0);
+        var full_photo_list=[];
+        var other_list=[];
+        async.series([
+            function(call){
+                sql = {title_url:title_url};
+                sort={};
+                dataz.get_sql_cache(db,DT_CATEGORY,sql,sort,function(error,data_list) {
+                    if(data_list.length>0){
+                        if(data_list[0].tbl_id!=0 &&data_list[0]){
+                            category=data_list[0];
+                        }
+                    }
+                    category.photos=[];
+                    category.items=[];
+                    call();
+                });
+            },
+            function(call){
+                sql = {top_tbl_id:category.tbl_id};
+                sort={};
+                dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
+                    for(a=0;a<data_list.length;a++){
+                        full_photo_list.push(data_list[a]);
+                    }
+                    call();
+                });
+            },
+            function(call){
+                sql={parent_tbl_id:category.tbl_id};
+                sort={order:1};
+                dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
+                    top_list=data_list;
+                    call();
+                });
+            },
+            function(call){
+                for(a=0;a<top_list.length;a++){
+                    top_list[a]=top_list[a];
+                    top_list[a].items=[];
+                    top_list[a].photos=[];
+                }
+                call();
+            },
+            function(call){
+                sql = {top_tbl_id:category.tbl_id};
+                sort={order:1};
+                dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
+                    other_list=data_list;
+                    call();
+                });
+            },
+            function(call){
+                for(a=0;a<other_list.length;a++){
+                    other_list[a]=other_list[a];
+                    other_list[a].items=[];
+                    other_list[a].photos=[];
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<full_photo_list.length;a++){
+                    if(category.tbl_id==full_photo_list[a].parent_tbl_id){
+                        category.photos.push(full_photo_list[a]);
+                    }
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<top_list.length;a++){
+                    for(b=0;b<full_photo_list.length;b++){
+                        if(top_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                            top_list[a].photos.push(full_photo_list[b]);
+                        }
+                    }
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<other_list.length;a++){
+                    for(b=0;b<full_photo_list.length;b++){
+                        if(other_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                            other_list[a].photos.push(full_photo_list[b]);
+                        }
+                    }
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<top_list.length;a++){
+                    for(b=0;b<other_list.length;b++){
+                        if(top_list[a].tbl_id==other_list[b].parent_tbl_id){
+                            for(c=0;c<other_list.length;c++){
+                                if(other_list[b].tbl_id==other_list[c].parent_tbl_id){
+                                    for(d=0;d<other_list.length;d++){
+                                        if(other_list[c].tbl_id==other_list[d].parent_tbl_id){
+                                            other_list[c][other_list[d].title_url]=other_list[d];
+                                            other_list[c].items.push(other_list[d]);
+                                        }
+                                    }
+                                    other_list[b][other_list[c].title_url]=other_list[c];
+                                    other_list[b].items.push(other_list[c]);
+                                }
+                            }
+                            top_list[a][other_list[b].title_url]=other_list[b];
+                            top_list[a].items.push(other_list[b]);
+                        }
+                    }
+                    category[top_list[a].title_url]=top_list[a];
+                    category.items.push(top_list[a]);
+                }
+                call();
+            },
+        ],
+            function(err, result){
+                callback(error,category);
+            });
+    }
 module.get_service=function(db,title_url,callback){
     var service=appz.get_new_item(DT_SERVICE,0);
     var full_photo_list=[];
@@ -2209,9 +2125,17 @@ module.get_service=function(db,title_url,callback){
                         service=data_list[0];
                     }
                 }
-                service=set_biz_money(service);
-                service.photos=[];
-                service.items=[];
+                call();
+            });
+        },
+        function(call){
+            service.photos=[];
+            service.items=[];
+            call();
+        },
+        function(call){
+            appz.get_item_biz_review(db,service.tbl_id,function(error,data){
+                service.review_obj=review_obj;
                 call();
             });
         },
@@ -2315,13 +2239,13 @@ module.get_service=function(db,title_url,callback){
             callback(error,service);
         });
 }
-module.get_comment_list=function(db,sql,sort_by,page_current,page_size,callback) {
-    var comment_list=[];
+module.get_review_list=function(db,sql,sort_by,page_current,page_size,callback) {
+    var review_list=[];
     var error=null;
     async.series([
         function(call){
-            dataz.get_sql_paging_cache(db,DT_COMMENT,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                comment_list=data_list;
+            dataz.get_sql_paging_cache(db,DT_REVIEW,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
+                review_list=data_list;
                 dt_total=_dt_total;
                 page_page_total=_page_page_total;
                 call();
@@ -2329,7 +2253,7 @@ module.get_comment_list=function(db,sql,sort_by,page_current,page_size,callback)
         },
     ],
         function(err, result){
-            callback(error,comment_list,dt_total,page_page_total);
+            callback(error,review_list,dt_total,page_page_total);
         });
 }
 module.get_service_list=function(db,sql,sort_by,page_current,page_size,callback) {
@@ -2345,12 +2269,6 @@ module.get_service_list=function(db,sql,sort_by,page_current,page_size,callback)
                 page_page_total=_page_page_total;
                 call();
             });
-        },
-        function(call){
-            for(a=0;a<service_list.length;a++){
-                service_list[a] = set_biz_money(service_list[a]);
-            }
-            call();
         },
     ],
         function(err, result){
@@ -2510,7 +2428,17 @@ module.get_gallery=function(db,title_url,callback){
                         gallery=data_list[0];
                     }
                 }
-                gallery.photos=[];
+                call();
+            });
+        },
+        function(call){
+            gallery.photos=[];
+            gallery.items=[];
+            call();
+        },
+        function(call){
+            appz.get_item_biz_review(db,gallery.tbl_id,function(error,data){
+                gallery.review_obj=data;
                 call();
             });
         },
@@ -2542,26 +2470,6 @@ module.get_gallery_list=function(db,sql,sort_by,page_current,page_size,callback)
                 page_page_total=_page_page_total;
                 call();
             });
-        },
-        function(call){
-            sql = {};
-            sort={};
-            dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                full_photo_list=data_list;
-                call();
-            });
-        },
-        function(call){
-            for(a=0;a<gallery_list.length;a++){
-                gallery_list[a].photos=[];
-                gallery_list[a].items=[];
-                for(b=0;b<full_photo_list.length;b++){
-                    if(gallery_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
-                        gallery_list[a].photos.push(full_photo_list[b]);
-                    }
-                }
-            }
-            call();
         },
     ],
         function(err, result){
@@ -2819,7 +2727,7 @@ module.get_team_member=function(db,title_url,callback){
             callback(error,team_member);
         });
 }
-module.get_teamz=function(db,sql,sort_by,page_current,page_size,callback) {
+module.get_team_list=function(db,sql,sort_by,page_current,page_size,callback) {
     var team_list=[];
     var error=null;
     async.series([
@@ -3020,26 +2928,117 @@ module.get_item_biz_list=function(db,data_type,sql,sort_by,page_current,page_siz
         });
 }
 function set_biz_money(item){
+    if(item.price){
+        item.price=item.price.replace('$','');
+    }
+    if(item.old_price){
+        item.old_price=String(item.old_price).replace('$','');
+    }
+    if(isNaN(item.price)){
+        item.price=parseFloat(0.00);
+    }
+    if(isNaN(item.old_price)){
+        item.old_price=parseFloat(0.00);
+    }
+    discount = item.old_price - item.price;
+    item.discount= parseInt(((discount / item.old_price) * 100));
+    if(isNaN(item.discount)){
+        item.discount="0%";
+    }else{
+        item.discount=item.discount+"%";
+    }
     item.price = biz9.get_money(item.price);
     item.old_price = biz9.get_money(item.old_price);
     return item;
 }
 function set_biz_event(event){
-       event.date_time_info={};
-       event.date_time_info.date_full=utilityz.get_datetime_full(event.start_date);
-       event.date_time_info.date_month=biz9.get_month_title_short(1+biz9.get_datetime_full_obj(event.start_date).month());
-       event.date_time_info.date_date=biz9.get_datetime_full_obj(event.start_date).date();
-       event.date_time_info.date_year=biz9.get_datetime_full_obj(event.start_date).year();
-       event.date_time_info.time=biz9.get_time_full(event.start_time);
-       event.date_time_info.isodatetime=utilityz.get_datetime_iso_format(event.start_date, event.start_time);
-       event.date_time_info.google_calendar_url=get_google_calendar_link(event.title,event.sub_note,'isodatetime',event.location);
+    event.date_time_info={};
+    event.date_time_info.date_full=utilityz.get_datetime_full(event.start_date);
+    event.date_time_info.date_month=biz9.get_month_title_short(1+biz9.get_date_full_obj(event.start_date).month());
+    event.date_time_info.date_date=biz9.get_date_full_obj(event.start_date).date();
+    event.date_time_info.date_year=biz9.get_date_full_obj(event.start_date).year();
+    event.date_time_info.time=biz9.get_time_full(event.start_time);
+    event.date_time_info.isodatetime=utilityz.get_datetime_iso_format(event.start_date, event.start_time);
+    event.date_time_info.google_calendar_url=get_google_calendar_link(event.title,event.sub_note,'isodatetime',event.location);
     return event;
 }
-
 function get_google_calendar_link(title,note,isodatetime,location){
-   return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+title+"&details="+note+"&dates="+isodatetime+"&location="+location;
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+title+"&details="+note+"&dates="+isodatetime+"&location="+location;
 }
-
-
+function set_biz_rating(comment_list){
+    if(comment_list.length>0){
+        comment_count=0;
+        rating=0;
+        for(a=0;a<comment_list.length;a++){
+            rating = rating+parseInt(comment_list[a].rating);
+        }
+        return parseFloat(rating / comment_list.length).toFixed(2);
+    }else{
+        return 0;
+    }
+}
+function set_biz_event(item){
+    item.start_date_str = moment(item.start_date+ " " + item.start_time, 'YYYY-MM-DD h:mm').format("dddd MMMM Do, YYYY");
+    item.start_time_str = moment(item.start_date+ " " + item.start_time, 'YYYY-MM-DD h:mm').format("h:mm a");
+    item.start_date_time_str = moment(item.start_date+ " " + item.start_time, 'YYYY-MM-DD h:mm').format("dddd MMMM Do, YYYY h:mm a");
+    return item;
+}
+module.get_item_biz_review=function(db,item_tbl_id,callback){
+    review_obj = get_new_review_obj();
+    error=null;
+    async.series([
+        function(call){
+            sql = {parent_tbl_id:item_tbl_id};
+            sort={date_create:-1};
+            dataz.get_sql_cache(db,DT_REVIEW,sql,sort,function(error,data_list) {
+                if(data_list.length>0){
+                    review_obj.review_list=data_list;
+                }else{
+                    review_obj.review_list=[];
+                }
+                call();
+            });
+        },
+        function(call){
+            if(review_obj.review_list.length>0){
+                rating_avg=0;
+                for(a=0;a<review_obj.review_list.length;a++){
+                    rating_avg=parseInt(rating_avg)+parseInt(review_obj.review_list[a].rating);
+                }
+                review_obj.rating_avg=parseFloat(rating_avg/review_obj.review_list.length).toFixed(2);
+                if(isNaN(review_obj.rating_avg)){
+                    review_obj.rating_avg=0;
+                }
+                call();
+            }else{
+                call();
+            }
+        },
+    ],
+        function(err, result){
+            callback(error,review_obj);
+        });
+}
+module.get_product_visible_option_list=function(product_visible_id){
+    visible_option_list=[];
+    for(a=0;a<4;a++){
+        visible_option_list.push(appz.get_product_visible_str(a));
+    }
+    return visible_option_list;
+}
+module.get_product_visible_str=function(product_visible_id){
+    switch(String(product_visible_id)){
+        case '0':
+            return 'Out of stock';
+        case '1':
+            return 'Only 1 left';
+        case '2':
+            return 'Less than 3 left';
+        case '3':
+            return 'In stock. Ships Immediately';
+        default:
+            return 'Out of stock';
+    }
+}
 return module;
 }
