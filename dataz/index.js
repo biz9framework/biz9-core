@@ -101,16 +101,6 @@ module.exports = function(data_config){
                 run();
             },
             function(call){
-                for(property in data_item){
-                    if(property!='tbl_id'&&property!='data_type'){
-                        if(!data_item[property]){
-                            delete data_item[property];
-                        }
-                    }
-                }
-                call();
-            },
-            function(call){
                 if(data_item.photo_obj){
                     delete data_item.photo_obj;
                 }
@@ -127,26 +117,6 @@ module.exports = function(data_config){
                         call();
                     });
             },
-            /*
-            function(call){
-                data_mon.get(db,data_type,data_item.tbl_id,function(error,data){
-                    if(data){
-                        data_item=data;
-                        set_cache=true;
-                    }
-                    call();
-                });
-            },
-            function(call){
-                if(set_cache){
-                set_cache_item(client_redis,db.db_name,data_type,data_item.tbl_id,data_item,function(error,data){
-                call();
-                });
-                }else{
-                    call();
-                }
-            },
-            */
             function(call){
                 const run = async function(a,b){
                     await client_redis.disconnect();

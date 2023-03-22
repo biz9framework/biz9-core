@@ -11,6 +11,8 @@ module.exports = function(){
         var error=null;
         async.series([
             function(call){
+
+                if(customer_id){
                 sql = {customer_id:customer_id,item_tbl_id:item_tbl_id,type_id:1};
                 sort={};
                 dataz.get_sql_cache(db,DT_STAT,sql,sort,function(error,data_list) {
@@ -19,12 +21,13 @@ module.exports = function(){
                     }
                     call();
                 });
+                }else{
+                    new_view=false;
+                    call();
+                }
             },
             function(call){
                 if(new_view){
-                    if(!customer_id){
-                        customer_id=biz9.get_id(999);
-                    }
                     new_stat = biz9.get_new_item(DT_STAT,0);
                     new_stat.item_data_type=item_data_type;
                     new_stat.item_tbl_id=item_tbl_id;
@@ -67,7 +70,6 @@ module.exports = function(){
             },
         ],
             function(err, result){
-                biz9.o('return_new_view',new_view);
                 callback(error,new_view);
             });
     }

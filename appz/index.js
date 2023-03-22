@@ -1,5 +1,5 @@
 /* Copyright (C) 2019 9_OPZ #Certified CoderZ
- * GNU GENERAL PUBLIC LICENSE
+/* GNU GENERAL PUBLIC LICENSE
  * Full LICENSE file ( gpl-3.0-licence.txt )
  * BiZ9 Framework
  * Core-AppZ
@@ -16,7 +16,6 @@ module.exports = function(app_config){
     DT_BLANK='blank_biz';
     DT_PHOTO='photo_biz';
     DT_USER='user_biz';
-    DT_TEAM='team_biz';
     DT_ADMIN='admin_biz';
     DT_PROJECT='project_biz';
     DT_GALLERY='gallery_biz';
@@ -50,7 +49,7 @@ module.exports = function(app_config){
         item = {data_type:data_type,tbl_id:tbl_id};
         return item;
     }
-    get_new_review_obj=function() {
+    get_new_review_biz_obj=function() {
         return {rating_avg:'0',review_list:[]}
     }
     module.get_test_item = function(data_type,tbl_id){
@@ -136,10 +135,8 @@ module.exports = function(app_config){
     }
     module.get_user = function(req){
         if(req.session.user){
-            //return appz.set_biz_item(req.session.user);//removed
             return req.session.user;
         }else{
-            //return app.set_biz_item({tbl_id:0,data_type:DT_USER});
             return {tbl_id:0,data_type:DT_USER};
         }
     }
@@ -348,8 +345,8 @@ module.exports = function(app_config){
         return helper;
     }
     module.convert_biz_item=function(item,item_list) {
-        max=12;
-        for(var a=0;a<item_list.length;a++){
+        max=19;
+        for(var a=0;a<=item_list.length;a++){
             if(a!=max){
                 if(item[item_list[a]]){
                     item['field_'+String(parseInt(a)+1)] = item_list[a];
@@ -421,6 +418,24 @@ module.exports = function(app_config){
         _sub_item.top_tbl_id=org_item.top_tbl_id;
         return _sub_item;
     }
+    module.set_new_member=function(data_type,org_item){
+        var _member = appz.get_new_item(data_type,0);
+        _member = bind_biz_item(_member,org_item);
+        _member.title='_copy_'+org_item.title;
+        _member.title_url='_copy_'+org_item.title_url;
+        _member.photofilename=org_item.photofilename;
+        _member.visible=org_item.visible;
+        _member.category=org_item.category;
+        _member.position=org_item.position;
+        _member.order=org_item.order;
+        _member.note=org_item.note;
+        _member.tags=org_item.tags;
+        _member.html=org_item.html;
+        _member.sub_note=org_item.sub_note;
+        _member.author=org_item.author;
+        _member.search=org_item.search;
+        return _member;
+    }
     module.set_new_blog_post=function(data_type,org_item){
         var _blog_post = appz.get_new_item(data_type,0);
         _blog_post = bind_biz_item(_blog_post,org_item);
@@ -437,20 +452,6 @@ module.exports = function(app_config){
         _blog_post.author=org_item.author;
         _blog_post.search=org_item.search;
         return _blog_post;
-    }
-    module.set_new_team=function(data_type,org_item){
-        var _team = appz.get_new_item(data_type,0);
-        _team = bind_biz_item(_team,org_item);
-        _team.title='_copy_'+org_item.title;
-        _team.title_url='_copy_'+org_item.title_url;
-        _team.photofilename=org_item.photofilename;
-        _team.position=org_item.position;
-        _team.bio=org_item.bio;
-        _team.visible=org_item.visible;
-        _team.order=org_item.order;
-        _team.note=org_item.note;
-        _team.search=org_item.search;
-        return _team;
     }
     module.set_new_event=function(data_type,org_item){
         var _event = appz.get_new_item(data_type,0);
@@ -590,31 +591,24 @@ module.exports = function(app_config){
         }
         return sort;
     }
-    get_category_title=function(category_data_type,callback) {
+    get_category_title=function(category_data_type) {
         switch(category_data_type) {
             case DT_BLOG_POST:
                 return  'Blog Post';
             case DT_EVENT:
                 return 'Event';
-                break;
             case DT_GALLERY:
                 return 'Gallery';
-                break;
             case DT_PRODUCT:
                 return 'Product';
-                break;
             case DT_PROJECT:
                 return 'Project';
-                break;
             case DT_SERVICE:
                 return 'Service';
-                break;
             case DT_VIDEO:
                 return 'Video';
-                break;
-            case DT_TEAM:
-                return 'Team';
-                break;
+            case DT_MEMBER:
+                return 'Member';
             default:
                 return 'Blank';
         }
@@ -626,13 +620,13 @@ module.exports = function(app_config){
             {value:DT_GALLERY,title:'Gallery'},
             {value:DT_PRODUCT,title:'Product'},
             {value:DT_PROJECT,title:'Project'},
-            {value:DT_TEAM,title:'Team'},
+            {value:DT_MEMBER,title:'Member'},
             {value:DT_SERVICE,title:'Service'},
             {value:DT_VIDEO,title:'Video'},
         ]
     }
     module.set_biz_item=function(item){
-        var no_photo=true;
+        no_photo_str='/images/no_image.png';
         _photo_size_album='';
         _photo_size_thumb='thumb_size_';
         _photo_size_mid='mid_size_';
@@ -640,58 +634,46 @@ module.exports = function(app_config){
         _photo_size_square_thumb='square_thumb_size_';
         _photo_size_square_mid='square_mid_size_';
         _photo_size_square_large='square_large_size_';
-        if(item.photofilename){
-            no_photo=false;
-            item.photo_obj={
-                album_url:FILE_URL+item.photofilename,
-                thumb_url:FILE_URL+_photo_size_thumb+item.photofilename,
-                mid_url:FILE_URL+_photo_size_mid+item.photofilename,
-                large_url:FILE_URL+_photo_size_large+item.photofilename,
-                thumb_url:FILE_URL+_photo_size_thumb+item.photofilename,
-                square_thumb_url:FILE_URL+_photo_size_square_thumb+item.photofilename,
-                square_mid_url:FILE_URL+_photo_size_square_thumb+item.photofilename,
-                square_large_url:FILE_URL+_photo_size_square_thumb+item.photofilename,
-            };
-        }
-        if(no_photo){
-            str='/images/no_image.png';
+       if(!item.photofilename){
             item.photofilename=null;
-            item.photo_obj={
-                album_url:str,
-                thumb_url:str,
-                mid_url:str,
-                large_url:str,
-                square_thumb_url:str,
-                square_mid_url:str
-            };
         }
-        if(item.price){
-            item=set_biz_money(item);
-        }
+        item.photo_obj={
+            album_url : (item.photofilename) ? FILE_URL+item.photofilename : no_photo_str,
+            thumb_url : (item.photofilename) ? FILE_URL+_photo_size_thumb+item.photofilename : no_photo_str,
+            mid_url   : (item.photofilename) ? FILE_URL+_photo_size_mid+item.photofilename : no_photo_str,
+            large_url : (item.photofilename) ? FILE_URL+_photo_size_large+item.photofilename : no_photo_str,
+            thumb_url : (item.photofilename) ? FILE_URL+_photo_size_thumb+item.photofilename : no_photo_str,
+            square_thumb_url : (item.photofilename) ? FILE_URL+_photo_size_square_thumb+item.photofilename : no_photo_str,
+            square_mid_url   : (item.photofilename) ? FILE_URL+_photo_size_square_thumb+item.photofilename : no_photo_str,
+            square_large_url : (item.photofilename) ? FILE_URL+_photo_size_square_thumb+item.photofilename : no_photo_str,
+        };
         if(!item.review_count){
             item.review_count='0';
         }
         if(!item.view_count){
             item.view_count='0';
         }
+        if(!item.date_create){
+            item.date_create=null;
+            no_date_str=' ';
+        }
         if(item.date_create){
             item.date_obj={
-                pretty_create:utilityz.get_date_time_pretty(item.date_create),
-                pretty_update:utilityz.get_date_time_pretty(item.date_save),
-                full_date_create:utilityz.get_date_str(item.date_create),
-                full_date_update:utilityz.get_date_str(item.date_save),
-                full_date_time_create:utilityz.get_date_time_str(item.date_create),
-                full_date_time_update:utilityz.get_date_time_str(item.date_save),
-                month_create:biz9.get_month_title_short(1+biz9.get_date_time_obj(item.date_create).month()),
-                month_update:biz9.get_month_title_short(1+biz9.get_date_time_obj(item.date_save).month()),
-                mo_create:(1+biz9.get_date_time_obj(item.date_create).month()),
-                mo_update:(1+biz9.get_date_time_obj(item.date_save).month()),
-                date_create:biz9.get_date_time_obj(item.date_create).date(),
-                date_update:biz9.get_date_time_obj(item.date_save).date(),
-                year_create:biz9.get_date_time_obj(item.date_create).year(),
-                year_update:biz9.get_date_time_obj(item.date_save).year(),
-                time_create:biz9.get_time_str(item.date_create),
-                time_update:utilityz.get_time_str(item.date_save),
+                pretty_create: (item.date_create) ? utilityz.get_date_time_pretty(item.date_create) : no_date_str,
+                pretty_update: (item.date_create) ? utilityz.get_date_time_pretty(item.date_save): no_date_str,
+                full_date_create: (item.date_create) ? utilityz.get_date_str(item.date_create) : no_date_str,
+                full_date_update: (item.date_create) ? utilityz.get_date_str(item.date_save) : no_date_str,
+                full_date_time_create: (item.date_create) ? utilityz.get_date_time_str(item.date_create) : no_date_str,
+                full_date_time_update: (item.date_create) ? utilityz.get_date_time_str(item.date_save) : no_date_str,
+                month_create: (item.date_create) ? biz9.get_month_title_short(1+biz9.get_date_time_obj(item.date_create).month()) : no_date_str,
+                month_update: (item.date_create) ? biz9.get_month_title_short(1+biz9.get_date_time_obj(item.date_save).month()) : no_date_str,
+                mo_create: (item.date_create) ? (1+biz9.get_date_time_obj(item.date_create).month()) : no_date_str,
+                mo_update: (item.date_create) ? (1+biz9.get_date_time_obj(item.date_save).month()) : no_date_str,
+                date_create: (item.date_create) ? biz9.get_date_time_obj(item.date_create).date() : no_date_str,
+                year_create: (item.date_create) ? biz9.get_date_time_obj(item.date_create).year() : no_date_str,
+                year_update: (item.date_create) ? biz9.get_date_time_obj(item.date_save).year() : no_date_str,
+                time_create: (item.date_create) ? biz9.get_time_str(item.date_create) : no_date_str,
+                time_update: (item.date_create) ? utilityz.get_time_str(item.date_save) : no_date_str,
             }
         }
         if(BIZ_MAP==true){
@@ -799,6 +781,133 @@ module.exports = function(app_config){
             "	injected humour, or non-characteristic words etc.</p>";
         return str;
     }
+    module.get_member=function(db,title_url,callback){
+        var member=appz.get_new_item(DT_BLOG_POST,0);
+        var full_photo_list=[];
+        var other_list=[];
+        var error=null;
+        async.series([
+            function(call){
+                sql = {title_url:title_url};
+                sort={};
+                dataz.get_sql_cache(db,DT_BLOG_POST,sql,sort,function(error,data_list) {
+                    if(data_list.length>0){
+                        if(data_list[0].tbl_id!=0 &&data_list[0]){
+                            member=data_list[0];
+                        }
+                    }
+                    call();
+                });
+            },
+            function(call){
+                member.photos=[];
+                member.items=[];
+                call();
+            },
+            function(call){
+                appz.get_review_obj(db,member.tbl_id,function(error,data){
+                    member.review_obj=data;
+                    call();
+                });
+            },
+            function(call){
+                sql = {top_tbl_id:member.tbl_id};
+                sort={};
+                dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
+                    for(a=0;a<data_list.length;a++){
+                        full_photo_list.push(data_list[a]);
+                    }
+                    call();
+                });
+            },
+            function(call){
+                sql={parent_tbl_id:member.tbl_id};
+                sort={order:1};
+                dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
+                    top_list=data_list;
+                    call();
+                });
+            },
+            function(call){
+                for(a=0;a<top_list.length;a++){
+                    top_list[a].items=[];
+                    top_list[a].photos=[];
+                }
+                call();
+            },
+            function(call){
+                sql = {top_tbl_id:member.tbl_id};
+                sort={order:1};
+                dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
+                    other_list=data_list;
+                    call();
+                });
+            },
+            function(call){
+                for(a=0;a<other_list.length;a++){
+                    other_list[a].items=[];
+                    other_list[a].photos=[];
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<full_photo_list.length;a++){
+                    if(member.tbl_id==full_photo_list[a].parent_tbl_id){
+                        member.photos.push(full_photo_list[a]);
+                    }
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<top_list.length;a++){
+                    for(b=0;b<full_photo_list.length;b++){
+                        if(top_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                            top_list[a].photos.push(full_photo_list[b]);
+                        }
+                    }
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<other_list.length;a++){
+                    for(b=0;b<full_photo_list.length;b++){
+                        if(other_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                            other_list[a].photos.push(full_photo_list[b]);
+                        }
+                    }
+                }
+                call();
+            },
+            function(call){
+                for(a=0;a<top_list.length;a++){
+                    for(b=0;b<other_list.length;b++){
+                        if(top_list[a].tbl_id==other_list[b].parent_tbl_id){
+                            for(c=0;c<other_list.length;c++){
+                                if(other_list[b].tbl_id==other_list[c].parent_tbl_id){
+                                    for(d=0;d<other_list.length;d++){
+                                        if(other_list[c].tbl_id==other_list[d].parent_tbl_id){
+                                            other_list[c][other_list[d].title_url]=other_list[d];
+                                            other_list[c].items.push(other_list[d]);
+                                        }
+                                    }
+                                    other_list[b][other_list[c].title_url]=other_list[c];
+                                    other_list[b].items.push(other_list[c]);
+                                }
+                            }
+                            top_list[a][other_list[b].title_url]=other_list[b];
+                            top_list[a].items.push(other_list[b]);
+                        }
+                    }
+                    member[top_list[a].title_url]=top_list[a];
+                    member.items.push(top_list[a]);
+                }
+                call();
+            },
+        ],
+            function(err, result){
+                callback(error,member);
+            });
+    }
 
     module.get_blog_post=function(db,title_url,callback){
         var blog_post=appz.get_new_item(DT_BLOG_POST,0);
@@ -824,8 +933,8 @@ module.exports = function(app_config){
                 call();
             },
             function(call){
-                appz.get_item_biz_review(db,blog_post.tbl_id,function(error,data){
-                    blog_post.review_obj=review_obj;
+                appz.get_review_obj(db,blog_post.tbl_id,function(error,data){
+                    blog_post.review_obj=data;
                     call();
                 });
             },
@@ -947,14 +1056,15 @@ module.exports = function(app_config){
                 });
             },
             function(call){
-                product.visible=appz.get_product_visible_str(product.visible);
                 product.photos=[];
                 product.items=[];
+                product.visible_obj=appz.get_visible_product_obj(product.visible);
+                product.money_obj=appz.get_money_obj(product);
                 call();
             },
             function(call){
-                appz.get_item_biz_review(db,product.tbl_id,function(error,data){
-                    product.review_obj=review_obj;
+                appz.get_review_obj(db,product.tbl_id,function(error,data){
+                    product.review_obj=data;
                     call();
                 });
             },
@@ -1053,6 +1163,7 @@ module.exports = function(app_config){
                 }
                 call();
             },
+
         ],
             function(err, result){
                 callback(error,product);
@@ -1119,7 +1230,7 @@ module.exports = function(app_config){
             },
             function(call){
                 if(item_map_page.tbl_id!=0&&page.tbl_id!=0){
-                    sql = {};
+                    sql = {parent_data_type:item_map_title_url};
                     sort={};
                     dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
                         for(a=0;a<data_list.length;a++){
@@ -1182,7 +1293,7 @@ module.exports = function(app_config){
             },
             function(call){
                 if(item_map_page.tbl_id!=0&&page.tbl_id!=0){
-                    sql = {};
+                    sql = {parent_data_type:item_map_title_url};
                     sort=appz.get_key_sort_type(page);
                     dataz.get_sql_cache(db,item_map_page.title_url,sql,sort,function(error,data_list) {
                         other_list=data_list;
@@ -1343,7 +1454,7 @@ module.exports = function(app_config){
             },
             function(call){
                 if(item_map.tbl_id!=0&&sub_page.tbl_id!=0){
-                    sql = {};
+                    sql = {parent_data_type:page_title_url};
                     sort={};
                     dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
                         for(a=0;a<data_list.length;a++){
@@ -1406,7 +1517,7 @@ module.exports = function(app_config){
             },
             function(call){
                 if(item_map.tbl_id!=0&&sub_page.tbl_id!=0){
-                    sql = {};
+                    sql = {parent_data_type:page_title_url};
                     sort=appz.get_key_sort_type(sub_page);
                     dataz.get_sql_cache(db,item_map.title_url,sql,sort,function(error,data_list) {
                         other_list=data_list;
@@ -1528,17 +1639,64 @@ module.exports = function(app_config){
         arraySort(_list,sort_type,{reverse:sort_order});
         return _list;
     }
-    module.get_order_status=function(status_id,callback) {
+    module.get_order_status=function(status_id) {
         switch(status_id) {
             case '0':
                 return  'Open';
             case '1':
-                return 'Paid';
-            case '2':
-                return 'Canceled';
+                return 'Shipped';
             default:
                 return 'Open';
         }
+    }
+    module.get_order_list=function(db,sql,sort_by,page_current,page_size,callback) {
+        var error=null;
+        var order_list=[];
+        var order_item_list=[];
+        async.series([
+            function(call){
+                dataz.get_sql_paging_cache(db,DT_ORDER,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
+                    order_list=data_list;
+                    dt_total=_dt_total;
+                    page_page_total=_page_page_total;
+                    call();
+                });
+            },
+            function(call){
+                sql={};
+                sort={date_create:-1};
+                dataz.get_sql_cache(db,DT_ORDER_ITEM,sql,sort,function(error,data_list) {
+                    order_item_list=data_list;
+                    call();
+                });
+            },
+            function(call){
+                for(a=0;a<order_list.length;a++){
+                    order_list[a].order_item_list=[];
+                    order_list[a].status=appz.get_order_status(order_list[a].status_id);
+                    for(b=0;b<order_item_list.length;b++){
+                        if(order_list[a].tbl_id==order_item_list[b].order_tbl_id){
+                            order_list[a].order_item_list.push(order_item_list[b]);
+                        }
+                    }
+                }
+                call();
+            },
+            /*
+            function(call){
+                async.forEachOf(order_list,(item,key,go)=>{
+                    item.cart = {};
+                    item.cart=caculate_cart(item.order_item_list);
+                    go();
+                }, error => {
+                    call();
+                });
+            },
+            */
+        ],
+            function(err, result){
+                callback(error,order_list,dt_total,page_page_total);
+            });
     }
     module.get_order_by_tbl_id=function(db,tbl_id,callback) {
         var error=null;
@@ -1568,7 +1726,7 @@ module.exports = function(app_config){
         var order = biz9.get_new_item(DT_ORDER,0);
         async.series([
             function(call){
-                sql={id:order_id};
+                sql={order_id:order_id};
                 dataz.get_sql_cache(db,DT_ORDER,sql,{},function(error,data_list) {
                     if(data_list.length>0){
                         order=data_list[0];
@@ -1578,7 +1736,7 @@ module.exports = function(app_config){
                 });
             },
             function(call){
-                sql={order_tbl_id:order.tbl_id};
+                sql={order_id:order_id};
                 dataz.get_sql_cache(db,DT_ORDER_ITEM,sql,{},function(error,data_list) {
                     order.order_item_list=data_list;
                     call();
@@ -1653,7 +1811,7 @@ module.exports = function(app_config){
         r_cart_item.sub_total=0;
         r_cart_item.grand_total=0;
         r_cart_item.shipping_total=0;
-        r_cart_item.option_note='';
+        r_cart_item.option_note=' ';
         for(var a=0;a<6;a++){
             if(cart_item['item_option_'+a+'_tbl_id']){
                 if(cart_item['item_option_'+a+'_price']){
@@ -1668,6 +1826,8 @@ module.exports = function(app_config){
         }
         if(r_cart_item.option_note){
             r_cart_item.option_note=r_cart_item.option_note.substr(0,r_cart_item.option_note.length-2);
+        }else{
+            r_cart_item.option_note=' ';
         }
         if(!has_option){
             r_cart_item.sub_total = cart_item.price;
@@ -1687,6 +1847,7 @@ module.exports = function(app_config){
         r_cart_item.old_price=biz9.get_money(cart_item.old_price);
         r_cart_item.category=cart_item.category;
         r_cart_item.quantity=cart_item.quantity;
+        r_cart_item.cart_note=cart_item.cart_note ? (cart_item.cart_note): ' ' ;
         discount = cart_item.old_price - cart_item.price;
         if(r_cart_item.parent_data_type==DT_SERVICE){
             r_cart_item.date=cart_item.date;
@@ -1743,12 +1904,12 @@ module.exports = function(app_config){
                 });
             },
             function(call){
-                async.forEachOf(event_list,(item,key,go)=>{
-                    item = set_biz_event(item)
-                    go();
-                }, error => {
-                    call();
-                });
+                for(a=0;a<event_list.length;a++){
+                    event_list[a].event_obj=appz.get_event_obj(event_list[a]);
+                    event_list[a].money_obj=appz.get_money_obj(event_list[a]);
+                    event_list[a].visible_obj=appz.get_visible_event_obj(event_list[a].visible);
+                }
+                call();
             },
         ],
             function(err, result){
@@ -1774,14 +1935,18 @@ module.exports = function(app_config){
                 });
             },
             function(call){
-                event = set_biz_event(event)
                 event.photos=[];
                 event.items=[];
+                event.visible_obj=appz.get_visible_event_obj(event.visible);
+                event.money_obj=appz.get_money_obj(event);
+                event.event_obj=appz.get_event_obj(event);
                 call();
             },
             function(call){
-                appz.get_item_biz_review(db,event.tbl_id,function(error,data){
-                    event.review_obj=review_obj;
+                appz.get_review_obj(db,event.tbl_id,function(error,data){
+                    event.review_obj=data;
+                    event.review_count=event.review_obj.review_list.length;
+                    event.rating_avg = event.review_obj.rating_avg;
                     call();
                 });
             },
@@ -1885,232 +2050,234 @@ module.exports = function(app_config){
                 callback(error,event);
             });
     }
-    module.get_product_list=function(db,sql,sort_by,page_current,page_size,callback) {
-        var product_list=[];
-        var full_photo_list=[];
-        var sub_product_list=[];
-        var review_list=[];
-        var error=null;
-        async.series([
-            function(call){
-                dataz.get_sql_paging_cache(db,DT_PRODUCT,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                    product_list=data_list;
-                    dt_total=_dt_total;
-                    page_page_total=_page_page_total;
-                    call();
-                });
-            },
-            function(call){
-                for(a=0;a<product_list.length;a++){
-                    product_list[a].visible=appz.get_product_visible_str(product_list[a].visible);
-                }
+module.get_product_list=function(db,sql,sort_by,page_current,page_size,callback) {
+    var product_list=[];
+    var full_photo_list=[];
+    var sub_product_list=[];
+    var review_list=[];
+    var error=null;
+    async.series([
+        function(call){
+            dataz.get_sql_paging_cache(db,DT_PRODUCT,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
+                product_list=data_list;
+                dt_total=_dt_total;
+                page_page_total=_page_page_total;
                 call();
-            },
-        ],
-            function(err, result){
-                callback(error,product_list,dt_total,page_page_total);
             });
-    }
-    module.get_category_biz_list=function(db,data_type,sort_by,page_current,page_size,callback) {
-        var category_list=[];
-        var item_list=[];
-        var error=null;
-        async.series([
-            function(call){
-                if(data_type=='all'){
-                    sql={};
-                }else{
-                    sql={type:data_type};
-                }
-                dataz.get_sql_paging_cache(db,DT_CATEGORY,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                    category_list=data_list;
-                    dt_total=_dt_total;
-                    page_page_total=_page_page_total;
-                    call();
-                });
-            },
-            function(call){
-                dataz.get_sql_cache(db,data_type,{},{},function(error,data_list) {
-                    item_list=data_list;
-                    call();
-                });
-            },
-            function(call){
-                for(a=0;a<category_list.length;a++){
-                    category_list[a].item_count=0;
-                    category_list[a].type_title=get_category_title(category_list[a].type);
-                    category_list[a].last_item_create={};
-                    add=true;
-                    for(b=0;b<item_list.length;b++){
-                        if(category_list[a].title==item_list[b].category){
-                            category_list[a].item_count=category_list[a].item_count+1;
-                            if(category_list[a].last_item_create.tbl_id){
-                                //compare
-                                date_1=new Date(item_list[b].date_obj.year_create,item_list[b].date_obj.mo_create,item_list[b].date_obj.date_create)
-                                date_2=new Date(category_list[a].last_item_create.date_obj.year_create,category_list[a].last_item_create.date_obj.mo_create,category_list[a].last_item_create.date_obj.date_create)
-                                update = utilityz.get_older_date(date_1,date_2);
-                                if('date2'==update){
-                                    add=true;
-                                }
-                            }
-                            else{
-                            }
-                            if(add){
-                                category_list[a].last_item_create = item_list[b];
-                                add=false;
+        },
+        function(call){
+            for(a=0;a<product_list.length;a++){
+                product_list[a].money_obj = appz.get_money_obj(product_list[a]);
+                product_list[a].visible_obj=appz.get_visible_product_obj(product_list[a].visible);
+            }
+            call();
+        },
+    ],
+        function(err, result){
+            callback(error,product_list,dt_total,page_page_total);
+        });
+}
+module.get_category_biz_list=function(db,data_type,sort_by,page_current,page_size,callback) {
+    var category_list=[];
+    var item_list=[];
+    var error=null;
+    async.series([
+        function(call){
+            if(data_type=='all'){
+                sql={};
+            }else{
+                sql={type:data_type};
+            }
+            dataz.get_sql_paging_cache(db,DT_CATEGORY,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
+                category_list=data_list;
+                dt_total=_dt_total;
+                page_page_total=_page_page_total;
+                call();
+            });
+        },
+        function(call){
+            dataz.get_sql_cache(db,data_type,{},{},function(error,data_list) {
+                item_list=data_list;
+                call();
+            });
+        },
+        function(call){
+            for(a=0;a<category_list.length;a++){
+                category_list[a].item_count=0;
+                category_list[a].type_title=get_category_title(category_list[a].type);
+                category_list[a].last_item_create=appz.get_new_item(DT_BLANK,0);
+                add=true;
+                for(b=0;b<item_list.length;b++){
+                    if(category_list[a].title==item_list[b].category){
+                        category_list[a].item_count=category_list[a].item_count+1;
+                        if(category_list[a].last_item_create.tbl_id){
+                            //compare
+                            date_1=new Date(item_list[b].date_obj.year_create,item_list[b].date_obj.mo_create,item_list[b].date_obj.date_create)
+                            date_2=new Date(category_list[a].last_item_create.date_obj.year_create,category_list[a].last_item_create.date_obj.mo_create,category_list[a].last_item_create.date_obj.date_create)
+                            update = utilityz.get_older_date(date_1,date_2);
+                            if('date2'==update){
+                                add=true;
                             }
                         }
+                        else{
+                            category_list[a].last_item_create=appz.set_biz_item(category_list[a].last_item_create);
+                        }
+                        if(add){
+                            category_list[a].last_item_create = item_list[b];
+                            add=false;
+                        }
                     }
                 }
+            }
+            call();
+        },
+    ],
+        function(err, result){
+            callback(error,category_list,dt_total,page_page_total);
+        });
+}
+module.get_category_list=function(db,data_type,sort_by,page_current,page_size,callback) {
+    var category_list=[];
+    var item_list=[];
+    var error=null;
+    async.series([
+        function(call){
+            if(data_type=='all'){
+                sql={};
+            }else{
+                sql={type:data_type};
+            }
+            dataz.get_sql_paging_cache(db,DT_CATEGORY,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
+                category_list=data_list;
+                dt_total=_dt_total;
+                page_page_total=_page_page_total;
                 call();
-            },
-        ],
-            function(err, result){
-                callback(error,category_list,dt_total,page_page_total);
             });
-    }
-    module.get_category_list=function(db,data_type,sort_by,page_current,page_size,callback) {
-        var category_list=[];
-        var item_list=[];
-        var error=null;
-        async.series([
-            function(call){
-                if(data_type=='all'){
-                    sql={};
-                }else{
-                    sql={type:data_type};
+        },
+    ],
+        function(err, result){
+            callback(error,category_list,dt_total,page_page_total);
+        });
+}
+module.get_category=function(db,title_url,callback){
+    var category=appz.get_new_item(DT_CATEGORY,0);
+    var full_photo_list=[];
+    var other_list=[];
+    async.series([
+        function(call){
+            sql = {title_url:title_url};
+            sort={};
+            dataz.get_sql_cache(db,DT_CATEGORY,sql,sort,function(error,data_list) {
+                if(data_list.length>0){
+                    if(data_list[0].tbl_id!=0 &&data_list[0]){
+                        category=data_list[0];
+                    }
                 }
-                dataz.get_sql_paging_cache(db,DT_CATEGORY,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                    category_list=data_list;
-                    dt_total=_dt_total;
-                    page_page_total=_page_page_total;
-                    call();
-                });
-            },
-        ],
-            function(err, result){
-                callback(error,category_list,dt_total,page_page_total);
+                category.photos=[];
+                category.items=[];
+                call();
             });
-    }
-    module.get_category=function(db,title_url,callback){
-        var category=appz.get_new_item(DT_CATEGORY,0);
-        var full_photo_list=[];
-        var other_list=[];
-        async.series([
-            function(call){
-                sql = {title_url:title_url};
-                sort={};
-                dataz.get_sql_cache(db,DT_CATEGORY,sql,sort,function(error,data_list) {
-                    if(data_list.length>0){
-                        if(data_list[0].tbl_id!=0 &&data_list[0]){
-                            category=data_list[0];
-                        }
-                    }
-                    category.photos=[];
-                    category.items=[];
-                    call();
-                });
-            },
-            function(call){
-                sql = {top_tbl_id:category.tbl_id};
-                sort={};
-                dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
-                    for(a=0;a<data_list.length;a++){
-                        full_photo_list.push(data_list[a]);
-                    }
-                    call();
-                });
-            },
-            function(call){
-                sql={parent_tbl_id:category.tbl_id};
-                sort={order:1};
-                dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                    top_list=data_list;
-                    call();
-                });
-            },
-            function(call){
-                for(a=0;a<top_list.length;a++){
-                    top_list[a]=top_list[a];
-                    top_list[a].items=[];
-                    top_list[a].photos=[];
+        },
+        function(call){
+            sql = {top_tbl_id:category.tbl_id};
+            sort={};
+            dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
+                for(a=0;a<data_list.length;a++){
+                    full_photo_list.push(data_list[a]);
                 }
                 call();
-            },
-            function(call){
-                sql = {top_tbl_id:category.tbl_id};
-                sort={order:1};
-                dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
-                    other_list=data_list;
-                    call();
-                });
-            },
-            function(call){
-                for(a=0;a<other_list.length;a++){
-                    other_list[a]=other_list[a];
-                    other_list[a].items=[];
-                    other_list[a].photos=[];
-                }
+            });
+        },
+        function(call){
+            sql={parent_tbl_id:category.tbl_id};
+            sort={order:1};
+            dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
+                top_list=data_list;
                 call();
-            },
-            function(call){
-                for(a=0;a<full_photo_list.length;a++){
-                    if(category.tbl_id==full_photo_list[a].parent_tbl_id){
-                        category.photos.push(full_photo_list[a]);
+            });
+        },
+        function(call){
+            for(a=0;a<top_list.length;a++){
+                top_list[a]=top_list[a];
+                top_list[a].items=[];
+                top_list[a].photos=[];
+            }
+            call();
+        },
+        function(call){
+            sql = {top_tbl_id:category.tbl_id};
+            sort={order:1};
+            dataz.get_sql_cache(db,DT_ITEM,sql,sort,function(error,data_list) {
+                other_list=data_list;
+                call();
+            });
+        },
+        function(call){
+            for(a=0;a<other_list.length;a++){
+                other_list[a]=other_list[a];
+                other_list[a].items=[];
+                other_list[a].photos=[];
+            }
+            call();
+        },
+        function(call){
+            for(a=0;a<full_photo_list.length;a++){
+                if(category.tbl_id==full_photo_list[a].parent_tbl_id){
+                    category.photos.push(full_photo_list[a]);
+                }
+            }
+            call();
+        },
+        function(call){
+            for(a=0;a<top_list.length;a++){
+                for(b=0;b<full_photo_list.length;b++){
+                    if(top_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                        top_list[a].photos.push(full_photo_list[b]);
                     }
                 }
-                call();
-            },
-            function(call){
-                for(a=0;a<top_list.length;a++){
-                    for(b=0;b<full_photo_list.length;b++){
-                        if(top_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
-                            top_list[a].photos.push(full_photo_list[b]);
-                        }
+            }
+            call();
+        },
+        function(call){
+            for(a=0;a<other_list.length;a++){
+                for(b=0;b<full_photo_list.length;b++){
+                    if(other_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
+                        other_list[a].photos.push(full_photo_list[b]);
                     }
                 }
-                call();
-            },
-            function(call){
-                for(a=0;a<other_list.length;a++){
-                    for(b=0;b<full_photo_list.length;b++){
-                        if(other_list[a].tbl_id==full_photo_list[b].parent_tbl_id){
-                            other_list[a].photos.push(full_photo_list[b]);
-                        }
-                    }
-                }
-                call();
-            },
-            function(call){
-                for(a=0;a<top_list.length;a++){
-                    for(b=0;b<other_list.length;b++){
-                        if(top_list[a].tbl_id==other_list[b].parent_tbl_id){
-                            for(c=0;c<other_list.length;c++){
-                                if(other_list[b].tbl_id==other_list[c].parent_tbl_id){
-                                    for(d=0;d<other_list.length;d++){
-                                        if(other_list[c].tbl_id==other_list[d].parent_tbl_id){
-                                            other_list[c][other_list[d].title_url]=other_list[d];
-                                            other_list[c].items.push(other_list[d]);
-                                        }
+            }
+            call();
+        },
+        function(call){
+            for(a=0;a<top_list.length;a++){
+                for(b=0;b<other_list.length;b++){
+                    if(top_list[a].tbl_id==other_list[b].parent_tbl_id){
+                        for(c=0;c<other_list.length;c++){
+                            if(other_list[b].tbl_id==other_list[c].parent_tbl_id){
+                                for(d=0;d<other_list.length;d++){
+                                    if(other_list[c].tbl_id==other_list[d].parent_tbl_id){
+                                        other_list[c][other_list[d].title_url]=other_list[d];
+                                        other_list[c].items.push(other_list[d]);
                                     }
-                                    other_list[b][other_list[c].title_url]=other_list[c];
-                                    other_list[b].items.push(other_list[c]);
                                 }
+                                other_list[b][other_list[c].title_url]=other_list[c];
+                                other_list[b].items.push(other_list[c]);
                             }
-                            top_list[a][other_list[b].title_url]=other_list[b];
-                            top_list[a].items.push(other_list[b]);
                         }
+                        top_list[a][other_list[b].title_url]=other_list[b];
+                        top_list[a].items.push(other_list[b]);
                     }
-                    category[top_list[a].title_url]=top_list[a];
-                    category.items.push(top_list[a]);
                 }
-                call();
-            },
-        ],
-            function(err, result){
-                callback(error,category);
-            });
-    }
+                category[top_list[a].title_url]=top_list[a];
+                category.items.push(top_list[a]);
+            }
+            call();
+        },
+    ],
+        function(err, result){
+            callback(error,category);
+        });
+}
 module.get_service=function(db,title_url,callback){
     var service=appz.get_new_item(DT_SERVICE,0);
     var full_photo_list=[];
@@ -2131,11 +2298,13 @@ module.get_service=function(db,title_url,callback){
         function(call){
             service.photos=[];
             service.items=[];
+            service.visible_obj=appz.get_visible_service_obj(service.visible);
+            service.money_obj=appz.get_money_obj(service);
             call();
         },
         function(call){
-            appz.get_item_biz_review(db,service.tbl_id,function(error,data){
-                service.review_obj=review_obj;
+            appz.get_review_obj(db,service.tbl_id,function(error,data){
+                service.review_obj=data;
                 call();
             });
         },
@@ -2269,6 +2438,13 @@ module.get_service_list=function(db,sql,sort_by,page_current,page_size,callback)
                 page_page_total=_page_page_total;
                 call();
             });
+        },
+        function(call){
+            for(a=0;a<service_list.length;a++){
+                service_list[a].money_obj = appz.get_money_obj(service_list[a]);
+                service_list[a].visible_obj=appz.get_visible_service_obj(service_list[a].visible);
+            }
+            call();
         },
     ],
         function(err, result){
@@ -2437,7 +2613,7 @@ module.get_gallery=function(db,title_url,callback){
             call();
         },
         function(call){
-            appz.get_item_biz_review(db,gallery.tbl_id,function(error,data){
+            appz.get_review_obj(db,gallery.tbl_id,function(error,data){
                 gallery.review_obj=data;
                 call();
             });
@@ -2506,7 +2682,7 @@ module.get_page=function(db,title_url,setting,callback){
             call();
         },
         function(call){
-            sql = {};
+            sql = {parent_data_type:title_url};
             sort={};
             dataz.get_sql_cache(db,DT_PHOTO,sql,sort,function(error,data_list) {
                 for(a=0;a<data_list.length;a++){
@@ -2650,6 +2826,9 @@ module.copy_photo_list=function(db,parent_tbl_id,new_parent_tbl_id,callback) {
                 photo.parent_tbl_id=new_parent_tbl_id;
                 photo.photofilename=photo_list[a].photofilename;
                 photo.text=photo_list[a].text;
+                photo.parent_data_type=photo_list[a].parent_data_type;
+                photo.top_tbl_id=photo_list[a].top_tbl_id;
+                photo.top_data_type=photo_list[a].top_data_type;
                 copy_photo_list.push(photo);
             }
             call();
@@ -2702,46 +2881,6 @@ module.get_page_list=function(db,sql,sort_by,page_current,page_size,callback) {
     ],
         function(err, result){
             callback(error,page_list,dt_total,page_page_total);
-        });
-}
-
-module.get_team_member=function(db,title_url,callback){
-    var team_member=appz.get_new_item(DT_TEAM,0);
-    var other_list=[];
-    var error=null;
-    async.series([
-        function(call){
-            sql = {title_url:title_url};
-            sort={};
-            dataz.get_sql_cache(db,DT_TEAM,sql,sort,function(error,data_list) {
-                if(data_list.length>0){
-                    if(data_list[0].tbl_id!=0 &&data_list[0]){
-                        team_member=data_list[0];
-                    }
-                }
-                call();
-            });
-        },
-    ],
-        function(err, result){
-            callback(error,team_member);
-        });
-}
-module.get_team_list=function(db,sql,sort_by,page_current,page_size,callback) {
-    var team_list=[];
-    var error=null;
-    async.series([
-        function(call){
-            dataz.get_sql_paging_cache(db,DT_TEAM,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
-                team_list=data_list;
-                dt_total=_dt_total;
-                page_page_total=_page_page_total;
-                call();
-            });
-        },
-    ],
-        function(err, result){
-            callback(error,team_list,dt_total,page_page_total);
         });
 }
 module.get_video_list=function(db,sql,sort_by,page_current,page_size,callback) {
@@ -2824,6 +2963,25 @@ module.get_video_list=function(db,sql,sort_by,page_current,page_size,callback) {
     ],
         function(err, result){
             callback(error,video_list,dt_total,page_page_total);
+        });
+}
+module.get_member_list=function(db,sql,sort_by,page_current,page_size,callback) {
+    var member_list=[];
+    var full_photo_list=[];
+    var sub_member_list=[];
+    var error=null;
+    async.series([
+        function(call){
+            dataz.get_sql_paging_cache(db,DT_MEMBER,sql,sort_by,page_current,page_size,function(error,data_list,_dt_total,_page_page_total) {
+                member_list=data_list;
+                dt_total=_dt_total;
+                page_page_total=_page_page_total;
+                call();
+            });
+        },
+    ],
+        function(err, result){
+            callback(error,member_list,dt_total,page_page_total);
         });
 }
 module.get_blog_post_list=function(db,sql,sort_by,page_current,page_size,callback) {
@@ -2927,40 +3085,30 @@ module.get_item_biz_list=function(db,data_type,sql,sort_by,page_current,page_siz
             callback(error,item_list,dt_total,page_page_total);
         });
 }
-function set_biz_money(item){
+module.get_money_obj=function(item) {
+    var money_obj={};
     if(item.price){
-        item.price=item.price.replace('$','');
+        money_obj.price=String(item.price).replace('$','');
     }
     if(item.old_price){
-        item.old_price=String(item.old_price).replace('$','');
+        money_obj.old_price=String(item.old_price).replace('$','');
     }
     if(isNaN(item.price)){
-        item.price=parseFloat(0.00);
+        money_obj.price=parseFloat(0.00);
     }
     if(isNaN(item.old_price)){
-        item.old_price=parseFloat(0.00);
+        money_obj.old_price=parseFloat(0.00);
     }
-    discount = item.old_price - item.price;
-    item.discount= parseInt(((discount / item.old_price) * 100));
-    if(isNaN(item.discount)){
-        item.discount="0%";
+    discount = money_obj.old_price - money_obj.price;
+    money_obj.discount= parseInt(((discount / money_obj.old_price) * 100));
+    if(isNaN(money_obj.discount)){
+        money_obj.discount="0%";
     }else{
-        item.discount=item.discount+"%";
+        money_obj.discount=money_obj.discount+"%";
     }
-    item.price = biz9.get_money(item.price);
-    item.old_price = biz9.get_money(item.old_price);
-    return item;
-}
-function set_biz_event(event){
-    event.date_time_info={};
-    event.date_time_info.date_full=utilityz.get_datetime_full(event.start_date);
-    event.date_time_info.date_month=biz9.get_month_title_short(1+biz9.get_date_full_obj(event.start_date).month());
-    event.date_time_info.date_date=biz9.get_date_full_obj(event.start_date).date();
-    event.date_time_info.date_year=biz9.get_date_full_obj(event.start_date).year();
-    event.date_time_info.time=biz9.get_time_full(event.start_time);
-    event.date_time_info.isodatetime=utilityz.get_datetime_iso_format(event.start_date, event.start_time);
-    event.date_time_info.google_calendar_url=get_google_calendar_link(event.title,event.sub_note,'isodatetime',event.location);
-    return event;
+    money_obj.price = biz9.get_money(item.price);
+    money_obj.old_price = biz9.get_money(item.old_price);
+    return money_obj;
 }
 function get_google_calendar_link(title,note,isodatetime,location){
     return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+title+"&details="+note+"&dates="+isodatetime+"&location="+location;
@@ -2977,14 +3125,25 @@ function set_biz_rating(comment_list){
         return 0;
     }
 }
-function set_biz_event(item){
-    item.start_date_str = moment(item.start_date+ " " + item.start_time, 'YYYY-MM-DD h:mm').format("dddd MMMM Do, YYYY");
-    item.start_time_str = moment(item.start_date+ " " + item.start_time, 'YYYY-MM-DD h:mm').format("h:mm a");
-    item.start_date_time_str = moment(item.start_date+ " " + item.start_time, 'YYYY-MM-DD h:mm').format("dddd MMMM Do, YYYY h:mm a");
-    return item;
+module.get_event_obj=function(item){
+    var event_obj={};
+    event_obj.title=item.title;
+    event_obj.sub_note=item.sub_note;
+    event_obj.location=item.location;
+    event_obj.website=item.website;
+    event_obj.metting_link=item.metting_link;
+    event_obj.start_date = moment(item.start_date+ " " + item.start_time, 'YYYY-MM-DD h:mm').format("dddd MMMM Do, YYYY");
+    event_obj.start_time = moment(item.start_date+ " " + item.start_time, 'YYYY-MM-DD h:mm').format("h:mm a");
+    event_obj.start_date_time = moment(item.start_date+ " " + item.start_time, 'YYYY-MM-DD h:mm').format("dddd MMMM Do, YYYY h:mm a");
+    event_obj.start_date_month=biz9.get_month_title_short(1+biz9.get_date_time_obj(item.start_date).month());
+    event_obj.start_date_date=biz9.get_date_time_obj(item.start_date).date();
+    event_obj.start_date_year=biz9.get_date_time_obj(item.start_date).year();
+    event_obj.start_iso_date_time=utilityz.get_iso_str_by_date_time(item.start_date,item.start_time);
+    event_obj.start_google_calendar_url=get_google_calendar_link(item.title,item.sub_note,'isodatetime',item.location);
+    return event_obj;
 }
-module.get_item_biz_review=function(db,item_tbl_id,callback){
-    review_obj = get_new_review_obj();
+module.get_review_obj=function(db,item_tbl_id,callback){
+    var review_obj = get_new_review_biz_obj();
     error=null;
     async.series([
         function(call){
@@ -3022,23 +3181,97 @@ module.get_item_biz_review=function(db,item_tbl_id,callback){
 module.get_product_visible_option_list=function(product_visible_id){
     visible_option_list=[];
     for(a=0;a<4;a++){
-        visible_option_list.push(appz.get_product_visible_str(a));
+        visible_option_list.push({text:appz.get_visible_product_obj(a).product_status,value:a});
     }
     return visible_option_list;
 }
-module.get_product_visible_str=function(product_visible_id){
+module.get_visible_event_obj=function(event_visible_id){
+    var visible_obj={};
+    event_status='';
+    event_status_short='';
+    switch(String(event_visible_id)){
+        case '0':
+            event_status = 'Sold Out';
+            event_status_short='Sold Out';
+            break;
+        case '1':
+            event_status = 'Less than 25 tickets remaining.';
+            event_status_short='Tickets Availble';
+            break;
+        case '2':
+            event_status = 'Less than 10 tickets remaining';
+            event_status_short='Tickets Availble';
+            break;
+        case '3':
+            event_status = 'Tickets are availble';
+            event_status_short='Tickets Availble';
+            break;
+        default:
+            event_status = 'Sold out';
+            event_status_short='Sold Out';
+            break;
+    }
+    visible_obj.event_status=event_status;
+    visible_obj.event_visible_id=event_visible_id;
+    visible_obj.event_status=event_status;
+    visible_obj.event_status_short=event_status_short;
+    return visible_obj;
+}
+
+module.get_visible_product_obj=function(product_visible_id){
+    var visible_obj={};
+    var product_status='';
+    var product_status_short='';
     switch(String(product_visible_id)){
         case '0':
-            return 'Out of stock';
+            product_status = 'Out of stock';
+            product_status_short='Sold Out';
+            break;
         case '1':
-            return 'Only 1 left';
+            product_status = 'Only 1 left';
+            product_status_short='In Stock';
+            break;
         case '2':
-            return 'Less than 3 left';
+            product_status = 'Less than 3 left';
+            product_status_short='In Stock';
+            break;
         case '3':
-            return 'In stock. Ships Immediately';
+            product_status = 'In stock. Ships Immediately.';
+            product_status_short='In Stock';
+            break;
         default:
-            return 'Out of stock';
+            product_status = 'Out of stock.';
+            product_status_short='Sold Out';
+            break;
     }
+    visible_obj.product_visible_id=product_visible_id;
+    visible_obj.product_status=product_status;
+    visible_obj.product_status_short=product_status_short;
+    return visible_obj;
 }
+module.get_visible_service_obj=function(service_visible_id){
+    var visible_obj={};
+    var service_status='';
+    var service_status_short='';
+    switch(String(service_visible_id)){
+        case '0':
+            service_status = 'No sessions availble';
+            service_status_short = 'Not Availble';
+            break;
+        case '1':
+            service_status = 'Ready For Booking';
+            service_status_short = 'Open for Business';
+            break;
+        default:
+            service_status = 'No sessions availble';
+            service_status_short = 'Not Availble';
+            break;
+    }
+    visible_obj.service_visible_id=service_visible_id;
+    visible_obj.service_status=service_status;
+    visible_obj.service_status_short=service_status_short;
+    return visible_obj;
+}
+
 return module;
 }

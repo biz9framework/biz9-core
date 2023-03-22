@@ -58,13 +58,12 @@ module.exports = function(){
         }
         return vars;
     }
-    module.get_date_time_str=function(date) {
+    module.get_date_time_str=function(date,time) {
         //Tuesday, February 14th 2023,  at 2:39 am
-        if(date){
-            return String(moment(date).format("dddd MMMM Do, YYYY")) + " at " +  String(moment(date).format("h:mm a")) ;
-        }
-        else{
-            return 'Invalid Date Format';
+        if(!time){
+            return String(moment(date).format("dddd MMMM Do, YYYY"));
+        }else{
+            return String(moment(date+ ' ' + time).format("dddd MMMM Do, YYYY  h:mm a"));
         }
     }
     module.get_date_str=function(date) {
@@ -91,7 +90,7 @@ module.exports = function(){
             return moment(date);
         }
         else{
-            return moment();
+            return moment(new Date());
         }
     }
     module.get_date_time_pretty=function(date) {
@@ -118,6 +117,12 @@ module.exports = function(){
             .replace(/ /g,'-')
             .replace(/[^\w-]+/g,'');
     }
+    module.remove_money=function(n) {
+        if(!n){
+            n='0';
+        }
+        return String(n).replace('$','');
+    }
     module.get_money=function(n) {
         var n = parseFloat(n);
         if(!n || isNaN(n)){
@@ -125,11 +130,12 @@ module.exports = function(){
         }
         return "$" + n.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,");
     }
+
     module.get_currency = function(amount) {
         return Math.round(100 * parseFloat(typeof amount === 'string' ? amount.replace(/[$,]/g, '') : amount));
     }
     module.get_cents = function(number) {
-        return  (Number(number) * 100).toString();
+        return  parseInt((Number(number) * 100)).toString();
     }
     module.get_contains=function(value, searchFor){
         return (value || '').indexOf(searchFor) > -1;
