@@ -634,7 +634,7 @@ module.exports = function(app_config){
         _photo_size_square_thumb='square_thumb_size_';
         _photo_size_square_mid='square_mid_size_';
         _photo_size_square_large='square_large_size_';
-       if(!item.photofilename){
+        if(!item.photofilename){
             item.photofilename=null;
         }
         item.photo_obj={
@@ -657,24 +657,22 @@ module.exports = function(app_config){
             item.date_create=null;
             no_date_str=' ';
         }
-        if(item.date_create){
-            item.date_obj={
-                pretty_create: (item.date_create) ? utilityz.get_date_time_pretty(item.date_create) : no_date_str,
-                pretty_update: (item.date_create) ? utilityz.get_date_time_pretty(item.date_save): no_date_str,
-                full_date_create: (item.date_create) ? utilityz.get_date_str(item.date_create) : no_date_str,
-                full_date_update: (item.date_create) ? utilityz.get_date_str(item.date_save) : no_date_str,
-                full_date_time_create: (item.date_create) ? utilityz.get_date_time_str(item.date_create) : no_date_str,
-                full_date_time_update: (item.date_create) ? utilityz.get_date_time_str(item.date_save) : no_date_str,
-                month_create: (item.date_create) ? biz9.get_month_title_short(1+biz9.get_date_time_obj(item.date_create).month()) : no_date_str,
-                month_update: (item.date_create) ? biz9.get_month_title_short(1+biz9.get_date_time_obj(item.date_save).month()) : no_date_str,
-                mo_create: (item.date_create) ? (1+biz9.get_date_time_obj(item.date_create).month()) : no_date_str,
-                mo_update: (item.date_create) ? (1+biz9.get_date_time_obj(item.date_save).month()) : no_date_str,
-                date_create: (item.date_create) ? biz9.get_date_time_obj(item.date_create).date() : no_date_str,
-                year_create: (item.date_create) ? biz9.get_date_time_obj(item.date_create).year() : no_date_str,
-                year_update: (item.date_create) ? biz9.get_date_time_obj(item.date_save).year() : no_date_str,
-                time_create: (item.date_create) ? biz9.get_time_str(item.date_create) : no_date_str,
-                time_update: (item.date_create) ? utilityz.get_time_str(item.date_save) : no_date_str,
-            }
+        item.date_obj={
+            pretty_create: (item.date_create) ? utilityz.get_date_time_pretty(item.date_create) : no_date_str,
+            pretty_update: (item.date_create) ? utilityz.get_date_time_pretty(item.date_save): no_date_str,
+            full_date_create: (item.date_create) ? utilityz.get_date_str(item.date_create) : no_date_str,
+            full_date_update: (item.date_create) ? utilityz.get_date_str(item.date_save) : no_date_str,
+            full_date_time_create: (item.date_create) ? utilityz.get_date_time_str(item.date_create) : no_date_str,
+            full_date_time_update: (item.date_create) ? utilityz.get_date_time_str(item.date_save) : no_date_str,
+            month_create: (item.date_create) ? biz9.get_month_title_short(1+biz9.get_date_time_obj(item.date_create).month()) : no_date_str,
+            month_update: (item.date_create) ? biz9.get_month_title_short(1+biz9.get_date_time_obj(item.date_save).month()) : no_date_str,
+            mo_create: (item.date_create) ? (1+biz9.get_date_time_obj(item.date_create).month()) : no_date_str,
+            mo_update: (item.date_create) ? (1+biz9.get_date_time_obj(item.date_save).month()) : no_date_str,
+            date_create: (item.date_create) ? biz9.get_date_time_obj(item.date_create).date() : no_date_str,
+            year_create: (item.date_create) ? biz9.get_date_time_obj(item.date_create).year() : no_date_str,
+            year_update: (item.date_create) ? biz9.get_date_time_obj(item.date_save).year() : no_date_str,
+            time_create: (item.date_create) ? biz9.get_time_str(item.date_create) : no_date_str,
+            time_update: (item.date_create) ? utilityz.get_time_str(item.date_save) : no_date_str,
         }
         if(BIZ_MAP==true){
             if(item.field_1 || item.date_1){
