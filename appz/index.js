@@ -653,9 +653,9 @@ module.exports = function(app_config){
         if(!item.view_count){
             item.view_count='0';
         }
+        no_date_str=' ';
         if(!item.date_create){
             item.date_create=null;
-            no_date_str=' ';
         }
         item.date_obj={
             pretty_create: (item.date_create) ? utilityz.get_date_time_pretty(item.date_create) : no_date_str,
@@ -2117,13 +2117,13 @@ module.get_category_biz_list=function(db,data_type,sort_by,page_current,page_siz
                                 add=true;
                             }
                         }
-                        else{
-                            category_list[a].last_item_create=appz.set_biz_item(category_list[a].last_item_create);
-                        }
                         if(add){
                             category_list[a].last_item_create = item_list[b];
                             add=false;
                         }
+                    }
+                    if(!category_list[a].last_item_create.tbl_id){
+                        category_list[a].last_item_create=appz.set_biz_item(category_list[a].last_item_create);
                     }
                 }
             }
