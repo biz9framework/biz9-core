@@ -306,7 +306,7 @@ module.exports = function(app_config,data_config){
             });
     }
     module.get_product=function(db,title_url,callback){
-       appz.get_product(db,title_url,function(error,data)
+        appz.get_product(db,title_url,function(error,data)
             {
                 callback(error,data);
             });
@@ -368,15 +368,15 @@ module.exports = function(app_config,data_config){
     module.get_product_visible_option_list = function() {
         return appz.get_product_visible_option_list();
     }
-    module.get_product_visible_str = function(product_visible_id) {
-        return appz.get_product_visible_option_list(product_visible_id);
+    module.get_service_visible_option_list = function() {
+        return appz.get_service_visible_option_list();
     }
-   module.set_biz_event = function(item) {
-        return appz.set_biz_event(item);
+    module.get_event_visible_option_list = function() {
+        return appz.get_event_visible_option_list();
     }
     ///////////////// APPZ END //////////////////////////////////////////
     ///////////////// ORDER START //////////////////////////////////////////
-   module.get_cart_itemz=function(db,sql,callback){
+    module.get_cart_itemz=function(db,sql,callback){
         appz.get_cart_item_list(db,sql,function(error,data_list)
             {
                 callback(error,data_list);
@@ -540,8 +540,14 @@ module.exports = function(app_config,data_config){
     module.get_money_obj=function(n) {
         return appz.get_money_obj(n);
     }
-  module.get_visible_product_obj=function(n) {
+    module.get_visible_product_obj=function(n) {
         return appz.get_visible_product_obj(n);
+    }
+    module.get_visible_service_obj=function(n) {
+        return appz.get_visible_service_obj(n);
+    }
+    module.get_visible_event_obj=function(n) {
+        return appz.get_visible_event_obj(n);
     }
     module.remove_money=function(n) {
         return utilityz.remove_money(n);

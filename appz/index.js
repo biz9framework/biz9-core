@@ -3183,6 +3183,20 @@ module.get_product_visible_option_list=function(product_visible_id){
     }
     return visible_option_list;
 }
+module.get_service_visible_option_list=function(product_visible_id){
+    visible_option_list=[];
+    for(a=0;a<2;a++){
+        visible_option_list.push({text:appz.get_visible_service_obj(a).service_status,value:a});
+    }
+    return visible_option_list;
+}
+module.get_event_visible_option_list=function(event_visible_id){
+    visible_option_list=[];
+    for(a=0;a<4;a++){
+        visible_option_list.push({text:appz.get_visible_event_obj(a).event_status,value:a});
+    }
+    return visible_option_list;
+}
 module.get_visible_event_obj=function(event_visible_id){
     var visible_obj={};
     event_status='';
