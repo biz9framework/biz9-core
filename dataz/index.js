@@ -211,19 +211,19 @@ module.exports = function(data_config){
                 callback(error,appz.set_biz_item(data_item));
             });
     }
-    module.get_sql_paging_cache=function(db,data_type,sql_obj,sort_by,current_page,page_size,callback){
-        dataz.get_sql_cache_paging_cache(db,data_type,sql_obj,sort_by,current_page,page_size,function(error,data_list,total_count,page_size){
+    module.get_sql_paging_cache=function(db,data_type,sql_obj,sort_by,page_current,page_size,callback){
+        dataz.get_sql_cache_paging_cache(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,data_list,total_count,page_size){
             callback(error,data_list,total_count,page_size);
         });
     }
     module.get_sql_cache=function(db,data_type,sql_obj,sort_by,callback){
-        var current_page=0;
+        var page_current=0;
         var page_size=0;
-        dataz.get_sql_cache_paging_cache(db,data_type,sql_obj,sort_by,current_page,page_size,function(error,data_list,total_count,page_size){
+        dataz.get_sql_cache_paging_cache(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,data_list,total_count,page_size){
             callback(error,data_list);
         });
     }
-    module.get_sql_cache_paging_cache=function(db,data_type,sql_obj,sort_by,current_page,page_size,callback){
+    module.get_sql_cache_paging_cache=function(db,data_type,sql_obj,sort_by,page_current,page_size,callback){
         var data_sql_tbl_id_list = [];
         var data_list=[];
         var total_count=0;
@@ -238,8 +238,8 @@ module.exports = function(data_config){
                 run();
             },
             function(call){
-                if(current_page!=0&&page_size!=0){//db
-                    data_mon.paging_sql_tbl_id(db,data_type,sql_obj,sort_by,current_page,page_size,function(error,_total_count,data_list){
+                if(page_current!=0&&page_size!=0){//db
+                    data_mon.paging_sql_tbl_id(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,_total_count,data_list){
                         total_count=_total_count;
                         for(a=0;a<data_list.length;a++){
                             data_sql_tbl_id_list.push({

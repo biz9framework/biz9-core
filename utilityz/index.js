@@ -301,11 +301,11 @@ module.exports = function(){
         if(current_page>=1||!current_page){
             current_page=1;
         }
-        total_count = data_list.length;
+        item_count = data_list.length;
         skip = page_size * (current_page - 1);
-        page_page_count = Math.ceil(total_count / page_size);
+        page_count = Math.ceil(item_count / page_size);
         new_data_list = data_list.slice(skip, skip + page_size);
-        callback(new_data_list,total_count,page_page_count);
+        callback(new_data_list,item_count,page_count);
     }
     module.get_older_date=function(date_1,date_2){
         if(date_1.getTime() < date_2.getTime()){

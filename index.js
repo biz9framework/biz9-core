@@ -70,9 +70,9 @@ module.exports = function(app_config,data_config){
             });
     }
     module.get_sql_paging=function(db,data_type,sql_obj,sort_by,page_current,page_size,callback){
-        dataz.get_sql_paging_cache(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+        dataz.get_sql_paging_cache(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data_list,item_count,page_count);
             });
     }
     module.delete_item=function(db,data_type,tbl_id,callback){
@@ -299,10 +299,16 @@ module.exports = function(app_config,data_config){
                 callback(error,data);
             });
     }
-    module.get_member=function(db,title_url,setting,callback){
-        appz.get_member(db,title_url,setting,function(error,data)
+    module.get_member=function(db,tbl_id,setting,callback){
+        appz.get_member(db,tbl_id,setting,function(error,data)
             {
                 callback(error,data);
+            });
+    }
+    module.get_memberz=function(db,sql,sort_by,page_current,page_size,callback){
+        appz.get_member_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
+            {
+                callback(error,data_list,item_count,page_count);
             });
     }
     module.get_product=function(db,title_url,callback){
@@ -318,39 +324,33 @@ module.exports = function(app_config,data_config){
             });
     }
     module.get_eventz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_event_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+        appz.get_event_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data_list,item_count,page_count);
             });
     }
     module.get_videoz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_video_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+        appz.get_video_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data_list,item_count,page_count);
             });
     }
     module.get_productz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_product_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+        appz.get_product_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data_list,item_count,page_count);
             });
     }
-    module.get_categoryz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_category_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+   module.get_orderz=function(db,sql,sort_by,page_current,page_size,callback){
+        appz.get_order_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
-                callback(error,data_list,total_item_count,page_page_count);
-            });
-    }
-    module.get_orderz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_order_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
-            {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data_list,item_count,page_count);
             });
     }
     module.get_category_biz_list=function(db,data_type,sort_by,page_current,page_size,callback){
-        appz.get_category_biz_list(db,data_type,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+        appz.get_category_biz_list(db,data_type,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data_list,item_count,page_count);
             });
     }
     module.copy_photo_list=function(db,parent_tbl_id,new_parent_tbl_id,callback){
@@ -411,33 +411,27 @@ module.exports = function(app_config,data_config){
     }
     ///////////////// ORDER END //////////////////////////////////////////
     module.get_reviewz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_review_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+        appz.get_review_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data_list,item_count,page_count);
             });
     }
     module.get_servicez=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_service_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+        appz.get_service_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data_list,item_count,page_count);
+            });
+    }
+  module.get_service=function(db,title_url,callback){
+        appz.get_service(db,title_url,function(error,data)
+            {
+                callback(error,data);
             });
     }
     module.get_projectz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_project_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+        appz.get_project_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
-                callback(error,data_list,total_item_count,page_page_count);
-            });
-    }
-    module.get_galleryz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_gallery_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
-            {
-                callback(error,data_list,total_item_count,page_page_count);
-            });
-    }
-    module.get_gallery=function(db,title_url,callback){
-        appz.get_gallery(db,title_url,function(error,data)
-            {
-                callback(error,data);
+                callback(error,data_list,item_count,page_count);
             });
     }
     module.get_project=function(db,title_url,callback){
@@ -446,22 +440,34 @@ module.exports = function(app_config,data_config){
                 callback(error,data);
             });
     }
-    module.get_item_biz_list=function(db,data_type,sql,sort_by,page_current,page_size,callback){
-        appz.get_item_biz_list(db,data_type,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+    module.get_galleryz=function(db,sql,sort_by,page_current,page_size,callback){
+        appz.get_gallery_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data_list,item_count,page_count);
             });
     }
-    module.get_memberz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_member_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+    module.get_gallery=function(db,title_url,callback){
+        appz.get_gallery(db,title_url,function(error,data)
             {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data);
+            });
+    }
+     module.get_item_biz_list=function(db,data_type,sql,sort_by,page_current,page_size,callback){
+        appz.get_item_biz_list(db,data_type,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
+            {
+                callback(error,data_list,item_count,page_count);
             });
     }
     module.get_blog_postz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_blog_post_list(db,sql,sort_by,page_current,page_size,function(error,data_list,total_item_count,page_page_count)
+        appz.get_blog_post_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
-                callback(error,data_list,total_item_count,page_page_count);
+                callback(error,data_list,item_count,page_count);
+            });
+    }
+    module.get_categoryz=function(db,sql,sort_by,page_current,page_size,callback){
+        appz.get_category_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
+            {
+                callback(error,data_list,item_count,page_count);
             });
     }
     module.get_category=function(db,title_url,callback){
@@ -470,13 +476,7 @@ module.exports = function(app_config,data_config){
                 callback(error,data);
             });
     }
-    module.get_service=function(db,title_url,callback){
-        appz.get_service(db,title_url,function(error,data)
-            {
-                callback(error,data);
-            });
-    }
-    module.get_item_map_page=function(db,item_map_title_url,page_title_url,setting,callback){
+   module.get_item_map_page=function(db,item_map_title_url,page_title_url,setting,callback){
         appz.get_item_map_page(db,item_map_title_url,page_title_url,setting,function(error,data)
             {
                 callback(error,data);
@@ -624,10 +624,10 @@ module.exports = function(app_config,data_config){
     module.validate_email=function(email){
         return utilityz.validate_email(email);
     }
-    module.get_paging_list=function(data_list,current_page,page_size,callback){
-        utilityz.get_paging_list(data_list,current_page,page_size,function(new_data_list,total_count,page_page_count)
+    module.get_paging_list=function(data_list,page_current,page_size,callback){
+        utilityz.get_paging_list(data_list,page_current,page_size,function(new_data_list,item_count,page_count)
             {
-                callback(new_data_list,total_count,page_page_count);
+                callback(new_data_list,item_count,page_count);
             });
     }
     ///////////////// UTILITY END //////////////////////////////////////////
