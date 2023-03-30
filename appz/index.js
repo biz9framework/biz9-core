@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 9_OPZ #Certified CoderZ
+
 /* GNU GENERAL PUBLIC LICENSE
  * Full LICENSE file ( gpl-3.0-licence.txt )
  * BiZ9 Framework
@@ -300,12 +300,14 @@ module.exports = function(app_config){
         helper.app_id=APP_ID;
         helper.app_title=APP_TITLE;
         helper.app_version=APP_VERSION;
-        if(APP_TITLE_ID){
-            helper.app_title_id=APP_TITLE_ID;
-        }else if(req.subdomains[0]){
+        if(!helper.app_title_id){
+            if(req.subdomains[0]){
                 helper.app_title_id=req.subdomains[0];
-        }else{
-            helper.app_title_id=helper.app_title_id;
+            }else if(APP_TITLE_ID){
+                helper.app_title_id=APP_TITLE_ID;
+            }else{
+                helper.app_title_id='notfound';
+            }
         }
         return helper;
     }
@@ -335,12 +337,14 @@ module.exports = function(app_config){
         helper.app_id=APP_ID;
         helper.app_title=APP_TITLE;
         helper.app_version=APP_VERSION;
-        if(APP_TITLE_ID){
-            helper.app_title_id=APP_TITLE_ID;
-        }else if(req.subdomains[0]){
+        if(!helper.app_title_id){
+            if(req.subdomains[0]){
                 helper.app_title_id=req.subdomains[0];
-        }else{
-            helper.app_title_id=helper.app_title_id;
+            }else if(APP_TITLE_ID){
+                helper.app_title_id=APP_TITLE_ID;
+            }else{
+                helper.app_title_id='notfound';
+            }
         }
         return helper;
     }
