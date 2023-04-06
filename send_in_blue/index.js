@@ -5,7 +5,7 @@
  * Core-Send-In-Blue
  */
 module.exports = function(){
-    module.send_order_confirmation=function(send_in_blue_key,send_in_blue_obj,callback){
+    module.send_mail=function(send_in_blue_key,send_in_blue_obj,callback){
         var r_error=null;
         async.series([
             function(call){
@@ -16,10 +16,10 @@ module.exports = function(){
                 }, function(error) {
                     if(error){
                         biz9.o('send_in_blue_obj',send_in_blue);
-                        biz9.o('send_order_confirmation_error',error);
-                        biz9.o('send_order_confirmation_error_22',error.response.error.text);
+                        biz9.o('send_mail_error',error);
+                        biz9.o('send_mail_error_2',error.response.error.text);
                         r_error=error.response.error.text;
-                        biz9.o('hrer',r_error);
+                        biz9.o('send_mail_error_3',r_error);
                         call();
                     }
                     else{

@@ -136,8 +136,8 @@ module.exports = function(app_config,data_config){
     }
     ///////////////// STRIPE END //////////////////////////////////////////
     ///////////////// SEND IN BLUE START //////////////////////////////////////////
-    module.send_order_confirmation=function(send_in_blue_key,send_in_blue_obj,callback){
-        send_in_blue.send_order_confirmation(send_in_blue_key,send_in_blue_obj,function(error,data)
+    module.send_mail=function(send_in_blue_key,send_in_blue_obj,callback){
+        send_in_blue.send_mail(send_in_blue_key,send_in_blue_obj,function(error,data)
             {
                 callback(error,data);
             });
