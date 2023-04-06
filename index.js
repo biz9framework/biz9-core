@@ -10,6 +10,7 @@ module.exports = function(app_config,data_config){
     aws = require('aws-sdk');
     exec = require('child_process').exec;
     fs = require('fs-extra');
+    path = require('path');
     request = require('request');
     moment = require('moment');
     prettydate = require("pretty-date");
@@ -135,8 +136,8 @@ module.exports = function(app_config,data_config){
     }
     ///////////////// STRIPE END //////////////////////////////////////////
     ///////////////// SEND IN BLUE START //////////////////////////////////////////
-    module.send_order_confirmation=function(send_in_blue_obj,callback){
-        send_in_blue.send_order_confirmation(send_in_blue_obj,function(error,data)
+    module.send_order_confirmation=function(send_in_blue_key,send_in_blue_obj,callback){
+        send_in_blue.send_order_confirmation(send_in_blue_key,send_in_blue_obj,function(error,data)
             {
                 callback(error,data);
             });
@@ -582,11 +583,8 @@ module.exports = function(app_config,data_config){
     module.text_truncate=function(str,length,ending){
         return utilityz.text_truncate(str,length,ending);
     }
-    module.get_file_ext=function(_file_path,_file_name,callback){
-        utilityz.get_file_ext(_file_path,_file_name,function(data)
-            {
-                callback(data);
-            });
+    module.get_file_ext=function(_file_path){
+        return utilityz.get_file_ext(_file_path);
     }
     module.set_file_upload=function(req,file_path,callback){
         utilityz.set_file_upload(req,file_path,function(data)

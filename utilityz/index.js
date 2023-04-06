@@ -26,8 +26,8 @@ module.exports = function(){
             return v.toString(16);
         });
     }
-    module.get_file_ext=function(file_name){
-        return file_name.replace(/^.*\./, '');
+    module.get_file_ext=function(_file_path){
+       return path.extname(_file_path);
     }
     module.get_title_url=function(title){
         if(!title){
@@ -281,11 +281,6 @@ module.exports = function(){
             .toFile(file_path+new_filename, (error, info) => {
                 callback(error,new_filename);
             });
-    }
-    module.get_file_ext=function(file_path,file_name,callback){
-        var path = require('path');
-        var ext = path.extname(file_path+file_name)
-        callback(ext);
     }
     module.get_file_buffer=function(file_path,callback){
         fs.readFile(file_path,function(error, buffer){

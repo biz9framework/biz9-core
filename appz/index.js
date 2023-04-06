@@ -1788,6 +1788,7 @@ module.exports = function(app_config){
         r_cart_item.sub_total=0;
         r_cart_item.grand_total=0;
         r_cart_item.shipping_total=0;
+        //option_note_start
         r_cart_item.option_note=' ';
         for(var a=0;a<6;a++){
             if(cart_item['item_option_'+a+'_tbl_id']){
@@ -1806,12 +1807,19 @@ module.exports = function(app_config){
         }else{
             r_cart_item.option_note=' ';
         }
+        if(r_cart_item.cart_note){
+            r_cart_item.option_note=r_cart_item.option_note + ' '+ r_cart_item.cart_note;
+        }
+        r_cart_item.cart_note=cart_item.cart_note ? (cart_item.cart_note): ' ' ;
+        if(r_cart_item.cart_note){
+            r_cart_item.option_note= r_cart_item.option_note +', '+ r_cart_item.cart_note;
+        }
+        //option_note_end
         if(!has_option){
             r_cart_item.sub_total = cart_item.price;
         }
         r_cart_item.shipping_total=(parseFloat(r_cart_item.shipping_total)*parseFloat(cart_item.quantity));
         r_cart_item.grand_total=(parseFloat(r_cart_item.sub_total)*parseFloat(cart_item.quantity))+ r_cart_item.shipping_total ;
-
         if(!cart_item.customer_id){
             cart_item.customer_id=0;
         }
@@ -1824,20 +1832,8 @@ module.exports = function(app_config){
         r_cart_item.old_price=biz9.get_money(cart_item.old_price);
         r_cart_item.category=cart_item.category;
         r_cart_item.quantity=cart_item.quantity;
-        r_cart_item.cart_note=cart_item.cart_note ? (cart_item.cart_note): ' ' ;
         discount = cart_item.old_price - cart_item.price;
-        if(r_cart_item.parent_data_type==DT_SERVICE){
-            r_cart_item.date=cart_item.date;
-            r_cart_item.time=cart_item.time;
-            r_cart_item.date_time=cart_item.date_time;
-        }
-        if(r_cart_item.parent_data_type==DT_EVENT){
-            r_cart_item.start_date=cart_item.start_date;
-            r_cart_item.start_time=cart_item.start_time;
-            r_cart_item.start_date_full=cart_item.start_date_full;
-            r_cart_item.start_time_full=cart_item.start_time_full;
-        }
-        if(isNaN(discount)){
+       if(isNaN(discount)){
             discount="0%";
         }
         r_cart_item.discount= String(parseInt(((discount / cart_item.old_price) * 100)))+"%";
