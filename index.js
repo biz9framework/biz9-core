@@ -23,7 +23,7 @@ module.exports = function(app_config,data_config){
     data_mon = require('./dataz/lib/mongo_db.js')();
     cache_red = require('./dataz/lib/redis_cache.js')();
     appz = require('./appz/index.js')(app_config);
-    order = require('./order/index.js')(app_config);
+    orderz = require('./orderz/index.js')(app_config);
     statz = require('./statz/index.js')();
     dataz = require('./dataz/index.js')(data_config);
     utilityz = require('./utilityz/index.js')();
@@ -107,14 +107,6 @@ module.exports = function(app_config,data_config){
             });
     }
     ///////////////// DATA END //////////////////////////////////////////
-    ///////////////// MAIL START //////////////////////////////////////////
-    module.send_mail=function(mail,callback){
-        mailz.send_mail(mail,function(error,data)
-            {
-                callback(error,data);
-            });
-    }
-    ///////////////// MAIL END //////////////////////////////////////////
     ///////////////// STRIPE START //////////////////////////////////////////
     module.get_stripe_redirect_url=function(stripe_config,retail_line_items,callback){
         stripe.get_stripe_redirect_url(stripe_config,retail_line_items,function(error,data)
@@ -174,14 +166,6 @@ module.exports = function(app_config,data_config){
             });
     }
     ///////////////// STATZ START //////////////////////////////////////////
-    ///////////////// ORDER START //////////////////////////////////////////
-    module.cart_checkout_product_order_add = function(db,customer,shipping,billing,cart,callback) {
-        order.cart_checkout_product_order_add(db,customer,shipping,billing,cart,function(error,data)
-            {
-                callback(error,data);
-            });
-    }
-    ///////////////// ORDER END //////////////////////////////////////////
     ///////////////// APPZ START //////////////////////////////////////////
     module.set_item_data = function(data_type,tbl_id,item_data) {
         return appz.set_item_data(data_type,tbl_id,item_data);
@@ -342,13 +326,7 @@ module.exports = function(app_config,data_config){
                 callback(error,data_list,item_count,page_count);
             });
     }
-   module.get_orderz=function(db,sql,sort_by,page_current,page_size,callback){
-        appz.get_order_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
-            {
-                callback(error,data_list,item_count,page_count);
-            });
-    }
-    module.get_category_biz_list=function(db,data_type,sort_by,page_current,page_size,callback){
+   module.get_category_biz_list=function(db,data_type,sort_by,page_current,page_size,callback){
         appz.get_category_biz_list(db,data_type,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
                 callback(error,data_list,item_count,page_count);
@@ -377,35 +355,41 @@ module.exports = function(app_config,data_config){
     }
     ///////////////// APPZ END //////////////////////////////////////////
     ///////////////// ORDER START //////////////////////////////////////////
+    module.get_orderz=function(db,sql,sort_by,page_current,page_size,callback){
+        orderz.get_order_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
+            {
+                callback(error,data_list,item_count,page_count);
+            });
+    }
     module.get_cart_itemz=function(db,sql,callback){
-        appz.get_cart_item_list(db,sql,function(error,data_list)
+        orderz.get_cart_item_list(db,sql,function(error,data_list)
             {
                 callback(error,data_list);
             });
     }
     module.get_order=function(db,order_id,callback){
-        appz.get_order(db,order_id,function(error,data)
+        orderz.get_order(db,order_id,function(error,data)
             {
                 callback(error,data);
             });
     }
     module.get_order_by_tbl_id=function(db,tbl_id,callback){
-        appz.get_order_by_tbl_id(db,tbl_id,function(error,data)
+        orderz.get_order_by_tbl_id(db,tbl_id,function(error,data)
             {
                 callback(error,data);
             });
     }
     module.get_order_status=function(status_id){
-        return appz.get_order_status(status_id);
+        return orderz.get_order_status(status_id);
     }
     module.get_cart=function(db,sql,callback){
-        appz.get_cart(db,sql,function(error,data)
+        orderz.get_cart(db,sql,function(error,data)
             {
                 callback(error,data);
             });
     }
     module.set_cart=function(item_list,callback){
-        appz.set_cart(item_list,function(error,data)
+        orderz.set_cart(item_list,function(error,data)
             {
                 callback(error,data);
             });
