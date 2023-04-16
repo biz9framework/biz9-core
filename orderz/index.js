@@ -5,7 +5,7 @@
  * Core-Order
  */
 module.exports = function(){
- module.get_order_status=function(status_id) {
+    module.get_order_status=function(status_id) {
         switch(status_id) {
             case '0':
                 return  'Open';
@@ -200,6 +200,7 @@ module.exports = function(){
                 dataz.get_sql_cache(db,DT_ORDER,sql,{},function(error,data_list) {
                     if(data_list.length>0){
                         order=data_list[0];
+                        order.status=orderz.get_order_status(order.status_id);
                     }
                     order.order_item_list=[];
                     call();
@@ -222,16 +223,20 @@ module.exports = function(){
         var order = biz9.get_new_item(DT_ORDER,0);
         async.series([
             function(call){
-                biz9.get_item(db,DT_ORDER,tbl_id,function(error,data) {
-                    order=data;
+                sql={tbl_id:tbl_id};
+                dataz.get_sql_cache(db,DT_ORDER,sql,{},function(error,data_list) {
+                    if(data_list.length>0){
+                        order=data_list[0];
+                        order.status=orderz.get_order_status(order.status_id);
+                    }
+                    order.order_item_list=[];
                     call();
                 });
             },
             function(call){
-                sql={order_tbl_id:order.tbl_id};
+                sql={order_id:order_id};
                 dataz.get_sql_cache(db,DT_ORDER_ITEM,sql,{},function(error,data_list) {
-                    order.cart={};
-                    order.cart=caculate_cart(data_list);
+                    order.order_item_list=data_list;
                     call();
                 });
             },
@@ -240,5 +245,5 @@ module.exports = function(){
                 callback(error,order);
             });
     }
-    return module;
+ return module;
 }
