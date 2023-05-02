@@ -300,7 +300,7 @@ module.exports = function(app_config){
 		helper.app_title=APP_TITLE;
 		helper.app_version=APP_VERSION;
 		if(!helper.app_title_id){
-			if(req.subdomains[0]){
+			if(req.subdomains[0]&&!APP_TITLE_ID){
 				helper.app_title_id=req.subdomains[0];
 			}else if(APP_TITLE_ID){
 				helper.app_title_id=APP_TITLE_ID;
@@ -374,6 +374,10 @@ module.exports = function(app_config){
 		item.field_10=org_item.field_10;
 		item.field_11=org_item.field_11;
 		item.field_12=org_item.field_12;
+		item.field_13=org_item.field_13;
+		item.field_14=org_item.field_14;
+		item.field_15=org_item.field_15;
+		item.field_16=org_item.field_16;
 		item.value_1=org_item.value_1;
 		item.value_2=org_item.value_2;
 		item.value_3=org_item.value_3;
@@ -709,13 +713,13 @@ module.exports = function(app_config){
 					item[item.field_16]=item.value_16 ? (item.value_16) : '';
 				}
 				if(item.date_1){
-					item[item.date_1]=biz9.get_date_full(item.date_value_1) ? (item.date_value_1) : '';
+					item[item.date_1]=biz9.get_date_time_obj(item.date_value_1) ? (item.date_value_1) : '';
 				}
 				if(item.date_2){
-					item[item.date_2]=biz9.get_date_full(item.date_value_2) ? (item.date_value_2) : '';
+					item[item.date_2]=biz9.get_date_time_obj(item.date_value_2) ? (item.date_value_2) : '';
 				}
 				if(item.date_3){
-					item[item.date_3]=biz9.get_date_full(item.date_value_3) ? (item.date_value_3) : '';
+					item[item.date_3]=biz9.get_date_time_obj(item.date_value_3) ? (item.date_value_3) : '';
 				}
 			}
 			for (const key in item) {
@@ -770,10 +774,19 @@ module.exports = function(app_config){
 			function(call){
 				sql = {title_url:title_url};
 				sort={};
-				dataz.get_sql_cache(db,DT_BLOG_POST,sql,sort,function(error,data_list) {
+				dataz.get_sql_cache(db,DT_MEMBER,sql,sort,function(error,data_list) {
 					if(data_list.length>0){
 						if(data_list[0].tbl_id!=0 &&data_list[0]){
 							member=data_list[0];
+                            if(!member.first_name==''|| member.first_name=='' ){
+                                member.first_name= ' ';
+                            }
+
+                            if(!member.last_name==''|| member.last_name=='' ){
+                                member.last_name= ' ';
+                            }
+
+
 						}
 					}
 					call();
