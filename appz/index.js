@@ -299,15 +299,15 @@ module.exports = function(app_config){
         helper.app_id=APP_ID;
         helper.app_title=APP_TITLE;
         helper.app_version=APP_VERSION;
-        if(!helper.app_title_id){
-            if(APP_TITLE_ID){
-                helper.app_title_id=APP_TITLE_ID;
-                else if(req.subdomains[0]){
-                    helper.app_title_id=req.subdomains[0];
-                }else{
-                    helper.app_title_id='notfound';
+       if(!helper.app_title_id){
+                if(APP_TITLE_ID){
+                    helper.app_title_id=APP_TITLE_ID;
+                }else if(req.subdomains[0]){
+                        helper.app_title_id=req.subdomains[0];
+                    }else{
+                        helper.app_title_id='notfound';
                 }
-            }
+                }
             return helper;
         }
         module.get_helper_user = function(req) {
@@ -337,16 +337,14 @@ module.exports = function(app_config){
             helper.app_title=APP_TITLE;
             helper.app_version=APP_VERSION;
             if(!helper.app_title_id){
-            if(APP_TITLE_ID){
-                helper.app_title_id=APP_TITLE_ID;
-                else if(req.subdomains[0]){
-                    helper.app_title_id=req.subdomains[0];
-                }else{
-                    helper.app_title_id='notfound';
+                if(APP_TITLE_ID){
+                    helper.app_title_id=APP_TITLE_ID;
+                } else if(req.subdomains[0]){
+                        helper.app_title_id=req.subdomains[0];
+                    }else{
+                        helper.app_title_id='notfound';
                 }
             }
-            return helper;
-        }
             return helper;
         }
         module.convert_biz_item=function(item,item_list) {
