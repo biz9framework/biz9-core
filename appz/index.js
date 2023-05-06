@@ -928,12 +928,6 @@ module.exports = function(app_config){
                     call();
                 },
                 function(call){
-                    if(blog_post.mp3filename){
-                        blog_post.mp3_url =FILE_URL+helper.item.mp3filename;
-                    }
-                    call();
-                },
-                function(call){
                     appz.get_review_obj(db,blog_post.tbl_id,function(error,data){
                         blog_post.review_obj=data;
                         call();
