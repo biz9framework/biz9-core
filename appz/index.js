@@ -2474,9 +2474,11 @@ module.get_page=function(db,title_url,setting,callback){
                 sql={parent_tbl_id:item_map.tbl_id,category:setting.filter_category};
             }
             sort={order:1};
-            if(setting.count){
-                dataz.get_sql_paging_cache(db,item_map.title_url,sql,sort,1,setting.count,function(error,data_list,_item_count,_page_count) {
+            if(setting.page_current){
+                dataz.get_sql_paging_cache(db,item_map.title_url,sql,sort,setting.page_current,setting.page_size,function(error,data_list,_item_count,_page_count) {
                     top_list=data_list;
+                    item_map.total_item_count=_item_count;
+                    item_map.page_page_count=_page_count;
                     call();
                 });
             }else{
