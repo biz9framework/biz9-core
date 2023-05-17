@@ -270,11 +270,26 @@ module.exports = function(){
             });
     }
     module.set_resize_square_photo_file=function(new_size,file_path,org_filename,new_filename,callback){
+        var file_ext=String(file_path+org_filename).substr(String(file_path+org_filename).lastIndexOf('.') + 1);
+        if(file_ext != 'avif'){
         sharp(file_path+org_filename)
             .resize({height:new_size,width:new_size,fit:sharp.fit.fill})
             .toFile(file_path+new_filename, (error,info)=>{
                 callback(error,new_filename);
             });
+        }else{
+            sharp(file_path+org_filename)
+            .avif({ effort: 2,number:90 })
+            .resize({height:new_size,width:new_size,fit:sharp.fit.fill})
+            .toFile(file_path+new_filename, (error,info)=>{
+                if(error){
+                    error = 'save avif error ' +error;
+                    callback(error,new_filename);
+                }else{
+                callback(error,new_filename);
+                }
+            });
+        }
     }
     module.set_photo_file=function(file_path,org_filename,new_filename,callback){
         sharp(file_path+org_filename)
