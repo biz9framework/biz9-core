@@ -92,11 +92,11 @@ module.exports = function(){
             cart_item.shipping_total=biz9.get_money(cart_item.shipping_total);
             cart_checkout_list.push(biz9.set_biz_item(cart_item));
         }
-        if(isNaN(grand_total)){
+        if(!isNaN(grand_total)){
             grand_total=0;
         }
         discount_total=(parseInt(discount_total/quantity));
-        if(isNaN(discount_total)){
+        if(!isNaN(discount_total)){
             discount_total=0;
         }
         discount_total=String(parseInt(discount_total))+"%";
@@ -153,6 +153,7 @@ module.exports = function(){
         }
         r_cart_item.title=cart_item.title;
         r_cart_item.parent_tbl_id=cart_item.parent_tbl_id;
+        r_cart_item.sub_note=cart_item.sub_note;
         r_cart_item.parent_data_type=cart_item.parent_data_type;
         r_cart_item.title_url=cart_item.title_url;
         r_cart_item.photofilename=cart_item.photofilename;
@@ -161,11 +162,12 @@ module.exports = function(){
         r_cart_item.category=cart_item.category;
         r_cart_item.quantity=cart_item.quantity;
         discount = cart_item.old_price - cart_item.price;
-        if(isNaN(discount) || !discount){
+        if(!isNaN(discount) || !discount){
            r_cart_item.discount="0%";
         }else{
             r_cart_item.discount= String(parseInt(((discount / cart_item.old_price) * 100)))+"%";
         }
+        biz9.o('i am here',r_cart_item.discount);
         return r_cart_item;
     }
     module.get_cart_item_list=function(db,sql,callback) {
