@@ -92,11 +92,11 @@ module.exports = function(){
             cart_item.shipping_total=biz9.get_money(cart_item.shipping_total);
             cart_checkout_list.push(biz9.set_biz_item(cart_item));
         }
-        if(!isNaN(grand_total)){
+        if(isNaN(grand_total)){
             grand_total=0;
         }
         discount_total=(parseInt(discount_total/quantity));
-        if(!isNaN(discount_total)){
+        if(isNaN(discount_total)){
             discount_total=0;
         }
         discount_total=String(parseInt(discount_total))+"%";
