@@ -333,6 +333,12 @@ module.exports = function(app_config,data_config){
                 callback(error,data_list,item_count,page_count);
             });
     }
+    module.copy_top_item=function(db,data_type,tbl_id,callback){
+        appz.copy_top_item(db,data_type,tbl_id,function(error,data)
+            {
+                callback(error,data);
+            });
+    }
     module.copy_photo_list=function(db,parent_tbl_id,new_parent_tbl_id,callback){
         appz.copy_photo_list(db,parent_tbl_id,new_parent_tbl_id,function(error,data_list)
             {
