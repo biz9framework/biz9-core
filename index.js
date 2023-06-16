@@ -7,7 +7,6 @@
 module.exports = function(app_config,data_config){
     async = require('async');
     arraySort = require('array-sort');
-    aws = require('aws-sdk');
     exec = require('child_process').exec;
     Promise = require('bluebird');
     fs = require('fs-extra');
