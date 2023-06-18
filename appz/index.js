@@ -512,10 +512,18 @@ module.exports = function(app_config){
         _sub_item.note=org_item.note ? (org_item.note) : "";
         _sub_item.html=org_item.html ? (org_item.html) : "";
         _sub_item.category=org_item.category ? (org_item.category) : "";
+        _sub_item.price=org_item.price ? (org_item.price) : "";
         _sub_item.order=org_item.order;
         _sub_item.visible=org_item.visible;
         _sub_item.photofilename=org_item.photofilename;
+
         _sub_item.org_tbl_id=org_item.tbl_id;
+        _sub_item.org_parent_tbl_id=org_item.parent_tbl_id;
+
+        _sub_item.parent_tbl_id=org_item.parent_tbl_id;
+        _sub_item.parent_data_type=org_item.parent_data_type;
+        _sub_item.top_tbl_id=org_item.top_tbl_id;
+        _sub_item.top_data_type=org_item.top_data_type;
         return _sub_item;
     }
     module.set_new_member=function(data_type,org_item){

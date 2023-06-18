@@ -1,9 +1,8 @@
 source ./.biz9_config.sh
 echo "#################"
-echo "BiZ9 Framework Git Repo Reset"
+echo "BiZ9 Framework Cordova GPlay Screen Deploy"
 echo "#################"
 bash ./scriptz/dq_header.sh
-git reset -- hard
-git reset --hard ${BRANCH}
+node other/scriptz/gplay_screen_resize.js
 bash ./scriptz/dq_footer.sh
 exit

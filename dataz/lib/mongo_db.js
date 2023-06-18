@@ -117,14 +117,23 @@ module.exports = function(){
                 }
                 run();
             },
+            function(call){
+                async function run() {
+                    try {
+                        data_list = await db.collection(data_type).find(sql_obj,{tbl_id:1,data_type:1}).sort(sort_by).skip(current_page>0?((current_page-1)*page_size):0).limit(page_size).collation({locale:"en_US",numericOrdering:true}).toArray();
+                    } catch (e) {
+                        error = e;
+                        console.error(e);
+                        call();
+                    } finally {
+                        call();
+                    }
+                }
+                run();
+            },
         ],
             function(errors,result){
-                db.collection(data_type).find(sql_obj,{tbl_id:1,data_type:1}).sort(sort_by)
-                    .skip(current_page>0?((current_page-1)*page_size):0)
-                    .limit(page_size).collation({locale:"en_US",numericOrdering:true})
-                    .toArray(function(error,_data) {
-                        callback(error,total_count,_data);
-                    });
+                callback(error,total_count,data_list);
             });
     }
     module.drop=function(db,data_type,callback){

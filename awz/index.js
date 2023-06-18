@@ -59,13 +59,16 @@ module.exports = function(){
                 if(p_buffer){
                     async function run() {
                         try {
-                            const config = {
-                                region:aws_config.region,
+                            const region = aws_config.region
+                            const accessKeyId = aws_config.aws_key
+                            const secretAccessKey = aws_config.aws_secret
+                            const s3Client = new S3Client({
+                                region,
                                 credentials: {
-                                    accessKeyId: aws_config.key,
-                                    secretAccessKey: aws_config.secret
+                                    accessKeyId,
+                                    secretAccessKey
                                 }
-                            }
+                            })
                             const input = {
                                 Body: Buffer.from(p_buffer,'utf-8'),
                                 Bucket:String(bucket),
@@ -73,9 +76,7 @@ module.exports = function(){
                                 ACL: "public-read",
                                 ContentType:content_type
                             };
-                            const s3 = new S3Client(config);
-                            const command = new PutObjectCommand(input);
-                            message = await s3.send(command);
+                                await s3Client.send(new PutObjectCommand(input));
                         } catch (e) {
                             console.error(e);
                             biz9.o('update_bucket_file_error',e);
