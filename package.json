@@ -13,18 +13,14 @@
     "array-sort": "^1.0.0",
     "async": "^3.2.4",
     "bluebird": "^3.7.2",
-    "exec": "^0.2.1",
     "format-duration": "^3.0.2",
     "fs-extra": "^11.1.1",
     "moment": "^2.29.4",
     "mongodb": "^5.6.0",
     "pretty-date": "^0.2.0",
     "redis": "^4.6.7",
-    "reques": "^0.0.1-security",
-    "request": "^2.88.2",
     "sharp": "^0.32.1",
     "sib-api-v3-sdk": "^8.5.0",
-    "stripe": "^12.9.0",
-    "uuid": "^9.0.0"
+    "stripe": "^12.9.0"
   }
 }

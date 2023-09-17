@@ -7,11 +7,9 @@
 module.exports = function(app_config,data_config){
     async = require('async');
     arraySort = require('array-sort');
-    exec = require('child_process').exec;
     Promise = require('bluebird');
     fs = require('fs-extra');
     path = require('path');
-    request = require('request');
     moment = require('moment');
     prettydate = require("pretty-date");
     redis = require('redis');
@@ -136,9 +134,6 @@ module.exports = function(app_config,data_config){
     }
     ///////////////// SEND IN BLUE END //////////////////////////////////////////
     ///////////////// AWZ START //////////////////////////////////////////
-    module.set_biz_item=function(item){
-        return appz.set_biz_item(item);
-    }
     module.get_bucket_data=function(bucket,key,callback){
         awz.get_bucket_data(bucket,key,function(error,data)
             {
@@ -167,6 +162,9 @@ module.exports = function(app_config,data_config){
     }
     ///////////////// STATZ START //////////////////////////////////////////
     ///////////////// APPZ START //////////////////////////////////////////
+    module.set_biz_item=function(item){
+        return appz.set_biz_item(item);
+    }
     module.set_item_data = function(data_type,tbl_id,item_data) {
         return appz.set_item_data(data_type,tbl_id,item_data);
     }
@@ -235,9 +233,6 @@ module.exports = function(app_config,data_config){
     }
     module.get_helper_user=function(req) {
         return appz.get_helper_user(req);
-    }
-    module.old_set_new_sub_item_parent=function(data_type,org_item){
-        return appz.set_new_sub_item_parent(data_type,org_item);
     }
     module.set_new_sub_item=function(data_type,org_item){
         return appz.set_new_sub_item(data_type,org_item);
@@ -359,6 +354,12 @@ module.exports = function(app_config,data_config){
     module.get_event_visible_option_list = function() {
         return appz.get_event_visible_option_list();
     }
+    module.get_item_biz_list=function(db,data_type,sql,sort_by,page_current,page_size,callback){
+        appz.get_item_biz_list(db,data_type,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
+            {
+                callback(error,data_list,item_count,page_count);
+            });
+    }
     ///////////////// APPZ END //////////////////////////////////////////
     ///////////////// ORDER START //////////////////////////////////////////
     module.get_orderz=function(db,sql,sort_by,page_current,page_size,callback){
@@ -443,13 +444,7 @@ module.exports = function(app_config,data_config){
                 callback(error,data);
             });
     }
-     module.get_item_biz_list=function(db,data_type,sql,sort_by,page_current,page_size,callback){
-        appz.get_item_biz_list(db,data_type,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
-            {
-                callback(error,data_list,item_count,page_count);
-            });
-    }
-    module.get_blog_postz=function(db,sql,sort_by,page_current,page_size,callback){
+     module.get_blog_postz=function(db,sql,sort_by,page_current,page_size,callback){
         appz.get_blog_post_list(db,sql,sort_by,page_current,page_size,function(error,data_list,item_count,page_count)
             {
                 callback(error,data_list,item_count,page_count);
