@@ -15,6 +15,7 @@ module.exports = function(app_config,data_config){
     redis = require('redis');
     sharp = require('sharp');
     format = require('format-duration');
+    exec = require('child_process').exec;
     SibApiV3Sdk = require('sib-api-v3-sdk');
     MONGO_FULL_URL=data_config.mongo_url;
     mongo_client = require('mongodb').MongoClient;

@@ -1,6 +1,6 @@
 {
   "name": "biz9-core",
-  "version": "5.4.1",
+  "version": "5.3.8",
   "description": "The core engine of the Biz9 Framework.",
   "main": "index.js",
   "scripts": {
@@ -13,6 +13,7 @@
     "array-sort": "^1.0.0",
     "async": "^3.2.4",
     "bluebird": "^3.7.2",
+    "child_process": "^1.0.2",
     "format-duration": "^3.0.2",
     "fs-extra": "^11.1.1",
     "moment": "^2.29.4",
