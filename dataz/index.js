@@ -7,16 +7,24 @@
 module.exports = function(data_config){
     module.get_mongo_connect_db=async function(db_name,callback){
         const client = new mongo_client(MONGO_FULL_URL);
+        var reset_cmd = "sudo mongod --fork --config "+data_config.mongo_config_file;
         var error=null;
         async function run() {
             try {
                 await client.connect();
-           } catch (e) {
-               error=e;
+            } catch (e) {
+                error=e;
+                //reset mongo cmd
+                //ssh admin@3.19.35.155 -- sudo mongod --fork --config /etc/mongod.conf
                 console.error(error);
                 biz9.o('get_mongo_connect_db',error);
                 biz9.o('get_mongo_connect_db_db_name',db_name);
-                var cmd = "sudo mongod --fork --config /etc/mongod.conf";
+                if(data_config.mongo_ip!='localhost'){
+                    reset_cmd = 'ssh '+data_config.mongo_server_user +"@"+data_config.mongo_ip +" -- "+reset_cmd;
+                    console.log('RESET_SERVER_START')
+                    console.log(reset_cmd);
+                    console.log('RESET_SERVER_END')
+                }
                 dir = exec(cmd, function(error,stdout,stderr){
                 });
                 dir.on('exit', function (code) {
