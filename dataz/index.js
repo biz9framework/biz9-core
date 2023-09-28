@@ -6,16 +6,9 @@
  */
 module.exports = function(data_config){
     module.get_mongo_connect_db=async function(db_name,callback){
-        console.log('aaaaaaaa');
-        console.log(MONGO_FULL_URL);
         const client = new mongo_client(MONGO_FULL_URL);
         var reset_cmd = "sudo mongod --fork --config "+data_config.mongo_config_file;
         var error=null;
-        biz9.o('mongo_full_url', MONGO_FULL_URL);
-        biz9.o('reset_cmd', reset_cmd);
-        biz9.o('client', client);
-        biz9.o('data_config', data_config);
-        console.log('bbbbbbbbb');
         async function run() {
             try {
                 await client.connect();
