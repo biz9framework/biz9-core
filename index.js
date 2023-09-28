@@ -16,7 +16,6 @@ module.exports = function(app_config,data_config){
     sharp = require('sharp');
     format = require('format-duration');
     exec = require('child_process').exec;
-    SibApiV3Sdk = require('sib-api-v3-sdk');
     MONGO_FULL_URL="mongodb://"+data_config.mongo_username_password+data_config.mongo_ip+":"+data_config.mongo_port;
     mongo_client = require('mongodb').MongoClient;
     data_mon = require('./dataz/lib/mongo_db.js')();
@@ -27,13 +26,15 @@ module.exports = function(app_config,data_config){
     dataz = require('./dataz/index.js')(data_config);
     utilityz = require('./utilityz/index.js')();
     awz = require('./awz/index.js')();
-    send_in_blue = require('./send_in_blue/index.js')();
+    brevo_lib = require('@getbrevo/brevo');
+    brevo = require('./brevo/index.js')();
     stripe = require('./stripe/index.js')();
     mailz = require('./mailz/index.js')();
     redis_url = data_config.redis_url;
     redis_port = data_config.redis_port;
     ///////////////// DATA START //////////////////////////////////////////
     module.get_connect_db=function(db_name,callback){
+        console.log('444444444');
         dataz.get_mongo_connect_db(db_name,function(error,db)
             {
                 callback(error,db);
@@ -126,14 +127,14 @@ module.exports = function(app_config,data_config){
             });
     }
     ///////////////// STRIPE END //////////////////////////////////////////
-    ///////////////// SEND IN BLUE START //////////////////////////////////////////
-    module.send_mail=function(send_in_blue_key,send_in_blue_obj,callback){
-        send_in_blue.send_mail(send_in_blue_key,send_in_blue_obj,function(error,data)
+    ///////////////// BREVO START //////////////////////////////////////////
+    module.send_brevo_mail=function(brevo_key,brevo_obj,callback){
+        brevo.send_mail(brevo_key,brevo_obj,function(error,data)
             {
                 callback(error,data);
             });
     }
-    ///////////////// SEND IN BLUE END //////////////////////////////////////////
+    ///////////////// BREVO END //////////////////////////////////////////
     ///////////////// AWZ START //////////////////////////////////////////
     module.get_bucket_data=function(bucket,key,callback){
         awz.get_bucket_data(bucket,key,function(error,data)

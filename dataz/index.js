@@ -6,29 +6,37 @@
  */
 module.exports = function(data_config){
     module.get_mongo_connect_db=async function(db_name,callback){
+        console.log('aaaaaaaa');
+        console.log(MONGO_FULL_URL);
         const client = new mongo_client(MONGO_FULL_URL);
         var reset_cmd = "sudo mongod --fork --config "+data_config.mongo_config_file;
         var error=null;
+        biz9.o('mongo_full_url', MONGO_FULL_URL);
+        biz9.o('reset_cmd', reset_cmd);
+        biz9.o('client', client);
+        biz9.o('data_config', data_config);
+        console.log('bbbbbbbbb');
         async function run() {
             try {
                 await client.connect();
             } catch (e) {
                 error=e;
-                //reset mongo cmd
-                //ssh admin@3.19.35.155 -- sudo mongod --fork --config /etc/mongod.conf
-                console.error(error);
-                biz9.o('get_mongo_connect_db',error);
-                biz9.o('get_mongo_connect_db_db_name',db_name);
+                //ssh admin@0.0.0.0 -- sudo mongod --fork --config /etc/mongod.conf
+                biz9.o('get_mongo_connect_db_error',error);
+                biz9.o('get_mongo_connect_db_data_config',data_config);
                 if(data_config.mongo_ip!='localhost'){
-                    reset_cmd = 'ssh '+data_config.mongo_server_user +"@"+data_config.mongo_ip +" -- "+reset_cmd;
-                    console.log('RESET_SERVER_START')
-                    console.log(reset_cmd);
-                    console.log('RESET_SERVER_END')
+                    if(!data_config.ssh_key_file){
+                        data_config.ssh_key_file='';
+                    }else{
+                        data_config.ssh_key_file=' -i '+ data_config.ssh_key_file;
+                    }
+                    reset_cmd='ssh '+ data_config.ssh_key_file + " " +data_config.mongo_server_user +"@"+data_config.mongo_ip +" -- "+reset_cmd;
                 }
-                dir = exec(cmd, function(error,stdout,stderr){
+                biz9.o('mongo_reset_cmd',reset_cmd);
+                dir = exec(reset_cmd, function(error,stdout,stderr){
                 });
                 dir.on('exit', function (code) {
-                    console.log('SUCCESS LOCAL RESET DB');
+                    biz9.o('get_mongo_connect_reset','OK');
                     callback(error,null);
                 });
             } finally {
@@ -38,26 +46,6 @@ module.exports = function(data_config){
             }
         }
         run();
-    }
-    module.get_mongo_connect_db_old=async function(db_name,callback){
-        var error=null;
-        mongo_client.connect(MONGO_FULL_URL,{useUnifiedTopology:true,useNewUrlParser:true,socketTimeoutMS:360000,connectTimeoutMS:360000,keepAlive:true},function(error,client){
-            if(error){
-                biz9.o('get_mongo_connect_db',error);
-                biz9.o('get_mongo_connect_db_db_name',db_name);
-                var cmd = "sudo mongod --fork --config /etc/mongod.conf";
-                dir = exec(cmd, function(error,stdout,stderr){
-                });
-                dir.on('exit', function (code) {
-                    console.log('SUCCESS LOCAL RESET DB');
-                    callback(error,null);
-                });
-            }else{
-                var db = client.db(db_name);
-                db.db_name=db_name;
-                callback(error,db);
-            }
-        });
     }
     module.set_close_db=function(db_name,callback){
         db.close()
