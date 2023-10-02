@@ -11,7 +11,12 @@ module.exports = function(data_config){
         var error=null;
         async function run() {
             try {
-                await client.connect();
+                if(!client){
+                    await client.connect();
+                }else{
+                    const db = client.db(db_name);
+                    db.db_name=db_name;
+                }
             } catch (e) {
                 error=e;
                 //ssh admin@0.0.0.0 -- sudo mongod --fork --config /etc/mongod.conf
