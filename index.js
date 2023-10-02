@@ -34,7 +34,6 @@ module.exports = function(app_config,data_config){
     redis_port = data_config.redis_port;
     ///////////////// DATA START //////////////////////////////////////////
     module.get_connect_db=function(db_name,callback){
-        console.log('444444444');
         dataz.get_mongo_connect_db(db_name,function(error,db)
             {
                 callback(error,db);
