@@ -2565,8 +2565,6 @@ module.get_page=function(db,title_url,setting,callback){
                 }else{
                     item_map.title_url=title_url;
                 }
-                item_map.photos=[];
-                item_map.items=[];
                 call();
             });
         },
@@ -3139,10 +3137,11 @@ module.get_blog_post_list=function(db,sql,sort_by,page_current,page_size,callbac
     var error=null;
     async.series([
         function(call){
-            dataz.get_sql_paging_cache(db,DT_BLOG_POST,sql,sort_by,page_current,page_size,function(error,data_list,_item_count,_page_count) {
+            dataz.get_sql_paging_cache(db,DT_BLOG_POST,sql,sort_by,page_current,page_size,function(_error,data_list,_item_count,_page_count) {
                 blog_post_list=data_list;
                 item_count=_item_count;
                 page_count=_page_count;
+                error=_error;
                 call();
             });
         },

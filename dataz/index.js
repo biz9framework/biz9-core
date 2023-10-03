@@ -13,9 +13,6 @@ module.exports = function(data_config){
             try {
                 if(!client){
                     await client.connect();
-                }else{
-                    const db = client.db(db_name);
-                    db.db_name=db_name;
                 }
             } catch (e) {
                 error=e;
@@ -61,16 +58,18 @@ module.exports = function(data_config){
                 run();
             },
             function(call){
-                for(a=0;a<data_item_list.length;a++){
-                    for(property in data_item_list[a]){
+                async.forEachOf(data_item_list,(item,key,go)=>{
+                    for(property in item[key]){
                         if(property!='tbl_id'&&property!='data_type'){
-                            if(!data_item_list[a][property]){
-                                delete data_item_list[a][property];
+                            if(!item[key][property]){
+                                delete item[key][property];
                             }
                         }
                     }
-                }
-                call();
+                    go();
+                }, error => {
+                    call();
+                });
             },
             function(call){
                 async.forEachOf(data_item_list,(item,key,go)=>{
@@ -259,34 +258,39 @@ module.exports = function(data_config){
             },
             function(call){
                 if(page_current!=0&&page_size!=0){//db
-                    data_mon.paging_sql_tbl_id(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,_total_count,data_list){
+                    data_mon.paging_sql_tbl_id(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,_total_count,_data_list){
                         total_count=_total_count;
-                        for(a=0;a<data_list.length;a++){
+                        async.forEachOf(_data_list,(item,key,go)=>{
                             data_sql_tbl_id_list.push({
-                                data_type:data_list[a].data_type,
-                                tbl_id:data_list[a].tbl_id,
+                                data_type:item.data_type,
+                                tbl_id:item.tbl_id,
                                 source:null,
                                 cache_key_list:null,
                                 data:null
                             });
-                        }
-                        call();
+                            go();
+                        },error=>{
+                            call();
+                        });
                     });
                 }else{//cache
-                    data_mon.get_sql_tbl_id(db,data_type,sql_obj,sort_by,function(error,data_list){
-                        total_count=data_list.length;
-                        for(a=0;a<data_list.length;a++){
+                    data_mon.get_sql_tbl_id(db,data_type,sql_obj,sort_by,function(error,_data_list){
+                        total_count=_data_list.length;
+                        async.forEachOf(_data_list,(item,key,go)=>{
                             data_sql_tbl_id_list.push({
-                                data_type:data_list[a].data_type,
-                                tbl_id:data_list[a].tbl_id,
+                                data_type:item.data_type,
+                                tbl_id:item.tbl_id,
                                 source:null,
                                 cache_key_list:null,
                                 data:null
                             });
-                        }
-                        call();
+                            go();
+                        },error=>{
+                            call();
+                        });
                     });
                 }
+
             },
             function(call){
                 async.forEachOf(data_sql_tbl_id_list,(item,key,go)=>{
@@ -297,7 +301,7 @@ module.exports = function(data_config){
                         else{
                             item.cache_key_list=null;
                         }
-                        go()
+                        go();
                     });
                 },error=>{
                     call();
@@ -362,12 +366,14 @@ module.exports = function(data_config){
                 });
             },
             function(call){
-                for(a=0;a<data_sql_tbl_id_list.length;a++){
-                    if(data_sql_tbl_id_list[a].data){
-                        data_list.push(appz.set_biz_item(data_sql_tbl_id_list[a].data));
+                async.forEachOf(data_sql_tbl_id_list,(item,key,go)=>{
+                    if(item.data){
+                        data_list.push(appz.set_biz_item(item.data));
                     }
-                }
-                call();
+                    go();
+                }, error => {
+                    call();
+                });
             },
             function(call){
                 const run = async function(a,b){
