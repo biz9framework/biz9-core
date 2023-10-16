@@ -5,14 +5,14 @@
  * Core-AWZ
  */
 module.exports = function(data_config){
-    module.get_mongo_connect_db=async function(db_name,callback){
-        const client = new mongo_client(MONGO_FULL_URL);
+    module.get_client_db=async function(callback){
+        var client_db = new mongo_client(MONGO_FULL_URL, {useNewUrlParser: true,useUnifiedTopology: true});
         var reset_cmd = "sudo mongod --fork --config "+data_config.mongo_config_file;
         var error=null;
         async function run() {
             try {
-                if(!client){
-                    await client.connect();
+                if(!isConnected(client_db)){
+                    await client_db.connect();
                 }
             } catch (e) {
                 error=e;
@@ -35,16 +35,34 @@ module.exports = function(data_config){
                     callback(error,null);
                 });
             } finally {
-                const db = client.db(db_name);
-                db.db_name=db_name;
-                callback(error,db);
+                callback(error,client_db);
             }
         }
         run();
+        function isConnected(client_db) {
+            return !!client_db && !!client_db.topology && client_db.topology.isConnected()
+        }
     }
-    module.set_close_db=function(db_name,callback){
-        db.close()
-        callback();
+    module.close_client_db=async function(client_db,callback){
+        var error=null;
+        async function run() {
+            try {
+                if(isConnected(client_db)){
+                    await client_db.close();
+                }
+            } catch (e) {
+                error=e;
+                if(error){
+                    biz9.o('clost_mongo_connect_db_error',error);
+                }
+            } finally {
+                callback(error);
+            }
+        }
+        run();
+        function isConnected(client_db) {
+            return !!client_db && !!client_db.topology && client_db.topology.isConnected()
+        }
     }
     module.update_list=function(db,data_item_list,callback){
         var error=null;
@@ -68,6 +86,9 @@ module.exports = function(data_config){
                     }
                     go();
                 }, error => {
+                    if(error){
+                        error=error;
+                    }
                     call();
                 });
             },
@@ -91,6 +112,9 @@ module.exports = function(data_config){
                         go();
                     }
                 }, error => {
+                    if(error){
+                        error=error;
+                    }
                     call();
                 });
             },
@@ -258,120 +282,130 @@ module.exports = function(data_config){
             },
             function(call){
                 if(page_current!=0&&page_size!=0){//db
-                    data_mon.paging_sql_tbl_id(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,_total_count,_data_list){
+                    data_mon.paging_sql_tbl_id(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,_total_count,_data_list_1){
                         total_count=_total_count;
-                        async.forEachOf(_data_list,(item,key,go)=>{
+                        async.forEachOf(_data_list_1,(item_1,key_1,go_1)=>{
                             data_sql_tbl_id_list.push({
-                                data_type:item.data_type,
-                                tbl_id:item.tbl_id,
+                                data_type:item_1.data_type,
+                                tbl_id:item_1.tbl_id,
                                 source:null,
                                 cache_key_list:null,
                                 data:null
                             });
-                            go();
+                            go_1();
                         },error=>{
+                            if(error){
+                                error=error;
+                            }
                             call();
                         });
                     });
                 }else{//cache
-                    data_mon.get_sql_tbl_id(db,data_type,sql_obj,sort_by,function(error,_data_list){
-                        total_count=_data_list.length;
-                        async.forEachOf(_data_list,(item,key,go)=>{
+                    data_mon.get_sql_tbl_id(db,data_type,sql_obj,sort_by,function(error,_data_list_2){
+                        total_count=_data_list_2.length;
+                        async.forEachOf(_data_list_2,(item_2,key_2,go_2)=>{
                             data_sql_tbl_id_list.push({
-                                data_type:item.data_type,
-                                tbl_id:item.tbl_id,
+                                data_type:item_2.data_type,
+                                tbl_id:item_2.tbl_id,
                                 source:null,
                                 cache_key_list:null,
                                 data:null
                             });
-                            go();
+                            go_2();
                         },error=>{
+                            if(error){
+                                error=error;
+                            }
                             call();
                         });
                     });
                 }
-
             },
             function(call){
-                async.forEachOf(data_sql_tbl_id_list,(item,key,go)=>{
-                    cache_red.get_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,data_type,item.tbl_id),function(error,data){
-                        if(data){
-                            item.cache_key_list=data;
+                async.forEachOf(data_sql_tbl_id_list,(item_3,key_3,go_3)=>{
+                    cache_red.get_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,data_type,item_3.tbl_id),function(error,data_3){
+                        if(data_3){
+                            item_3.cache_key_list=data_3;
                         }
                         else{
-                            item.cache_key_list=null;
+                            item_3.cache_key_list=null;
                         }
-                        go();
+                        go_3();
                     });
                 },error=>{
                     call();
                 });
             },
             function(call){
-                async.forEachOf(data_sql_tbl_id_list,(item,key,go)=>{
-                    if(item.cache_key_list!=null){
-                        var _list =item.cache_key_list.split(',');
+                async.forEachOf(data_sql_tbl_id_list,(item_4,key_4,go_4)=>{
+                    if(item_4.cache_key_list!=null){
+                        var _list =item_4.cache_key_list.split(',');
                     }else{
                         var _list=[];
                     }
                     _cache_found=false;
                     var data_value = {};
-                    async.forEachOf(_list,(item2,key2,go2)=>{
-                        if(item2){
-                            //item2
-                            cache_red.get_cache_string(client_redis,get_cache_item_attr_key(db.db_name,data_type,item.tbl_id,item2),function(error,data){
-                                if(data){
-                                    data_value[item2] = data;
+                    async.forEachOf(_list,(item_5,key_5,go_5)=>{
+                        if(item_5){
+                            cache_red.get_cache_string(client_redis,get_cache_item_attr_key(db.db_name,data_type,item_4.tbl_id,item_5),function(error,data_5){
+                                if(data_5){
+                                    data_value[item_5] = data_5;
                                     _cache_found=true;
                                 }else{
-                                    data_value[item2] =null;
+                                    data_value[item_5] =null;
                                 }
-                                go2();
+                                go_5();
                             });
                         }else{
-                            go2();
+                            go_5();
                         }
                     }, error => {
                         if(_cache_found){
                             data_value.source='cache';
-                            item.data=data_value;
+                            item_4.data=data_value;
                         }
-                        go();
+                        go_4();
                     });
                 }, error => {
                     call();
                 });
             },
             function(call){
-                async.forEachOf(data_sql_tbl_id_list,(item,key,go)=>{
-                    if(!item.data){
-                        data_mon.get(db,data_type,item.tbl_id,function(error,data_list){
+                async.forEachOf(data_sql_tbl_id_list,(item_7,key_7,go_7)=>{
+                    if(!item_7.data){
+                        data_mon.get(db,data_type,item_7.tbl_id,function(error,data_list){
                             if(data_list.length>0){
-                                set_cache_item(client_redis,db.db_name,item.data_type,item.tbl_id,data_list[0],function(data_b){
-                                    data_b.source='db';
-                                    item.data=data_list[0];
-                                    go();
+                                set_cache_item(client_redis,db.db_name,item_7.data_type,item_7.tbl_id,data_list[0],function(data_7){
+                                    data_7.source='db';
+                                    item_7.data=data_list[0];
+                                    go_7();
                                 });
                             }
                             else{
-                                item.data=appz.get_new_item(item.data_type,item.tbl_id);
-                                go();
+                                item_7.data=appz.get_new_item(item_7.data_type,item_7.tbl_id);
+                                go_7();
                             }
                         });
                     }else{
-                        go();
+                        go_7();
                     }
                 }, error => {
+                    if(error){
+                        error = error;
+                    }
                     call();
                 });
             },
             function(call){
-                async.forEachOf(data_sql_tbl_id_list,(item,key,go)=>{
-                    if(item.data){
-                        data_list.push(appz.set_biz_item(item.data));
+                async.forEachOf(data_sql_tbl_id_list,(item_8,key,go)=>{
+                    if(item_8.data){
+                        data_list.push(appz.set_biz_item(item_8.data));
                     }
                     go();
                 }, error => {
+                    if(error){
+                        error = error;
+                    }
                     call();
                 });
             },
@@ -454,6 +488,9 @@ module.exports = function(data_config){
                                 go();
                             }
                         }, error => {
+                            if(error){
+                                error = error;
+                            }
                             call();
                         });
                     }
@@ -501,6 +538,9 @@ module.exports = function(data_config){
                             });
                     });
                 }, error => {
+                    if(error){
+                        error=error;
+                    }
                     call();
                 });
             },

@@ -2602,7 +2602,7 @@ module.get_page=function(db,title_url,setting,callback){
                     top_list=data_list;
                     item_map.total_item_count=_item_count;
                     item_map.page_page_count=_page_count;
-                    call();
+                        call()
                 });
             }else{
                 dataz.get_sql_cache(db,item_map.title_url,sql,sort,function(error,data_list) {

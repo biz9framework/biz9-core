@@ -16,7 +16,7 @@ module.exports = function(app_config,data_config){
     sharp = require('sharp');
     format = require('format-duration');
     exec = require('child_process').exec;
-    MONGO_FULL_URL="mongodb://"+data_config.mongo_username_password+data_config.mongo_ip+":"+data_config.mongo_port+"?retryWrites=true&w=majority&maxIdleTimeMS=60000&connectTimeoutMS=150000&socketTimeoutMS=90000&maxPoolSize=900000";
+    MONGO_FULL_URL="mongodb://"+data_config.mongo_username_password+data_config.mongo_ip+":"+data_config.mongo_port+"?retryWrites=true&w=majority&maxIdleTimeMS=60000&connectTimeoutMS=150000&socketTimeoutMS=90000&maxPoolSize=900000&maxConnecting=10000";
     mongo_client = require('mongodb').MongoClient;
     data_mon = require('./dataz/lib/mongo_db.js')();
     cache_red = require('./dataz/lib/redis_cache.js')();
@@ -32,17 +32,17 @@ module.exports = function(app_config,data_config){
     mailz = require('./mailz/index.js')();
     redis_url = data_config.redis_url;
     redis_port = data_config.redis_port;
-    ///////////////// DATA START //////////////////////////////////////////
-    module.get_connect_db=function(db_name,callback){
-        dataz.get_mongo_connect_db(db_name,function(error,db)
+   ///////////////// DATA START //////////////////////////////////////////
+    module.get_client_db=function(callback){
+        dataz.get_client_db(function(error,client_db)
             {
-                callback(error,db);
+                callback(error,client_db);
             });
     }
-    module.set_close_db=function(db,callback){
-        dataz.set_close_db(db,function()
+    module.close_client_db=function(client_db,callback){
+        dataz.close_client_db(client_db,function(error)
             {
-                callback();
+                callback(error);
             });
     }
     module.update_item=function(db,data_type,data_item,callback){
