@@ -348,7 +348,7 @@ module.exports = function(app_config){
         return helper;
     }
     module.convert_biz_item=function(item,item_list) {
-        max=25;
+        max=50;
         for(var a=0;a<=item_list.length;a++){
             if(a!=max){
                 if(!item[item_list[a]]){
