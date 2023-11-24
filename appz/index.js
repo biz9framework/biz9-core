@@ -364,7 +364,7 @@ module.exports = function(app_config){
     bind_biz_item = function(item,org_item){
         for(var a=0;a<=50;a++){
             if(org_item['field_'+a]){
-                item.['field_'+a]=org_item['field_'+a] ? (org_item['field_'+a]) : "";
+                item['field_'+a]=org_item['field_'+a] ? (org_item['field_'+a]) : "";
             }
             if(org_item['value_'+a]){
                 item['value_'+a]=org_item['value_'+a] ? (org_item['value_'+a]) : "";
