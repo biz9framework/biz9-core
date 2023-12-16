@@ -1,9 +1,9 @@
-/* Copyright (C) 2016 9_OPZ #Certified CoderZ
- * GNU GENERAL PUBLIC LICENSE
- * Full LICENSE file ( gpl-3.0-licence.txt )
- * BiZ9 Framework
- * Core-Utility
- */
+/*
+Copyright 2023 Certified CoderZ
+Author: certifiedcoderz@gmail.com (Certified CoderZ)
+License GNU General Public License v3.0
+Description: BiZ9 Framework: Core-Utility
+*/
 module.exports = function(){
     module.o = function(title,str){
         if(!str){

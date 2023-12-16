@@ -1,3 +1,9 @@
+/*
+Copyright 2023 Certified CoderZ
+Author: certifiedcoderz@gmail.com (Certified CoderZ)
+License GNU General Public License v3.0
+Description: BiZ9 Framework: Core-DataZ
+*/
 module.exports = function(){
     module.update =async function(db,data_type,item,callback){
         var error=null;

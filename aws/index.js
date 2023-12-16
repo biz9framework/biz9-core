@@ -1,9 +1,9 @@
-/* Copyright (C) 2016 9_OP #Certified CoderZ
- * GNU GENERAL PUBLIC LICENSE
- * Full LICENSE file ( gpl-3.0-licence.txt )
- * BiZ9 Framework
- * Core-AWZ
- */
+/*
+Copyright 2023 Certified CoderZ
+Author: certifiedcoderz@gmail.com (Certified CoderZ)
+License GNU General Public License v3.0
+Description: BiZ9 Framework: Core-AWS
+*/
 module.exports = function(){
     module.get_bucket_data = function(aws_config,bucket,key,callback){
         aws.config.update({ accessKeyId: aws_config.aws_key, secretAccessKey:aws_config.aws_secret,region:aws_config.aws_region});

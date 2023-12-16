@@ -1,9 +1,9 @@
-/* Copyright (C) 2021 9_OPZ #Certified CoderZ
- * GNU GENERAL PUBLIC LICENSE
- * Full LICENSE file ( gpl-3.0-licence.txt )
- * BiZ9 Framework
- * Core
- */
+/*
+Copyright 2023 Certified CoderZ
+Author: certifiedcoderz@gmail.com (Certified CoderZ)
+License GNU General Public License v3.0
+Description: BiZ9 Framework: Core
+*/
 module.exports = function(app_config,data_config){
     async = require('async');
     arraySort = require('array-sort');
@@ -26,7 +26,7 @@ module.exports = function(app_config,data_config){
     statz = require('./statz/index.js')();
     dataz = require('./dataz/index.js')(data_config);
     utilityz = require('./utilityz/index.js')();
-    awz = require('./awz/index.js')();
+    aws = require('./aws/index.js')();
     brevo_lib = require('@getbrevo/brevo');
     brevo = require('./brevo/index.js')();
     stripe = require('./stripe/index.js')();
@@ -137,19 +137,19 @@ module.exports = function(app_config,data_config){
     ///////////////// BREVO END //////////////////////////////////////////
     ///////////////// AWZ START //////////////////////////////////////////
     module.get_bucket_data=function(bucket,key,callback){
-        awz.get_bucket_data(bucket,key,function(error,data)
+        aws.get_bucket_data(bucket,key,function(error,data)
             {
                 callback(error,data);
             });
     }
     module.update_bucket=function(title,callback){
-        awz.update_bucket(title,function(error,data)
+        aws.update_bucket(title,function(error,data)
             {
                 callback(error,data);
             });
     }
     module.update_bucket_file=function(aws_config,bucket,file_path,key,content_type,callback){
-        awz.update_bucket_file(aws_config,bucket,file_path,key,content_type,function(error,data)
+        aws.update_bucket_file(aws_config,bucket,file_path,key,content_type,function(error,data)
             {
                 callback(error,data);
             });

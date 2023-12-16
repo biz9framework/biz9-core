@@ -1,8 +1,11 @@
+# Copyright 2023 Certified CoderZ
+# Author: certifiedcoderz@gmail.com (Certified CoderZ)
+# License GNU General Public License v3.0
+# Description: BiZ9 Framework ScriptZ : Mobile Android Deploy
 source ./.biz9_config.sh
 echo "#################"
-echo "BiZ9 Framework Cordova Google Play Deploy"
+echo "BiZ9 Mobile Android Deploy"
 echo "#################"
-bash ./scriptz/dq_header.sh
 INCREMENT_VERSION ()
 {
     declare -a part=( ${1//\./ } )
@@ -26,8 +29,8 @@ sed -i "s/CONFIG_ID/${CONFIG_ID}/g" config.xml
 sed -i "s/CONFIG_VERSION/${APP_VERSION_NEW}/g" config.xml
 sed -i "s/APP_VERSION=.*/APP_VERSION='${APP_VERSION_NEW}'/" .biz9_config.sh
 sed -i "s/APP_VERSION=.*/APP_VERSION='${APP_VERSION_NEW}'/" www/scripts/biz9-mobile/scriptz/config.js
-sed -i "s/APP_ID=.*/APP_VENDOR='${APP_ID}'/" .biz9_config.sh
-sed -i "s/APP_ID=.*/APP_VENDOR='${APP_ID}'/" www/scripts/biz9-mobile/scriptz/config.js
+sed -i "s/PROJECT_ID=.*/PROJECT_ID='${PROJECT_ID}'/" .biz9_config.sh
+sed -i "s/PROJECT_ID=.*/PROJECT_ID='${PROJECT_ID}'/" www/scripts/biz9-mobile/scriptz/config.js
 sed -i "s/APP_TITLE_ID=.*/APP_TITLE_ID='${APP_TITLE_ID}'/" .biz9_config.sh
 sed -i "s/APP_TITLE_ID=.*/APP_TITLE_ID='${APP_TITLE_ID}'/" www/scripts/biz9-mobile/scriptz/config.js
 sed -i "s/APP_TITLE=.*/APP_TITLE='${APP_TITLE}'/" .biz9_config.sh
@@ -81,8 +84,8 @@ fi
 if [ "$APP_VERSION" != "" ]; then
     echo "APP VERSION : ${APP_VERSION}"
 fi
-if [ "$APP_ID" != "" ]; then
-    echo "APP ID : ${APP_ID}"
+if [ "$PROJECT_ID" != "" ]; then
+    echo "PROJECT ID : ${PROJECT_ID}"
 fi
 if [ "$APP_TITLE" != "" ]; then
     echo "APP TITLE : ${APP_TITLE}"
@@ -99,15 +102,19 @@ fi
 if [ "$REPO_URL" != "" ]; then
     echo "REPO URL : ${REPO_URL}"
 fi
-echo "#################"
-echo "------------------------------------------------------------------------------------------"
-echo "${BIZ9_MOBILE_DOWNLOAD_URL}/${APP_TITLE_ID}_${APP_VERSION_NEW}.aab"
-echo "------------------------------------------------------------------------------------------"
-echo "${BIZ9_MOBILE_DOWNLOAD_URL}/${APP_TITLE_ID}_${APP_VERSION_NEW}.apk"
 ##rm
 rm -rf *.apk
 rm -rf *.apks
 rm -rf *.idsig
 rm -rf *.aab
-bash ./scriptz/dq_footer.sh
-exit
+echo "----------------------------------"
+echo "Project ID: ${PROJECT_ID}"
+echo "APP Title: ${APP_TITLE}"
+echo "APP Title ID: ${APP_TITLE_ID}"
+echo "APP Version: ${APP_VERSION}"
+echo "Android .AAB: ${BIZ9_MOBILE_DOWNLOAD_URL}/${APP_TITLE_ID}_${APP_VERSION_NEW}.aab"
+echo "---"
+echo "Android .APK: ${BIZ9_MOBILE_DOWNLOAD_URL}/${APP_TITLE_ID}_${APP_VERSION_NEW}.apk"
+echo "Done!"
+echo "----------------------------------"
+exit 1

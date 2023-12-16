@@ -1,9 +1,9 @@
-/* Copyright (C) 2016 9_OPZ #Certified CoderZ
- * GNU GENERAL PUBLIC LICENSE
- * Full LICENSE file ( gpl-3.0-licence.txt )
- * BiZ9 Framework
- * Core-StatZ
- */
+/*
+Copyright 2023 Certified CoderZ
+Author: certifiedcoderz@gmail.com (Certified CoderZ)
+License GNU General Public License v3.0
+Description: BiZ9 Framework: Core-StatZ
+*/
 module.exports = function(){
     module.update_item_view_count=function(db,item_data_type,item_tbl_id,customer_id,callback){
         var new_view=true;

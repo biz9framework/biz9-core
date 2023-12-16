@@ -1,9 +1,9 @@
-/* Copyright (C) 2016 9_OPZ #Certified CoderZ
- * GNU GENERAL PUBLIC LICENSE
- * Full LICENSE file ( gpl-3.0-licence.txt )
- * BiZ9 Framework
- * Core-Mail
- */
+/*
+Copyright 2023 Certified CoderZ
+Author: certifiedcoderz@gmail.com (Certified CoderZ)
+License GNU General Public License v3.0
+Description: BiZ9 Framework: Core-Mail
+*/
 module.exports = function(){
     module.send_mail = function(mail,callback){
         aws.config.update({accessKeyId:mail.aws_key,secretAccessKey:mail.aws_secret, region:mail.aws_region});

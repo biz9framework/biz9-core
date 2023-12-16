@@ -1,8 +1,11 @@
+# Copyright 2023 Certified CoderZ
+# Author: certifiedcoderz@gmail.com (Certified CoderZ)
+# License GNU General Public License v3.0
+# Description: BiZ9 Framework ScriptZ : App Git Commit
 source ./.biz9_config.sh
 echo "#################"
-echo "BiZ9 Framework Git Commit"
+echo "BiZ9 App Git Commit"
 echo "#################"
-bash ./scriptz/dq_header.sh
 INCREMENT_VERSION ()
 {
     declare -a part=( ${1//\./ } )
@@ -18,10 +21,8 @@ INCREMENT_VERSION ()
         new="${part[*]}"
         echo -e "${new// /.}"
 }
-
 echo 'Enter noteZ:'
 read commit_notes
-
 echo "Update framework version?"
 read n
 yes=$(echo $n | tr -s '[:upper:]' '[:lower:]')
@@ -30,10 +31,7 @@ if [[  "$n" = "yes"  ]] ; then
 else
     APP_VERSION_NEW=${APP_VERSION};
 fi
-
-
 G_HAS_APP=false;
-
 sed -i "s/APP_VERSION=.*/APP_VERSION='${APP_VERSION_NEW}'/" .biz9_config.sh
 #CMS
 if [ "${APP_TITLE}" = "${BIZ9_CMS_TITLE}" ]; then
@@ -95,5 +93,11 @@ fi
 
 git add -A .
 git commit -m  "${commit_notes}"
-bash ./scriptz/dq_footer.sh
+echo "----------------------------------"
+echo "Project ID: ${PROJECT_ID}"
+echo "APP Title: ${APP_TITLE}"
+echo "APP Title ID: ${APP_TITLE_ID}"
+echo "APP Version: ${APP_VERSION}"
+echo "Done!"
+echo "----------------------------------"
 exit

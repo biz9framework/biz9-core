@@ -1,8 +1,10 @@
-source ./.biz9_config.sh
+# Copyright 2023 Certified CoderZ
+# Author: certifiedcoderz@gmail.com (Certified CoderZ)
+# License GNU General Public License v3.0
+# Description: BiZ9 Framework ScriptZ : BiZ9 Framework Git Commit
 echo "#################"
 echo "BiZ9 Framework GitHub Commit"
 echo "#################"
-#bash ./scriptz/dq_header.sh
 INCREMENT_VERSION ()
 {
     declare -a part=( ${1//\./ } )
@@ -19,7 +21,7 @@ INCREMENT_VERSION ()
     echo -e "${new// /.}"
 }
 #prod-start
-echo "Enter Framework Tool: [cms, core, docz, mobile, scriptz, service, test, website, vendor, vendor-payment]"
+echo "Enter Framework Tool: [cms, core, docz, mobile, scriptz, service, server, test, website, vendor, vendor-payment]"
 read app_type
 echo "Enter Branch: [unstable, testing, stable]"
 read branch_dir
@@ -28,10 +30,9 @@ read commit_notes
 #prod-end
 ##test-start##
 : '
-app_type='cms'
+app_type='website'
 branch_dir='unstable'
 commit_notes="Framework Update $(date +%F@%H:%M)"
-
 '
 ##test-end##
 #cms
@@ -155,6 +156,22 @@ if [ "${app_type}" = "website" ]; then
     git commit -m  "${commit_notes}"
     echo "Tool: BiZ9-Website";
     echo "Version: ${BIZ9_WEBSITE_VERSION}";
+    echo "Repo URL:${REPO_URL}"
+    echo "BIZ9-Website NEW VERSION : ${BIZ9_VERSION_NEW}"
+fi
+#server
+if [ "${app_type}" = "server" ]; then
+    G_PROJECT_DIR=${BIZ9_HOME}/${BIZ9_SERVER_TITLE,,}/src/${branch_dir}
+    cd ${G_PROJECT_DIR}
+    echo ".biz9_backup" > .gitignore
+    source .biz9_config.sh
+    BIZ9_VERSION_NEW=$(INCREMENT_VERSION $BIZ9_SERVER_VERSION);
+    sed -i "s/BIZ9_SERVER_VERSION=.*/BIZ9_SERVER_VERSION='${BIZ9_VERSION_NEW}'/" .biz9_config.sh
+    sed -i "s/BIZ9_SERVER_VERSION=.*/BIZ9_SERVER_VERSION='${BIZ9_VERSION_NEW}'/" app.js
+    git add -A .
+    git commit -m  "${commit_notes}"
+    echo "Tool: BiZ9-Server";
+    echo "Version: ${BIZ9_SERVER_VERSION}";
     echo "Repo URL:${REPO_URL}"
     echo "BIZ9-Website NEW VERSION : ${BIZ9_VERSION_NEW}"
 fi

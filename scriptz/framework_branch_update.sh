@@ -1,10 +1,13 @@
-source ./.biz9_config.sh
+# Copyright 2023 Certified CoderZ
+# Author: certifiedcoderz@gmail.com (Certified CoderZ)
+# License GNU General Public License v3.0
+# Description: BiZ9 Framework ScriptZ : BiZ9 Framework Branch Update
 echo "#################"
-echo "BiZ9 Framework Update"
+echo "BiZ9 Framework Branch Update"
 echo "#################"
-bash ./scriptz/dq_header.sh
+G_PROJECT_FOLDER="$HOME/www/projectz/"
 #prod-start
-echo "Enter Framework Tool: [cms, core, docz, mobile, scriptz, service, test, vendor, vendor-payment, website]"
+echo "Enter Framework Tool: [cms, core, docz, mobile, scriptz, service, server, test, vendor, vendor-payment, website]"
 read app_type
 echo "Enter Source Branch: [unstable, testing, stable]"
 read source_dir
@@ -73,6 +76,21 @@ if [ "${app_type}" = "service" ]; then
     sed -i "s/BIZ9_SERVICE_VERSION=.*/BIZ9_SERVICE_VERSION='${BIZ9_SERVICE_VERSION}';/" ${destination_dir}/.biz9_config.sh
     sed -i "s/BIZ9_SERVICE_VERSION=.*/BIZ9_SERVICE_VERSION='${BIZ9_SERVICE_VERSION}';/" ${destination_dir}/app.js
     echo Source ${source_dir}: Version: ${BIZ9_SERVICE_VERSION};
+fi
+if [ "${app_type}" = "server" ]; then
+    G_PROJECT_DIR=${BIZ9_HOME}/${BIZ9_SERVER_TITLE,,}/src/${source_dir}
+    cd ${BIZ9_HOME}/${BIZ9_SERVER_TITLE,,}/src/
+    source ${destination_dir}/.biz9_config.sh
+    echo 'Tool: BiZ9-Server';
+    echo Destination ${destination_dir}: Version: ${BIZ9_SERVER_VERSION};
+    #rm
+    rm -rf ${destination_dir}/*
+    #copy
+    cp -rf ${source_dir}/* ${destination_dir}/
+    #sed
+    source ${source_dir}/.biz9_config.sh
+    sed -i "s/BIZ9_SERVER_VERSION=.*/BIZ9_SERVER_VERSION='${BIZ9_SERVER_VERSION}';/" ${destination_dir}/.biz9_config.sh
+    echo Source ${source_dir}: Version: ${BIZ9_SERVER_VERSION};
 fi
 if [ "${app_type}" = "cms" ]; then
     G_PROJECT_DIR=${BIZ9_HOME}/${BIZ9_CMS_TITLE,,}/src/${source_dir}
@@ -184,7 +202,4 @@ if [ "${app_type}" = "vendor-payment" ]; then
     echo Source ${source_dir}: Version: ${BIZ9_VENDOR_PAYMENT_VERSION};
 fi
 
-
-
-bash ./scriptz/dq_footer.sh
-exit
+exit 1

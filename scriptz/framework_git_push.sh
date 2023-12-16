@@ -1,19 +1,15 @@
+# Copyright 2023 Certified CoderZ
+# Author: certifiedcoderz@gmail.com (Certified CoderZ)
+# License GNU General Public License v3.0
+# Description: BiZ9 Framework ScriptZ : BiZ9 Framework Git Push
 echo "#################"
-echo "BiZ9 Framework GitHub Push"
+echo "BiZ9 Framework Git Push"
 echo "#################"
-bash ./scriptz/dq_header.sh
 #prod-start
-echo "Enter APP Type: [cms, core, docz, mobile, scriptz, service, test, website, vendor, vendor-payment]"
+echo "Enter APP Type: [cms, core, docz, mobile, scriptz, service, server, test, website, vendor, vendor-payment]"
 read app_type
 echo "Enter Branch: [unstable, testing, stable]"
 read branch_dir
-#prod-end
-##test-start##
-: '
-app_type='cms'
-branch_dir='unstable'
-'
-##test-end##
 echo "Are you sure you want to push?"
 g_push=false;
 read n
@@ -21,6 +17,14 @@ yes=$(echo $n | tr -s '[:upper:]' '[:lower:]')
 if [[  "$n" = "yes"  ]] ; then
     g_push=true;
 fi
+#prod-end
+##test-start##
+: '
+app_type='website'
+branch_dir='unstable'
+g_push=true;
+'
+##test-end##
 if [ "${app_type}" = "docz" ]&& [ "${g_push}" == true ] ; then
     G_PROJECT_DIR=${BIZ9_HOME}/${BIZ9_DOCZ_TITLE,,}/src/${branch_dir}
     cd ${G_PROJECT_DIR}
@@ -46,6 +50,15 @@ if [ "${app_type}" = "service" ]&& [ "${g_push}" == true ] ; then
     git push -f ${REPO_URL} ${GIT_BRANCH}
     echo "Tool: BiZ9-Service";
     echo "Version: ${BIZ9_SERVICE_VERSION}";
+    echo "Repo URL:${REPO_URL}"
+fi
+if [ "${app_type}" = "server" ]&& [ "${g_push}" == true ] ; then
+    G_PROJECT_DIR=${BIZ9_HOME}/${BIZ9_SERVER_TITLE,,}/src/${branch_dir}
+    cd ${G_PROJECT_DIR}
+    source .biz9_config.sh
+    git push -f ${REPO_URL} ${GIT_BRANCH}
+    echo "Tool: BiZ9-Server";
+    echo "Version: ${BIZ9_SERVER_VERSION}";
     echo "Repo URL:${REPO_URL}"
 fi
 if [ "${app_type}" = "cms" ]&& [ "${g_push}" == true ] ; then
@@ -120,5 +133,11 @@ if [ "${app_type}" = "vendor-payment" ]&& [ "${g_push}" == true ] ; then
     echo "Version: ${BIZ9_VENDOR_PAYMENT_VERSION}";
     echo "Repo URL:${REPO_URL}"
 fi
-bash ./scriptz/dq_footer.sh
-exit
+echo "----------------------------------"
+echo "BiZ9 GitHub Push Complete"
+echo "Project PROJECT ID: ${PROJECT_ID}"
+echo "Project APP Title: ${APP_TITLE}"
+echo "Project APP Title ID: ${APP_TITLE_ID}"
+echo "BiZ9 Push Success: @ $(date +%F@%H:%M)"
+echo "----------------------------------"
+exit 1

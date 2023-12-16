@@ -6,8 +6,7 @@
  */
 module.exports = function(data_config){
     module.get_client_db=async function(callback){
-        //var client_db = new mongo_client(MONGO_FULL_URL, {useNewUrlParser: true,useUnifiedTopology: true});
-        var reset_cmd = "sudo mongod --fork --config "+data_config.mongo_config_file;
+        var reset_cmd = "sudo mongod --fork --config "+data_config.mongo_config;
         var error=null;
         async function run() {
             try {
@@ -16,16 +15,15 @@ module.exports = function(data_config){
                 }
             } catch (e) {
                 error=e;
-                //ssh admin@0.0.0.0 -- sudo mongod --fork --config /etc/mongod.conf
                 biz9.o('get_mongo_connect_db_error',error);
                 biz9.o('get_mongo_connect_db_data_config',data_config);
                 if(data_config.mongo_ip!='localhost'){
-                    if(!data_config.ssh_key_file){
-                        data_config.ssh_key_file='';
+                    if(!data_config.ssh_key){
+                        data_config.ssh_key='';
                     }else{
-                        data_config.ssh_key_file=' -i '+ data_config.ssh_key_file;
+                        data_config.ssh_key=' -i '+ data_config.ssh_key;
                     }
-                    reset_cmd='ssh '+ data_config.ssh_key_file + " " +data_config.mongo_server_user +"@"+data_config.mongo_ip +" -- "+reset_cmd;
+                    reset_cmd='ssh '+ data_config.ssh_key + " " +data_config.mongo_server_user +"@"+data_config.mongo_ip +" -- "+reset_cmd;
                 }
                 biz9.o('mongo_reset_cmd',reset_cmd);
                 dir = exec(reset_cmd, function(error,stdout,stderr){
@@ -53,8 +51,6 @@ module.exports = function(data_config){
         }else{
                  return true;
             }
-                //if(!db.client.topology){
-        //return !!db.client.topology.isConnected()&&!!db.client.topology&&!!db.client;
     }
     module.close_client_db=async function(client_db,callback){
         var error=null;

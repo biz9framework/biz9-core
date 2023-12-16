@@ -4,7 +4,7 @@
  * Core-AppZ
  */
 module.exports = function(app_config){
-    APP_ID=app_config.app_id;
+    PROJECT_ID=app_config.project_id;
     APP_TITLE_ID=app_config.app_title_id;
     APP_TITLE=app_config.app_title;
     APP_VERSION=app_config.app_version;
@@ -296,7 +296,7 @@ module.exports = function(app_config){
                 helper[key]=req.params[key].trim();
             }
         }
-        helper.app_id=APP_ID;
+        helper.project_id=PROJECT_ID;
         helper.app_title=APP_TITLE;
         helper.app_version=APP_VERSION;
         if(!helper.app_title_id){
@@ -333,7 +333,7 @@ module.exports = function(app_config){
                 helper[key]=req.params[key].trim();
             }
         }
-        helper.app_id=APP_ID;
+        helper.project_id=PROJECT_ID;
         helper.app_title=APP_TITLE;
         helper.app_version=APP_VERSION;
         if(!helper.app_title_id){
