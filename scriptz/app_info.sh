@@ -6,46 +6,71 @@ source ./.biz9_config.sh
 echo "#################"
 echo "BiZ9 App Info"
 echo "#################"
-#mobile
-if [ "${APP_TITLE}" = "${BIZ9_MOBILE_TITLE}" ]; then
-    echo "BIZ9 MOBILE VERSION : ${BIZ9_MOBILE_VERSION}"
+#MOBILE
+if [ -n "${BIZ9_MOBILE_VERSION}" ]; then
+    echo "Framework: BiZ9-Mobile"
+    echo "Version : ${BIZ9_MOBILE_VERSION}"
 fi
-if [ "$APP_TITLE" = "BIZ9_SERVICE_TITLE" ]; then
-    echo "BIZ9 SERVICE VERSION : ${BIZ9_SERVICE_VERSION}"
+#WEBSITE
+if [ -n "${BIZ9_WEBSITE_VERSION}" ]; then
+    echo "Framework: BiZ9-Website"
+    echo "Version : ${BIZ9_WEBSITE_VERSION}"
 fi
-#web
-if [ "${APP_TITLE}" = "${BIZ9_WEBSITE_TITLE}" ]; then
-    echo "BIZ9 WEBSITE VERSION : ${BIZ9_WEBSITE_VERSION}"
+#CORE
+if [ -n "${BIZ9_CORE_VERSION}" ]; then
+    echo "Framework: BiZ9-Core"
+    echo "Version : ${BIZ9_CORE_VERSION}"
 fi
-#core
-if [ "${APP_TITLE}" = "${BIZ9_CORE_TITLE}" ]; then
-    echo "BIZ9 CORE VERSION : ${BIZ9_CORE_VERSION}"
+#CMS
+if [ -n "${BIZ9_CMS_VERSION}" ]; then
+    echo "Framework: BiZ9-CMS"
+    echo "Version : ${BIZ9_CMS_VERSION}"
 fi
-#cms
-if [ "${APP_TITLE}" = "${BIZ9_CMS_TITLE}" ]; then
-    echo "BIZ9 CMS VERSION : ${BIZ9_CMS_VERSION}"
+#SCRIPTZ
+if [ -n "${BIZ9_SCRIPTZ_VERSION}" ]; then
+    echo "Framework: BiZ9-Scriptz"
+    echo "Version : ${BIZ9_SCRIPTZ_VERSION}"
 fi
-#scriptz
-if [ "${APP_TITLE}" = "${BIZ9_SCRIPTZ_TITLE}" ]; then
-    echo "BIZ9 SCRIPTZ VERSION : ${BIZ9_SCRIPTZ_VERSION}"
+#TESTZ
+if [ -n "${BIZ9_TEST_VERSION}" ]; then
+    echo "Framework: BiZ9-Test"
+    echo "Version : ${BIZ9_TEST_VERSION}"
 fi
-#testz
-if [ "${APP_TITLE}" = "${BIZ9_TEST_TITLE}" ]; then
-    echo "BIZ9 TEST VERSION : ${BIZ9_TEST_VERSION}"
+#SERVER
+if [ -n "${BIZ9_SERVER_VERSION}" ]; then
+    echo "Framework: BiZ9-Server"
+    echo "Version : ${BIZ9_TEST_VERSION}"
 fi
-#vendor
-if [ "${APP_TITLE}" = "${BIZ9_VENDOR_TITLE}" ]; then
-    echo "BIZ9 VENDOR VERSION : ${BIZ9_VENDOR_VERSION}"
+#SERVICE
+if [ -n "${BIZ9_SERVICE_VERSION}" ]; then
+    echo "Framework: BiZ9-Service"
+    echo "Version : ${BIZ9_SERVICE_VERSION}"
 fi
-#vendor-payment
-if [ "${APP_TITLE}" = "${BIZ9_VENDOR_PAYMENT_TITLE}" ]; then
-    echo "BIZ9 VENDOR-PAYMENT VERSION : ${BIZ9_VENDOR_PAYMENT_VERSION}"
+#SERVER_IP
+if [ -n "${SERVER_IP}" ]; then
+    echo "Server Ip: ${SERVER_IP}"
+fi
+#SERVER_DEPLOY_DIR
+if [ -n "${SERVER_DEPLOY_DIR}" ]; then
+    echo "Server Deploy Dir: ${SERVER_DEPLOY_DIR}"
+fi
+#SSH_KEY
+if [ -n "${SSH_KEY}" ]; then
+    echo "SSH Key: ${SSH_KEY}"
+fi
+#REPO_URL
+if [ -n "${REPO_URL}" ]; then
+    echo "Repo Url: ${REPO_URL}"
+fi
+#MONGO_PORT
+if [ -n "${MONGO_PORT}" ]; then
+    echo "Mongo Port: ${MONGO_PORT}"
 fi
 echo "----------------------------------"
-echo "Project ID: ${PROJECT_ID}"
-echo "APP Title: ${APP_TITLE}"
-echo "APP Title ID: ${APP_TITLE_ID}"
-echo "APP Version: ${APP_VERSION}"
+echo "Project-ID: ${PROJECT_ID}"
+echo "App Title: ${APP_TITLE}"
+echo "App-Title-ID: ${APP_TITLE_ID}"
+echo "App Version: ${APP_VERSION}"
 echo "Done!"
 echo "----------------------------------"
 exit 1

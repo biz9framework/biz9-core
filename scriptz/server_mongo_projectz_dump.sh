@@ -24,6 +24,7 @@ do
    mongodump --db ${line} --port ${MONGO_PORT} --out "./db_box_backupz/${line}/${DB_DATE}"
 done
 echo "----------------------------------"
+echo "Project List: ${PROJECT_LIST}"
+echo "Done!"
 echo "----------------------------------"
 exit 1
-

@@ -1,14 +1,12 @@
 # Copyright 2023 Certified CoderZ
 # Author: certifiedcoderz@gmail.com (Certified CoderZ)
 # License GNU General Public License v3.0
-# Description: BiZ9 Framework ScriptZ : Server Connect
+# Description: BiZ9 Framework ScriptZ : Framework NPM Publish
 source ./.biz9_config.sh
 echo "#################"
-echo 'BiZ9 Server Connect'
+echo "BiZ9 Framework NPM Publish"
 echo "#################"
-SSH_KEY_DIR=other/aws/ec2_key
-ssh -i ssh -i ${SSH_KEY} admin@${SERVER_IP_ADDR}
-echo "----------------------------------"
+sudo npm publish --access public
 echo "Done!"
 echo "----------------------------------"
-exit 1
+exit

@@ -1,19 +1,13 @@
 # Copyright 2023 Certified CoderZ
 # Author: certifiedcoderz@gmail.com (Certified CoderZ)
 # License GNU General Public License v3.0
-# Description: BiZ9 Framework ScriptZ : Mobile Android Screenshot Update
+# Description: BiZ9 Framework ScriptZ : App Server Connect
 source ./.biz9_config.sh
 echo "#################"
-echo "BiZ9 Mobile Android Screenshot Update"
+echo 'BiZ9 App Server Connect'
 echo "#################"
-node other/scriptz/android_screen_resize.js
+ssh -i ${SSH_KEY} admin@${SERVER_IP}
 echo "----------------------------------"
-echo "Project-ID: ${PROJECT_ID}"
-echo "App Title: ${APP_TITLE}"
-echo "App-Title-ID: ${APP_TITLE_ID}"
-echo "App Version: ${APP_VERSION}"
 echo "Done!"
 echo "----------------------------------"
 exit 1
-exit
-

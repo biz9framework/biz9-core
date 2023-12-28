@@ -1,5 +1,5 @@
-BIZ9_CORE_VERSION='6.0.8'
-APP_VERSION='5.2.9'
+BIZ9_CORE_VERSION='6.1.2'
+APP_VERSION='1.0.0'
 APP_ID="19"
 APP_TITLE="BiZ9-Core"
-REPO_URL="git@github.com:bossappz/biz9-core-stable.git";
+REPO_URL="${BIZ9_GIT_REPO}biz9-core.git";
