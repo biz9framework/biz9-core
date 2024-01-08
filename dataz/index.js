@@ -101,12 +101,11 @@ module.exports = function(data_config){
             function(call){
                 async.forEachOf(data_item_list,(item,key,go)=>{
                     if(item){
-                        item.db_name=db.db_name;
                         data_mon.update(db,item.data_type,item,function(error,data)
                             {
                                 item.tbl_id=data.tbl_id;
                                 if(data){
-                                    cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,item.data_type,data.tbl_id),function(error,data)
+                                    cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(item.data_type,data.tbl_id),function(error,data)
                                         {
                                             go();
                                         });
@@ -161,7 +160,7 @@ module.exports = function(data_config){
                 });
             },
             function(call){
-                cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,data_item.data_type,data_item.tbl_id),function(error,data)
+                cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(data_item.data_type,data_item.tbl_id),function(error,data)
                     {
                         call();
                     });
@@ -194,7 +193,7 @@ module.exports = function(data_config){
                 run();
             },
             function(call){
-                cache_red.get_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,data_type,tbl_id),function(error,data){
+                cache_red.get_cache_string(client_redis,get_cache_item_attr_list_key(data_type,tbl_id),function(error,data){
                     if(data){
                         cache_key_list=data;
                     }
@@ -209,7 +208,7 @@ module.exports = function(data_config){
                 }
                 async.forEachOf(_list,(item,key,go)=>{
                     if(item){
-                        cache_red.get_cache_string(client_redis,get_cache_item_attr_key(db.db_name,data_type,tbl_id,item),function(error,data){
+                        cache_red.get_cache_string(client_redis,get_cache_item_attr_key(data_type,tbl_id,item),function(error,data){
                             if(data){
                                 data_item[item] = data;
                                 _cache_found=true;
@@ -233,7 +232,7 @@ module.exports = function(data_config){
                 if(!_cache_found){
                     data_mon.get(db,data_type,tbl_id,function(error,data_list){
                         if(data_list.length>0){
-                            set_cache_item(client_redis,db.db_name,data_type,tbl_id,data_list[0],function(data){
+                            set_cache_item(client_redis,data_type,tbl_id,data_list[0],function(data){
                                 data_item=data_list[0];
                                 data_item.source='db';
                                 call();
@@ -329,7 +328,7 @@ module.exports = function(data_config){
             },
             function(call){
                 async.forEachOf(data_sql_tbl_id_list,(item_3,key_3,go_3)=>{
-                    cache_red.get_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,data_type,item_3.tbl_id),function(error,data_3){
+                    cache_red.get_cache_string(client_redis,get_cache_item_attr_list_key(data_type,item_3.tbl_id),function(error,data_3){
                         if(data_3){
                             item_3.cache_key_list=data_3;
                         }
@@ -353,7 +352,7 @@ module.exports = function(data_config){
                     var data_value = {};
                     async.forEachOf(_list,(item_5,key_5,go_5)=>{
                         if(item_5){
-                            cache_red.get_cache_string(client_redis,get_cache_item_attr_key(db.db_name,data_type,item_4.tbl_id,item_5),function(error,data_5){
+                            cache_red.get_cache_string(client_redis,get_cache_item_attr_key(data_type,item_4.tbl_id,item_5),function(error,data_5){
                                 if(data_5){
                                     data_value[item_5] = data_5;
                                     _cache_found=true;
@@ -381,7 +380,7 @@ module.exports = function(data_config){
                     if(!item_7.data){
                         data_mon.get(db,data_type,item_7.tbl_id,function(error,data_list){
                             if(data_list.length>0){
-                                set_cache_item(client_redis,db.db_name,item_7.data_type,item_7.tbl_id,data_list[0],function(data_7){
+                                set_cache_item(client_redis,item_7.data_type,item_7.tbl_id,data_list[0],function(data_7){
                                     data_7.source='db';
                                     item_7.data=data_list[0];
                                     go_7();
@@ -440,9 +439,9 @@ module.exports = function(data_config){
                 run();
             },
             function(call){
-                cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,data_type,tbl_id),function(error,data)
+                cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(data_type,tbl_id),function(error,data)
                     {
-                        data_item.cache_string=get_cache_item_attr_list_key(db.db_name,data_type,tbl_id);
+                        data_item.cache_string=get_cache_item_attr_list_key(data_type,tbl_id);
                         data_item.cache_del=true;
                         call();
                     });
@@ -485,7 +484,7 @@ module.exports = function(data_config){
                             if(item){
                                 data_mon.delete(db,item.data_type,item.tbl_id,function(error,data)
                                     {
-                                        cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,item.data_type,item.tbl_id),function(error,data)
+                                        cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(item.data_type,item.tbl_id),function(error,data)
                                             {
                                                 go();
                                             });
@@ -536,7 +535,7 @@ module.exports = function(data_config){
             },
             function(call){
                 async.forEachOf(data_item_list,(item,key,go)=>{
-                    cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(db.db_name,item.data_type,item.tbl_id),function(error,data){
+                    cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(item.data_type,item.tbl_id),function(error,data){
                         data_mon.delete(db,item.data_type,item.tbl_id,function(error,data)
                             {
                                 data_list.push(data);
@@ -572,13 +571,13 @@ module.exports = function(data_config){
             callback(error,data);
         });
     }
-    function set_cache_item(client_redis,db_name,data_type,tbl_id,data_item,callback){
+    function set_cache_item(client_redis,data_type,tbl_id,data_item,callback){
         var cache_string_str='';
         async.series([
             function(call){
                 for (property in data_item) {
                     if(String(property)){
-                        cache_red.set_cache_string(client_redis,get_cache_item_attr_key(db_name,data_type,tbl_id,property),data_item[property],function(error,data){
+                        cache_red.set_cache_string(client_redis,get_cache_item_attr_key(data_type,tbl_id,property),data_item[property],function(error,data){
                         });
                         cache_string_str=cache_string_str+property+',';
                     }
@@ -586,7 +585,7 @@ module.exports = function(data_config){
                 call();
             },
             function(call){
-                cache_red.set_cache_string(client_redis,get_cache_item_attr_list_key(db_name,data_type,tbl_id),cache_string_str,function(error,data){
+                cache_red.set_cache_string(client_redis,get_cache_item_attr_list_key(data_type,tbl_id),cache_string_str,function(error,data){
                     call();
                 });
             },
@@ -611,11 +610,11 @@ module.exports = function(data_config){
             return new_key_obj;
         }
     }
-    function get_cache_item_attr_key(cache_id,data_type,tbl_id,key){
-        return cache_id + "_" +data_type + "_" + key + "_" + String(tbl_id);
+    function get_cache_item_attr_key(data_type,tbl_id,key){
+        return data_type + "_" + key + "_" + String(tbl_id);
     }
-    function get_cache_item_attr_list_key(cache_id,data_type,tbl_id){
-        return cache_id + "_" +data_type+"_aik_"+String(tbl_id);
+    function get_cache_item_attr_list_key(data_type,tbl_id){
+        return data_type+"_aik_"+String(tbl_id);
     }
     return module;
 }

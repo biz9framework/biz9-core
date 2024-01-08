@@ -12,7 +12,6 @@ module.exports = function(){
             item.tbl_id = utilityz.get_guid();
             item.date_create = new moment().toISOString();
             item.date_save = new moment().toISOString();
-            item.db_name = db.db_name;
             async function run() {
                 try {
                     if(dataz.db_client_connected(db)){
