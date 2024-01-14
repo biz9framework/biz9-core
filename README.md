@@ -1,5 +1,47 @@
 # BiZ9-Core
-The BiZ9-Core library is the heart of [The BiZ9 Framework](https://github.com/biz9framework). It is used within a Node.js application as an interface to handle popular business functions such as product processing, service booking, and ticket handling. You access the core library interface with pre defined data about the project, database settings, and 3rd party tool parameters. The data access utilizes memory caching to speed things up.  
+The BiZ9 Framework Core is a Node.js [NPM JavaScript Package](https://www.npmjs.com/). It is used within a Node.js application as an interface to handle popular business functions such as product processing, service booking, and ticket handling. The core is utilize within The [BiZ9-CMS](https://github.com/biz9framework/biz9-cms), [BiZ9-Service](https://github.com/biz9framework/biz9-service), [BiZ9-Website](https://github.com/biz9framework/biz9-website) which are all server side components. Its primary responsibilities are data access, photo manipulation, and business logic processing. The primary libraries are [MongoDB](https://www.mongodb.com/), [Redis](https://redis.io/), [Amazon Web Services](https://aws.amazon.com/), [Brevo Mail](https://www.brevo.com/features/email-marketing/) and [Stripe](https://www.npmjs.com/). 
+
+
+The Data Access consists of Node.js calls. These functions include primary functions that are standardised in business applications. The database is MongoDB which is a NoSql based framework. The objects are written to the Redis cache by {key/value}. This speeds up the data access tremendously. Some popular functions are: 
+
+
+* [get_client_db](#get_client_db)
+* [get_item](#get_item)
+* [get_sql](#get_sql)
+* [get_sql_paging](#get_sql_paging)
+* [update_item](#update_item)
+* [update_list](#update_list)
+
+
+Image handling plays a major part in any application. There are many different device sizes available and your applications photos must properly show on all those devices. The BiZ9-Code solves this problem by creating multiple sizes of each object. Every business object, rather it be a ‘Product’, ‘Service’, ‘Blog Post’, each is provided by photo_obj. 
+
+```
+var product = {title:’My Product 1’, cost:’2.00’, };
+product = biz9.update_item(product);
+product.photo_obj: {
+                album_url: aws_url, // full size
+                thumb_url: aws_url, // x250
+                mid_url: aws_url, // x720
+                large_url: aws_url, // x1000
+                square_thumb_url: aws_url, // x250 sq
+                square_mid_url: aws_url,  // x720 sq
+                square_large_url: aws_url // x1000 sq
+        },
+```
+
+
+
+
+The BiZ9-Core also provides popular business functionality such as currency processing. For example, when a new product is process in the system its new populated object looks like:  
+
+```
+var product = {title:’My Product 1’, cost:’50.00’, };
+product = biz9.update_item(product);
+
+product.money_obj: { price: '$25.00', old_price: '$50.00', discount: '50%' }, // money
+product.review_obj: { customer_rating_avg: '0', review_list: [] } // customer ratings
+```
+
 
 ## Table of Contents:
 
@@ -20,8 +62,8 @@ The BiZ9-Core library is the heart of [The BiZ9 Framework](https://github.com/bi
 * [Stat](#biz_stat_function_call)
 * [Utility](#biz_utility_function_call)
 
-## <a id="biz_data_function_call"></a>Data Function Calls
-* [close_client_db](#close_client_db)
+## <a id="biz_data_function_call"></a>Data Function Call
+*s [close_client_db](#close_client_db)
 * [delete_item](#delete_item)
 * [delete_sql](#delete_sql)
 * [delete_list](#delete_list)
