@@ -2425,6 +2425,9 @@ module.get_gallery_list=function(db,sql,sort_by,page_current,page_size,callback)
             callback(error,gallery_list,item_count,page_count);
         });
 }
+//page_current={page_current:1};
+//page_size={page_size:12};
+//filter_category={'category':'my_cat'};
 module.get_page=function(db,title_url,setting,callback){
     var item_map=appz.get_new_item(DT_ITEM_MAP,0);
     var full_photo_list=[];

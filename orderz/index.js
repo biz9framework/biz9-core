@@ -163,6 +163,9 @@ module.exports = function(){
         }else{
             r_cart_item.discount= String(parseInt(((discount / cart_item.old_price) * 100)))+"%";
         }
+        if(isNaN(r_cart_item.discount)){
+            r_cart_item.discount=0;
+        }
         return r_cart_item;
     }
     module.get_cart_item_list=function(db,sql,callback) {
