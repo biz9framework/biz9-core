@@ -1,9 +1,24 @@
 # BiZ9-Core
-The BiZ9 Framework Core is a Node.js [NPM JavaScript Package](https://www.npmjs.com/). It is used within a Node.js application as an interface to handle popular business functions such as product processing, service booking, and ticket handling. The core is utilize within The [BiZ9-CMS](https://github.com/biz9framework/biz9-cms), [BiZ9-Service](https://github.com/biz9framework/biz9-service), [BiZ9-Website](https://github.com/biz9framework/biz9-website) which are all server side components. Its primary responsibilities are data access, photo manipulation, and business logic processing. The primary libraries are [MongoDB](https://www.mongodb.com/), [Redis](https://redis.io/), [Amazon Web Services](https://aws.amazon.com/), [Brevo Mail](https://www.brevo.com/features/email-marketing/) and [Stripe](https://www.npmjs.com/).
+The BiZ9-Core is a [Node.js Package](https://www.npmjs.com/) used by client frameworks such as [React](https://react.dev/), [React Native](https://reactnative.dev/), and [Angular](https://angular.io/) to handle popular business functions such as product processing, service bookings, event ticketing, blog post managements, photo manipulations, and gateway to 3rd patry tools such as [Amazon Web Services](https://aws.amazon.com/), [Brevo Mail](https://www.brevo.com/features/email-marketing/), and [Stripe Payments](https://stripe.com/payments).
 
 
-The Data Access consists of Node.js calls. These functions include primary functions that are standardised in business applications. The database is MongoDB which is a NoSql based framework. The objects are written to the Redis cache by {key/value}. This speeds up the data access tremendously. Some popular functions are:
+Some benefits of using the BiZ9-Core library is data access, photo cloud distribution, and email notifications. The data access layer is a NoSql design pattern and utilizes caching to speed up overall performance. The data access components contain the primary CRUD actions for data handling. The primary libraries used for data access  are MongoDB for data storage and Redis for memory caching.  
 
+All applications contain photos and those images must display and render as the correct size on multiple device sizes. Using the BiZ9-Core library when a photo is uploaded to the system it is re-sized to thumb, medium, and album sizes. Also the files are distgributiped to Amazon Web Service S3 data storage product. The uploaded photo urls are generated and provided. 
+    
+E-mail notifications are important for Customer Relationship Management. The BiZ9-Core sends out notifications using The Brevo Mail API. The reason you use 3rd party tools for email handling, is to ensure email deliverability and less spam inbox landing. Currently when new product orders, service bookings, event ticketings, form submissions occur, email notifications are sent out.
+
+### Key Features:
+* CRUD Data Access
+* Caching
+* Business Logic
+* Utilities
+* Notifications
+* File Processing
+* Cloud Storage
+
+
+### Some popular functions are:
 
 * [get_client_db](#get_client_db)
 * [get_item](#get_item)
@@ -12,6 +27,7 @@ The Data Access consists of Node.js calls. These functions include primary funct
 * [update_item](#update_item)
 * [update_list](#update_list)
 
+### Image Manipulation
 
 Image handling plays a major part in any application. There are many different device sizes available and your applications photos must properly show on all those devices. The BiZ9-Code solves this problem by creating multiple sizes of each object. Every business object, rather it be a ‘Product’, ‘Service’, ‘Blog Post’, each is provided by photo_obj.
 
@@ -30,7 +46,7 @@ product.photo_obj: {
 ```
 
 
-
+### Currency Pricing
 
 The BiZ9-Core also provides popular business functionality such as currency processing. For example, when a new product is process in the system its new populated object looks like:
 
