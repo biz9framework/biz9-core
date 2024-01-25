@@ -1,12 +1,15 @@
-# BiZ9-Core
+# BiZ9-Cor
 The BiZ9-Core is a [Node.js Package](https://www.npmjs.com/) used by client frameworks such as [React](https://react.dev/), [React Native](https://reactnative.dev/), and [Angular](https://angular.io/) to handle popular business functions such as product processing, service bookings, event ticketing, blog post managements, photo manipulations, and gateway to 3rd patry tools such as [Amazon Web Services](https://aws.amazon.com/), [Brevo Mail](https://www.brevo.com/features/email-marketing/), and [Stripe Payments](https://stripe.com/payments).
 
 
 Some benefits of using the BiZ9-Core library is data access, photo cloud distribution, and email notifications. The data access layer is a NoSql design pattern and utilizes caching to speed up overall performance. The data access components contain the primary CRUD actions for data handling. The primary libraries used for data access  are MongoDB for data storage and Redis for memory caching.  
 
+
 All applications contain photos and those images must display and render as the correct size on multiple device sizes. Using the BiZ9-Core library when a photo is uploaded to the system it is re-sized to thumb, medium, and album sizes. Also the files are distgributiped to Amazon Web Service S3 data storage product. The uploaded photo urls are generated and provided. 
+
     
 E-mail notifications are important for Customer Relationship Management. The BiZ9-Core sends out notifications using The Brevo Mail API. The reason you use 3rd party tools for email handling, is to ensure email deliverability and less spam inbox landing. Currently when new product orders, service bookings, event ticketings, form submissions occur, email notifications are sent out.
+
 
 ### Key Features:
 * CRUD Data Access
@@ -63,10 +66,6 @@ product.review_obj: { customer_rating_avg: '0', review_list: [] } // customer ra
 
 * [Function Calls](#biz_function_call)
 * [Sample Code](#biz_sample_code)
-* [About](#biz_about)
-* [Creator](#biz_about)
-
-
 
 ## <a id="biz_function_call"></a>Function Calls
 * [App](#biz_app_function_call)
@@ -865,30 +864,6 @@ biz9=require("biz9-core")(app_config,data_config);
 ```
 
 
-## <a id="biz_about"></a>About
-
-### The Core of The BiZ9 Framework
-The BiZ9-Core library is the heart of the BiZ9 Framework. It is used within a Node.js application as an interface to handle popular business functions such as product processing, service booking, and ticket handling. You access the core library interface with pre defined data about the project, database settings, and 3rd party tool parameters. The data access utilizes memory caching to speed things up.
-
-#### Required Libriaries
-* [MongoDB](https://www.mongodb.com/)
-* [Redis](https://redis.io/)
-#### Other Libriaries
-* [Amazon Web Service SDK](https://aws.amazon.com/developer/tools/)
-* [Stripe](https://stripe.com/docs/api)
-* [Brevo API](https://developers.brevo.com/)
-
-### Fast Data Access
-The core library handles data access for applications as well. Data is retrieved from cache instead of the database. This speeds up data processing tremendously. On data insert, each object is written to the database, and also added to memory using a unique key/value. To retrieve data, you would use that unique key and the object will be accessed via the system memory instead of the database. This approach speeds up data access of the application.
-
-### Key Features
-* CRUD Data Access
-* Caching
-* Business Logic
-* Utilities
-* Notifications
-* File Processing
-* Cloud Storage
 
 ## E-mail
 - certifiedcoderz@gmail.com
@@ -916,15 +891,14 @@ Brandon Poole Sr also known as ‘TaNK’ is a full stack technical lead and app
 - The Real Tank from the Matrix movie!
 
 ## LinkZ:
-- [certifiedcoderz.com](certifiedcoderz.com)
-- [instagram.com/tank9code](instagram.com/tank9code)
-- [twitch.com/tank9code](twitch.com/tank9code)
-- [twitter.com/tank9code](twitter.com/tank9code)
-- [medium.com/@tank9code](medium.com/@tank9code)
-- [blogpost.com/certifiedcoderz](blogpost.com/certifiedcoderz)
-- [blogpost.com/tank9code](blogpost.com/tank9code)
-- [tictok.com/tank9code](tictok.com/tank9code)
-- [facebook.com/tank9code](facebook.com/tank9code)
+- [bossappz.com](bossappz.com)
+- [medium.com/bossappz](medium.com/bossappz)
+- [https://bossappz.blogspot.com](https://bossappz.blogspot.com)
+- [twitter.com/boss_appz](twitter.com/boss_appz)
+- [instagram.com/bossappz_showcase](instagram.com/bossappz_showcase)
+- [facebook.com/bossappz](facebook.com/bossappz)
+
+
 ## TagZ:
 #### #BoSSAppZ
 #### #BiZ9Framework
