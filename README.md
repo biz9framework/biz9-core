@@ -1,11 +1,23 @@
-# BiZ9-Cor
-The BiZ9-Core is a [Node.js Package](https://www.npmjs.com/) used by client frameworks such as [React](https://react.dev/), [React Native](https://reactnative.dev/), and [Angular](https://angular.io/) to handle popular business functions such as product processing, service bookings, event ticketing, blog post managements, photo manipulations, and gateway to 3rd patry tools such as [Amazon Web Services](https://aws.amazon.com/), [Brevo Mail](https://www.brevo.com/features/email-marketing/), and [Stripe Payments](https://stripe.com/payments).
+# BiZ9-Core
+
+### Required Libraries
+- [MongoDB](https://www.mongodb.com/)
+- [Redis](https://redis.io/)    
+### Other Libraries
+- [Amazon Web Service SDK](https://aws.amazon.com/developer/tools/)
+- [Stripe](https://stripe.com/docs/api) 
+- [Brevo](https://developers.brevo.com/)
 
 
-Some benefits of using the BiZ9-Core library is data access, photo cloud distribution, and email notifications. The data access layer is a NoSql design pattern and utilizes caching to speed up overall performance. The data access components contain the primary CRUD actions for data handling. The primary libraries used for data access  are MongoDB for data storage and Redis for memory caching.  
+
+## Overview
+The BiZ9-Core is a [Node.js Package](https://www.npmjs.com/) used by client frameworks such as [React](https://react.dev/), [React Native](https://reactnative.dev/), and [Angular](https://angular.io/) to handle popular business functions such as product processing, service bookings, event ticketing, blog post managements, photo manipulations, and gateway to 3rd party tools such as [Amazon Web Services](https://aws.amazon.com/), [Brevo Mail](https://www.brevo.com/features/email-marketing/), and [Stripe Payments](https://stripe.com/payments).
 
 
-All applications contain photos and those images must display and render as the correct size on multiple device sizes. Using the BiZ9-Core library when a photo is uploaded to the system it is re-sized to thumb, medium, and album sizes. Also the files are distgributiped to Amazon Web Service S3 data storage product. The uploaded photo urls are generated and provided. 
+Some benefits of using the BiZ9-Core library are data access, photo cloud distribution, and email notifications. The data access layer is a NoSql design pattern and utilizes caching to speed up overall performance. The data access components contain the primary CRUD actions for data handling. The primary libraries used for data access  are MongoDB for data storage and Redis for memory caching.  
+
+
+All applications contain photos and those images must display and render as the correct size on multiple device sizes. Using the BiZ9-Core library when a photo is uploaded to the system it is resized to thumb, medium, and album sizes. Also the files are distributed to Amazon Web Service S3 data storage. The uploaded photo urls are generated and provided. 
 
     
 E-mail notifications are important for Customer Relationship Management. The BiZ9-Core sends out notifications using The Brevo Mail API. The reason you use 3rd party tools for email handling, is to ensure email deliverability and less spam inbox landing. Currently when new product orders, service bookings, event ticketings, form submissions occur, email notifications are sent out.
@@ -30,7 +42,7 @@ E-mail notifications are important for Customer Relationship Management. The BiZ
 * [update_item](#update_item)
 * [update_list](#update_list)
 
-### Image Manipulation
+### Photo Manipulation
 
 Image handling plays a major part in any application. There are many different device sizes available and your applications photos must properly show on all those devices. The BiZ9-Code solves this problem by creating multiple sizes of each object. Every business object, rather it be a ‘Product’, ‘Service’, ‘Blog Post’, each is provided by photo_obj.
 
@@ -233,7 +245,7 @@ Example:
 Description:
     Creates an instance of the database connection;
 Best Practice:
-    This will connect an active connection if your db is running on server. Make sure to call close_client_db() when done. This will disconnect from db and dispose;
+    This will connect to an active connection if your db is running on a server. Make sure to call close_client_db() when done. This will disconnect from db and dispose;
 Param:
     none;
 Return:
@@ -280,7 +292,7 @@ Example:
 Description:
     Dispose and disconnect an instance of the database connection;
 Best Practice:
-    Make sure to call close_client_db() at end of get_client_db() instance. To close db connection and dispose instance;
+    Make sure to call close_client_db() at the end of get_client_db() instance. To close db connection and dispose instance;
 Param:
     none;
 Return:
@@ -304,7 +316,7 @@ Description:
 Best practice:
     new item:
         new value: {tbl_id:guid,date_create:new Date(),date_update:new Date()};
-    exsisting item:
+    existing item:
         update value: {date_update:new Date()};
 Param:
   database_connection: The database connection object;
@@ -382,7 +394,7 @@ Best Practice:
     Make sure data item field {data_type} is set;
     new item:
         new value: {tbl_id:guid,date_create:new Date(),date_update:new Date()};
-    exsisting item:
+    existing item:
         update value: {date_update:new Date()};
 Param:
     database_connection: The database connection object;
@@ -516,7 +528,8 @@ Example:
 #### <a id="get_sql"></a>get_sql
 ```
 Description:
-    Get a list of data items from database table. Get by sql;
+    Get a list of data items from the database table. Get by sql;
+
 Param:
     database_connection: The database connection object;
         type: object;
@@ -589,7 +602,7 @@ Example:
 #### <a id="get_sql_paging"></a>get_sql_paging
 ```
 Description:
-    Get a paged list of data items from database table. Get page limit by sql;
+    Get a paged list of data items from the database table. Get page limit by sql;
 Param:
     database_connection: The database connection object;
         type: object;
@@ -711,7 +724,7 @@ Example:
 #### <a id="delete_sql"></a>delete_sql
 ```
 Description:
-    Delete a list of data items from database. Delete by sql;
+    Delete a list of data items from the database. Delete by sql;
 Param:
     none
         type: none;
@@ -785,7 +798,7 @@ Param:
         type: object;
     table_name: The name of the database table;
         type: string;
-    data_item_list: The list of data items to be removed from database.
+    data_item_list: The list of data items to be removed from the database.
         type: list {tbl_id:'123',data_type:table_name};
 Return:
     error: error message;
@@ -828,7 +841,7 @@ const MONGO_USERNAME_PASSWORD="";
 const MONGO_PORT="27019";
 const MONGO_SERVER_USER="admin";
 const MONGO_CONFIG="/etc/mongod.conf";
-const SSH_KEY=""; // used to restart remote server on mongo fail.
+const SSH_KEY=""; // used to restart remote server on mongo failure.
 
 /* --- REDIS --- */
 const REDIS_URL="0.0.0.0";
@@ -863,32 +876,58 @@ app_config={
 biz9=require("biz9-core")(app_config,data_config);
 ```
 
+## Company
+- BoSS AppZ
 
-
-## E-mail
-- certifiedcoderz@gmail.com
 ## Code
 - [BiZ9 Framework Github](https://github.com/biz9framework)
 - [BiZ9 Core NPM](https://www.npmjs.com/package/biz9-core)
+
+## E-mail
+- contact@bossappz.com
+
 ## Website
-- [certifiedcoderz.com](https://certifiedcoderz.com)
-## Support
-- [$TaNK9Code](https://cash.app/$Tank9Code)
+- [bossappz.com](https://bossappz.com)
+
+## BoSS AppZ 💰
+
+BoSS AppZ are web and mobile applications built for the BoSS on the go. The primary features of the BoSS AppZ are ThemeForest.net, The BiZ9 Framework, and Amazon Web Services. BoSS ApZZ powers many applications in the healthcare, retail and manufacturing industries.
+
+- [Blog](https://bossappz.medium.com)
+
+## App Money NoteZ 💯
+
+Application Development NoteZ That Make $ense! Cuts out all the blah, blah, blah and gets right to the resultZ!
+
 
 ## The BiZ9 Framework 🦾
+The BiZ9 Framework is a user-friendly platform for building fast and scalable network applications. The framework consists of libraries and software tools like: Node,js, React Native, Angular, ExpressJS, MongoDB, Nginx, Redis, GIT, and Bash scripts. The BIZ9 Framework is designed to build, maintain, and deploy rich and robust, applications for web, Android and Apple devices. Other 3rd party  Application Programming Interfaces included are Amazon Web Service, Stripe, and Bravely.
+- [Blog](https://bossappz.medium.com/what-is-the-biz9-framework-29731c49ad79)
 
-The BiZ9 Framework is a user-friendly platform for building fast and scalable network applications. The framework consists of libraries and software tools like: Node,js, ExpressJS, MongoDB, Nginx, Redis, GIT, and Bash. The BIZ9 Framework is designed to build, maintain, and deploy rich, robust, and data driven real-time applications for data driven web, Android and Apple devices. Other 3rd party Application Programming Interfaces that are pre included are Amazon Web Service, Stripe and Bravely.
 
-- [What Is The BiZ9 Framework? ](https://medium.com/@tank9code/what-is-the-biz9-framework-ec67d123e505)
-- [BoSS Mobile App Youtube Demo](https://youtu.be/W_ZUmwZMFoc?si=4b5_6q9vPgi1IxPL)
+## BoSS AppZ Developer  ClaZZ💡
+The BoSS AppZ Application Development Class is custom designed for each individual that desires to learn the art of application development for career or self-use purposes. We will teach you and train you on how to become a full stack application developer. Mobile applications are the future. Stay informed with the best and greatest tools for application development. 
+- [Website](https://bossappz.com/clazz)
+
 
 ## TaNK9 Code 👽
 
-Brandon Poole Sr also known as ‘TaNK’ is a full stack technical lead and application developer with 17 years of experience. He was born and raised in Atlanta, Ga and graduated with a Computer Information Systems degree from Fort Valley State University (FVSU). He is proficient in ASP.NET C#, ASP.NET MVC, .NET Core, Microsoft SQL Server, IIS Web Server, Node.js, Framework7, Redis, Amazon Web Services, Apple IOS, Android SDK, Redis, NGINX, GIT.
-- [Tank9Code Blog](https://medium.com/@tank9code/about-brandon-poole-sr-ac2fe8e06a09)
-- [9_OPZ Certified CoderZ Founder](https://certifiedcoderz.com)
-- [BoSS AppZ Creator](https://bossappz.com)
-- The Real Tank from the Matrix movie!
+Brandon Poole Sr also known as ‘TaNK’ is a full stack application developer 
+born and raised in Atlanta Ga and graduated with a Computer Information Systems degree from Fort Valley State University (FVSU).  While attending FVSU Mr. Poole created a social network titled CrunkFriends. It accumulated over 50k registered members and was the first of its kind back in 2005.
+
+Mr. Poole went on to have a career as a Senior Application Developer for many premium Technology companies. The names of those tech companies are Colonial Pipeline, Nascar, Home Depot, the Center for Disease Control, American Cancer Society,  and the United Parcel Service. 
+
+He is sometimes referred to as “the real Tank” from the movie The Matrix.
+
+- [Blog](https://medium.com/@tank9code/about-brandon-poole-sr-ac2fe8e06a09)
+
+
+## Brandon Poole Sr.
+- BoSS AppZ Creator
+- 9_OPZ #Certified CoderZ Founder
+- The Real Tank from the #Matrix movie! 
+- Expert in Open Source Software
+
 
 ## LinkZ:
 - [bossappz.com](bossappz.com)
