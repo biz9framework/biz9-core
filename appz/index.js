@@ -464,6 +464,8 @@ module.exports = function(app_config){
         _event.html=org_item.html;
         _event.tags=org_item.tags;
         _event.search=org_item.search;
+        _event.app_store_product=org_item.app_store_product;
+        _event.app_store_product_id=org_item.app_store_product_id;
         _event.mp3filename=org_item.mp3filename;
         _event.mp3duration=org_item.mp3duration;
         return _event;
@@ -502,6 +504,8 @@ module.exports = function(app_config){
         _product.youtube_url=org_item.youtube_url;
         _product.mp3filename=org_item.mp3filename;
         _product.mp3duration=org_item.mp3duration;
+        _product.app_store_product=org_item.app_store_product;
+        _product.app_store_product_id=org_item.app_store_product_id;
         return _product;
     }
     module.set_new_project=function(data_type,org_item){
@@ -543,6 +547,8 @@ module.exports = function(app_config){
         _service.search=org_item.search;
         _service.mp3filename=org_item.mp3filename;
         _service.mp3duration=org_item.mp3duration;
+        _service.app_store_product=org_item.app_store_product;
+        _service.app_store_product_id=org_item.app_store_product_id;
         return _service;
     }
     module.get_key_sort_type=function(key){
