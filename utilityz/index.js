@@ -26,6 +26,18 @@ module.exports = function(){
             return v.toString(16);
         });
     }
+    module.is_guid=function(str) {
+        let regex = new RegExp(/^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$/);
+        if (str == null) {
+            return false;
+        }
+        if (regex.test(str) == true) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
     module.get_file_ext=function(_file_path){
         return path.extname(_file_path);
     }
@@ -279,16 +291,16 @@ module.exports = function(){
         async function run() {
             try {
                 Promise.map(sizes, function(size) {
-                sharp(org_file)
-             .resize(size.xy)
-                .toFile(size.path,(error,info)=>{
-                    if(error){
-                        r_error=error;
-                        biz9.o('set_resize_photo_file',error);
-                    }
-                });
+                    sharp(org_file)
+                        .resize(size.xy)
+                        .toFile(size.path,(error,info)=>{
+                            if(error){
+                                r_error=error;
+                                biz9.o('set_resize_photo_file',error);
+                            }
+                        });
                 }).then(function(x){
-            });
+                });
             } catch (e) {
                 if(e){
                     r_error=error;
@@ -316,17 +328,17 @@ module.exports = function(){
         async function run() {
             try {
                 Promise.map(sizes, function(size) {
-                sharp(org_file)
-                .resize(size.xy, size.xy,{fit:sharp.fit.fill,quality:100})
-                .toFile(size.path,(error,info)=>{
-                    if(error){
-                        if(error){
-                            r_error=error;
-                        }
-                    }
-                });
+                    sharp(org_file)
+                        .resize(size.xy, size.xy,{fit:sharp.fit.fill,quality:100})
+                        .toFile(size.path,(error,info)=>{
+                            if(error){
+                                if(error){
+                                    r_error=error;
+                                }
+                            }
+                        });
                 }).then(function(x){
-            });
+                });
             } catch (e) {
                 if(e){
                     r_error=e;

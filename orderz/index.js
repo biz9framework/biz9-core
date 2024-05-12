@@ -141,7 +141,7 @@ module.exports = function(){
         }
         r_cart_item.cart_note=cart_item.cart_note ? (cart_item.cart_note): ' ' ;
         //option_note_end
-        r_cart_item.sub_total = r_cart_item.sub_total + parseFloat(cart_item.price);
+        r_cart_item.sub_total = r_cart_item.sub_total+parseFloat(cart_item.price);
         r_cart_item.shipping_total=(parseFloat(r_cart_item.shipping_total)*parseFloat(cart_item.quantity));
         r_cart_item.grand_total=(parseFloat(r_cart_item.sub_total)*parseFloat(cart_item.quantity))+ r_cart_item.shipping_total ;
         if(!cart_item.customer_id){
@@ -153,19 +153,11 @@ module.exports = function(){
         r_cart_item.parent_data_type=cart_item.parent_data_type;
         r_cart_item.title_url=cart_item.title_url;
         r_cart_item.photofilename=cart_item.photofilename;
-        r_cart_item.price=biz9.get_money(cart_item.price);
-        r_cart_item.old_price=biz9.get_money(cart_item.old_price);
         r_cart_item.category=cart_item.category;
         r_cart_item.quantity=cart_item.quantity;
-        discount = parseFloat(cart_item.old_price) - parseFloat(cart_item.price);
-        if(isNaN(discount) || !discount){
-            r_cart_item.discount="0%";
-        }else{
-            r_cart_item.discount= String(parseInt(((discount / cart_item.old_price) * 100)))+"%";
-        }
-        if(isNaN(r_cart_item.discount)){
-            r_cart_item.discount=0;
-        }
+        r_cart_item.price=cart_item.price;
+        r_cart_item.old_price=cart_item.old_price;
+        r_cart_item.money_obj = biz9.get_money_obj({price:cart_item.price,old_price:cart_item.old_price});
         return r_cart_item;
     }
     module.get_cart_item_list=function(db,sql,callback) {

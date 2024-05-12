@@ -15,8 +15,6 @@ module.exports = function(data_config){
                 }
             } catch (e) {
                 error=e;
-                biz9.o('get_mongo_connect_db_error',error);
-                biz9.o('get_mongo_connect_db_data_config',data_config);
                 if(data_config.mongo_ip!='localhost'){
                     if(!data_config.ssh_key){
                         data_config.ssh_key='';
@@ -25,11 +23,9 @@ module.exports = function(data_config){
                     }
                     reset_cmd='ssh '+ data_config.ssh_key + " " +data_config.mongo_server_user +"@"+data_config.mongo_ip +" -- "+reset_cmd;
                 }
-                biz9.o('mongo_reset_cmd',reset_cmd);
                 dir = exec(reset_cmd, function(error,stdout,stderr){
                 });
                 dir.on('exit', function (code) {
-                    biz9.o('get_mongo_connect_reset','OK');
                     callback(error,null);
                 });
             } finally {
@@ -45,27 +41,21 @@ module.exports = function(data_config){
         if(!db.client){
             return false;
         }else if(!db.client.topology){
-                 return false;
+            return false;
         }else if(!db.client.topology){
-                 return false;
+            return false;
         }else{
-                 return true;
-            }
+            return true;
+        }
     }
     module.close_client_db=async function(client_db,callback){
         var error=null;
         async function run() {
-            try {
-                if(dataz.db_connected(client_db)){
-                    await client_db.close();
-                }
-            } catch (e) {
-                error=e;
-                if(error){
-                    biz9.o('clost_mongo_connect_db_error',error);
-                }
-            } finally {
-                callback(error);
+            if(dataz.db_connected(client_db)){
+                await client_db.close();
+                callback();
+            }else{
+                callback('close_client_db_error');
             }
         }
         run();
@@ -155,7 +145,13 @@ module.exports = function(data_config){
                 if(data_item.date_obj){
                     delete data_item.date_obj;
                 }
-                data_mon.update(db,data_type,data_item,function(error,data){
+                if(data_item.title){
+                    data_item.title_url=biz9.get_title_url(data_item.title);
+                }
+                call();
+            },
+            function(call){
+               data_mon.update(db,data_type,data_item,function(error,data){
                     call();
                 });
             },
@@ -180,7 +176,7 @@ module.exports = function(data_config){
     module.get_cache_item=function(db,data_type,tbl_id,callback) {
         var data_item = appz.get_new_item(data_type,tbl_id);
         var item_attr_list_str=null;
-        var _cache_found=false;
+        var cache_found=false;
         var cache_key_list=null;
         var error=null;
         var client_redis = redis.createClient(redis_port, redis_url);
@@ -201,17 +197,16 @@ module.exports = function(data_config){
                 });
             },
             function(call){
+                var item_list_str=[];
                 if(cache_key_list!=null){
-                    _list =cache_key_list.split(',');
-                }else{
-                    _list=[];
+                    item_list_str =cache_key_list.split(',');
                 }
-                async.forEachOf(_list,(item,key,go)=>{
+                async.forEachOf(item_list_str,(item,key,go)=>{
                     if(item){
                         cache_red.get_cache_string(client_redis,get_cache_item_attr_key(data_type,tbl_id,item),function(error,data){
                             if(data){
                                 data_item[item] = data;
-                                _cache_found=true;
+                                cache_found=true;
                             }else{
                                 data_item[item] =null;
                             }
@@ -222,14 +217,14 @@ module.exports = function(data_config){
                         go();
                     }
                 }, error => {
-                    if(_cache_found){
+                    if(cache_found){
                         data_item.source='cache';
                     }
                     call();
                 });
             },
             function(call){
-                if(!_cache_found){
+                if(!cache_found){
                     data_mon.get(db,data_type,tbl_id,function(error,data_list){
                         if(data_list.length>0){
                             set_cache_item(client_redis,data_type,tbl_id,data_list[0],function(data){
@@ -260,19 +255,43 @@ module.exports = function(data_config){
             });
     }
     module.get_sql_paging_cache=function(db,data_type,sql_obj,sort_by,page_current,page_size,callback){
-        dataz.get_sql_cache_paging_cache(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,data_list,total_count,page_size){
-            callback(error,data_list,total_count,page_size);
-        });
+        var error=null;
+        var data_tbl_id_list = [];
+        var data_list=[];
+        var total_count=0;
+        var client_redis = redis.createClient(redis_port, redis_url);
+        async.series([
+            function(call){
+                const run = async function(a,b){
+                    await client_redis.connect();
+                    call();
+                }
+                run();
+            },
+            function(call){
+                data_mon.get_paging_sql_tbl_id(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,_total_count,_data_list){
+                    error=error;
+                    total_count=_total_count;
+                    data_tbl_id_list=_data_list;
+                    call();
+                });
+            },
+            function(call){
+                bind_sql_cache_paging_cache(client_redis,data_type,data_tbl_id_list,function(error,_data_list){
+                    if(error){
+                        error=error;
+                    }
+                    data_list=_data_list;
+                    call();
+                });
+            },
+        ],
+            function(err, result){
+                callback(error,data_list,total_count,Math.round(total_count/page_size+1));
+            });
     }
     module.get_sql_cache=function(db,data_type,sql_obj,sort_by,callback){
-        var page_current=0;
-        var page_size=0;
-        dataz.get_sql_cache_paging_cache(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,data_list,total_count,page_size){
-            callback(error,data_list);
-        });
-    }
-    module.get_sql_cache_paging_cache=function(db,data_type,sql_obj,sort_by,page_current,page_size,callback){
-        var data_sql_tbl_id_list = [];
+        var data_tbl_id_list = [];
         var data_list=[];
         var total_count=0;
         var error=null;
@@ -286,131 +305,19 @@ module.exports = function(data_config){
                 run();
             },
             function(call){
-                if(page_current!=0&&page_size!=0){//db
-                    data_mon.paging_sql_tbl_id(db,data_type,sql_obj,sort_by,page_current,page_size,function(error,_total_count,_data_list_1){
-                        total_count=_total_count;
-                        async.forEachOf(_data_list_1,(item_1,key_1,go_1)=>{
-                            data_sql_tbl_id_list.push({
-                                data_type:item_1.data_type,
-                                tbl_id:item_1.tbl_id,
-                                source:null,
-                                cache_key_list:null,
-                                data:null
-                            });
-                            go_1();
-                        },error=>{
-                            if(error){
-                                error=error;
-                            }
-                            call();
-                        });
-                    });
-                }else{//cache
-                    data_mon.get_sql_tbl_id(db,data_type,sql_obj,sort_by,function(error,_data_list_2){
-                        total_count=_data_list_2.length;
-                        async.forEachOf(_data_list_2,(item_2,key_2,go_2)=>{
-                            data_sql_tbl_id_list.push({
-                                data_type:item_2.data_type,
-                                tbl_id:item_2.tbl_id,
-                                source:null,
-                                cache_key_list:null,
-                                data:null
-                            });
-                            go_2();
-                        },error=>{
-                            if(error){
-                                error=error;
-                            }
-                            call();
-                        });
-                    });
-                }
-            },
-            function(call){
-                async.forEachOf(data_sql_tbl_id_list,(item_3,key_3,go_3)=>{
-                    cache_red.get_cache_string(client_redis,get_cache_item_attr_list_key(data_type,item_3.tbl_id),function(error,data_3){
-                        if(data_3){
-                            item_3.cache_key_list=data_3;
-                        }
-                        else{
-                            item_3.cache_key_list=null;
-                        }
-                        go_3();
-                    });
-                },error=>{
+                data_mon.get_sql_tbl_id(db,data_type,sql_obj,sort_by,function(error,_data_list){
+                    error=error;
+                    total_count=_data_list.length;
+                    data_tbl_id_list=_data_list;
                     call();
                 });
             },
             function(call){
-                async.forEachOf(data_sql_tbl_id_list,(item_4,key_4,go_4)=>{
-                    if(item_4.cache_key_list!=null){
-                        var _list =item_4.cache_key_list.split(',');
-                    }else{
-                        var _list=[];
-                    }
-                    _cache_found=false;
-                    var data_value = {};
-                    async.forEachOf(_list,(item_5,key_5,go_5)=>{
-                        if(item_5){
-                            cache_red.get_cache_string(client_redis,get_cache_item_attr_key(data_type,item_4.tbl_id,item_5),function(error,data_5){
-                                if(data_5){
-                                    data_value[item_5] = data_5;
-                                    _cache_found=true;
-                                }else{
-                                    data_value[item_5] =null;
-                                }
-                                go_5();
-                            });
-                        }else{
-                            go_5();
-                        }
-                    }, error => {
-                        if(_cache_found){
-                            data_value.source='cache';
-                            item_4.data=data_value;
-                        }
-                        go_4();
-                    });
-                }, error => {
-                    call();
-                });
-            },
-            function(call){
-                async.forEachOf(data_sql_tbl_id_list,(item_7,key_7,go_7)=>{
-                    if(!item_7.data){
-                        data_mon.get(db,data_type,item_7.tbl_id,function(error,data_list){
-                            if(data_list.length>0){
-                                set_cache_item(client_redis,item_7.data_type,item_7.tbl_id,data_list[0],function(data_7){
-                                    data_7.source='db';
-                                    item_7.data=data_list[0];
-                                    go_7();
-                                });
-                            }
-                            else{
-                                item_7.data=appz.get_new_item(item_7.data_type,item_7.tbl_id);
-                                go_7();
-                            }
-                        });
-                    }else{
-                        go_7();
-                    }
-                }, error => {
+                bind_sql_cache_paging_cache(client_redis,data_type,data_tbl_id_list,function(error,_data_list){
                     if(error){
-                        error = error;
+                        error=error;
                     }
-                    call();
-                });
-            },
-            function(call){
-                async.forEachOf(data_sql_tbl_id_list,(item_8,key,go)=>{
-                    if(item_8.data){
-                        data_list.push(appz.set_biz_item(item_8.data));
-                    }
-                    go();
-                }, error => {
-                    if(error){
-                        error = error;
-                    }
+                    data_list=_data_list;
                     call();
                 });
             },
@@ -422,8 +329,122 @@ module.exports = function(data_config){
                 run();
             },
         ],
+            function(err, result){
+                callback(error,data_list);
+            });
+    }
+    bind_sql_cache_paging_cache=function(client_redis,data_type,data_tbl_id_list,callback){
+        var data_list=[];
+        var blank_tbl_id_list=[];
+        var error=null;
+        async.series([
+            function(call){
+                async.forEachOf(data_tbl_id_list,(item_1,key_1,go_1)=>{
+                    blank_tbl_id_list.push({
+                        data_type:item_1.data_type,
+                        tbl_id:item_1.tbl_id,
+                        source:null,
+                        cache_key_list:null,
+                        data:null
+                    });
+                    go_1();
+                },error=>{
+                    if(error){
+                        error=error;
+                    }
+                    call();
+                });
+            },
+            function(call){
+                async.forEachOf(blank_tbl_id_list,(item,key,go)=>{
+                    cache_red.get_cache_string(client_redis,get_cache_item_attr_list_key(data_type,item.tbl_id),function(error,data){
+                        if(data){
+                            item.cache_key_list=data;
+                        }
+                        else{
+                            item.cache_key_list=null;
+                        }
+                        go();
+                    });
+                },error=>{
+                    call();
+                });
+            },
+            function(call){
+                async.forEachOf(blank_tbl_id_list,(blank_item,key,go)=>{
+                    var blank_item_list_str=[];
+                    if(blank_item.cache_key_list!=null){
+                        blank_item_list_str=blank_item.cache_key_list.split(',');
+                    }
+                    var cache_found=false;
+                    var data_value = {};
+                    async.forEachOf(blank_item_list_str,(blank_item_str,key,go_sub)=>{
+                        if(blank_item_str){
+                            cache_red.get_cache_string(client_redis,get_cache_item_attr_key(data_type,blank_item.tbl_id,blank_item_str),function(error,data){
+                                if(data){
+                                    data_value[blank_item_str]=data;
+                                    cache_found=true;
+                                }else{
+                                    data_value[blank_item_str]=null;
+                                }
+                                go_sub();
+                            });
+                        }else{
+                            go_sub();
+                        }
+                    }, error => {
+                        if(cache_found){
+                            data_value.source='cache';
+                            blank_item.data=data_value;
+                        }
+                        go();
+                    });
+                }, error => {
+                    call();
+                });
+            },
+            function(call){
+                async.forEachOf(blank_tbl_id_list,(item,key,go)=>{
+                    if(!item.data){
+                        data_mon.get(db,data_type,item.tbl_id,function(error,data_list){
+                            if(data_list.length>0){
+                                set_cache_item(client_redis,item.data_type,item.tbl_id,data_list[0],function(data_7){
+                                    data_7.source='db';
+                                    item.data=data_list[0];
+                                    go();
+                                });
+                            }
+                            else{
+                                item.data=appz.get_new_item(item.data_type,item.tbl_id);
+                                go();
+                            }
+                        });
+                    }else{
+                        go();
+                    }
+                }, error => {
+                    if(error){
+                        error = error;
+                    }
+                    call();
+                });
+            },
+            function(call){
+                async.forEachOf(blank_tbl_id_list,(item,key,go)=>{
+                    if(item.data){
+                        data_list.push(appz.set_biz_item(item.data));
+                    }
+                    go();
+                }, error => {
+                    if(error){
+                        error=error;
+                    }
+                    call();
+                });
+            },
+        ],
             function(err,result){
-                callback(error,data_list,total_count,Math.round(total_count/page_size+1));
+                callback(error,data_list);
             });
     }
     module.delete_cache_item=function(db,data_type,tbl_id,callback){
@@ -449,6 +470,7 @@ module.exports = function(data_config){
             function (call){
                 data_mon.delete(db,data_type,tbl_id,function(error,data)
                     {
+                        error=error;
                         data_item.data_del=true;
                         data_item.data=data;
                         call();
@@ -484,6 +506,7 @@ module.exports = function(data_config){
                             if(item){
                                 data_mon.delete(db,item.data_type,item.tbl_id,function(error,data)
                                     {
+                                        error=error;
                                         cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(item.data_type,item.tbl_id),function(error,data)
                                             {
                                                 go();
@@ -506,6 +529,9 @@ module.exports = function(data_config){
             },
             function(call){
                 data_mon.delete_sql(db,data_type,sql_obj,function(error,data){
+                    if(error){
+                        error=error;
+                    }
                     call();
                 });
             },
@@ -538,6 +564,7 @@ module.exports = function(data_config){
                     cache_red.del_cache_string(client_redis,get_cache_item_attr_list_key(item.data_type,item.tbl_id),function(error,data){
                         data_mon.delete(db,item.data_type,item.tbl_id,function(error,data)
                             {
+                                error=error;
                                 data_list.push(data);
                                 go();
                             });
