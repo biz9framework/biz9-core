@@ -6,15 +6,14 @@ Description: BiZ9 Framework: Core-Firebase
 */
 module.exports = function(app_config){
     firebase_admin = require("firebase-admin");
-    FIREBASE_KEY_FILE=app_config.firebase_key_file;
+    serviceAccount = require(app_config.firebase_key_file);
+    firebase_admin.initializeApp({
+        credential: firebase_admin.credential.cert(serviceAccount)
+    });
     module.send_message_topic=function(send_message,topic,callback){
         var error=null;
         async.series([
             function(call){
-                var serviceAccount = require(FIREBASE_KEY_FILE);
-                firebase_admin.initializeApp({
-                    credential: firebase_admin.credential.cert(serviceAccount)
-                });
                 const message = {
                     notification: {
                         title:send_message.title,
