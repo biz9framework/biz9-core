@@ -565,8 +565,8 @@ module.set_cart=function(item_list,callback){
 ///////////////// ORDER END //////////////////////////////////////////
 
 ///////////////// FIREBASE START ////////////////////////////////////////
-module.send_mobile_notification_topic=function(server_key,message,topic,callback){
-    firebase.send_message_topic(server_key,message,topic,function(error,data)
+module.send_mobile_notification_topic=function(message,topic,callback){
+    firebase.send_message_topic(message,topic,function(error,data)
         {
             callback(error,data);
         });

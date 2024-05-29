@@ -1,6 +1,6 @@
 {
   "name": "biz9-core",
-  "version": "6.4.7",
+  "version": "6.6.3",
   "description": "The core engine of the Biz9 Framework.",
   "main": "index.js",
   "scripts": {
@@ -15,6 +15,7 @@
     "async": "^3.2.4",
     "bluebird": "^3.7.2",
     "child_process": "^1.0.2",
+    "firebase-admin": "^12.1.1",
     "format-duration": "^3.0.2",
     "fs-extra": "^11.1.1",
     "moment": "^2.29.4",
