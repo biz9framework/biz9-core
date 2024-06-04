@@ -325,6 +325,9 @@ module.get_memberz=function(db,sql,sort_by,page_current,page_size,callback){
 }
 //-- MEMBER END //
 //-- CATEGORY END //
+module.convert_biz_item_org=function(org_item,item,item_list){
+    return appz.convert_biz_item_org(org_item,item,item_list);
+}
 module.convert_biz_item=function(item,item_list){
     return appz.convert_biz_item(item,item_list);
 }
@@ -565,8 +568,8 @@ module.set_cart=function(item_list,callback){
 ///////////////// ORDER END //////////////////////////////////////////
 
 ///////////////// FIREBASE START ////////////////////////////////////////
-module.send_mobile_notification_topic=function(message,topic,callback){
-    firebase.send_message_topic(message,topic,function(error,data)
+module.send_mobile_notification_topic=function(firebase_key_file,message,topic,callback){
+    firebase.send_message_topic(firebase_key_file,message,topic,function(error,data)
         {
             callback(error,data);
         });
