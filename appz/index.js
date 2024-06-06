@@ -2705,7 +2705,9 @@ module.get_item_list=function(db,data_type,sql,sort_by,page_current,page_size,ca
     async.series([
         function(call){
             page_current=1;
-            page_size=99;
+            if(!page_size){
+                page_size=99;
+            }
             dataz.get_sql_paging_cache(db,data_type,sql,sort_by,page_current,page_size,function(_error,_data_list,_item_count,_page_count) {
                 item_list=_data_list;
                 item_count=_item_count;
