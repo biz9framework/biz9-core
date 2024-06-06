@@ -85,7 +85,7 @@ module.exports = function(){
         var cart_checkout_list=[]
         for(var a=0;a<cart_list.length;a++){
             cart_item = set_cart_item(cart_list[a]);
-            sub_total = (parseFloat(sub_total)+parseFloat(cart_item.sub_total)).toFixed(2) ;
+            sub_total = ( parseFloat(sub_total)+ parseFloat(cart_item.sub_total)).toFixed(2) ;
             shipping_total = (parseFloat(shipping_total)+parseFloat(cart_item.shipping_total)).toFixed(2);
             grand_total = (parseFloat(grand_total)+parseFloat(cart_item.grand_total)).toFixed(2);
             discount_total= parseInt(discount_total)+parseInt(cart_item.discount);
@@ -103,7 +103,6 @@ module.exports = function(){
             discount_total=0;
         }
         discount_total=String(parseInt(discount_total))+"%";
-        biz9.o('discount_total',discount_total);
         cart={item_list:cart_checkout_list,
             price:{
                 sub_total:biz9.get_money(sub_total),
@@ -127,6 +126,10 @@ module.exports = function(){
         r_cart_item.option_note_html=' ';
         for(var a=0;a<6;a++){
             if(cart_item['item_option_'+a+'_tbl_id']){
+                console.log(cart_item['item_option_'+a+'_title']);
+                console.log(cart_item['item_option_'+a+'_price']);
+                //console.log(r_cart_item.sub_total);
+                //biz9.o('my_title',cart_item['item_option_'+a+'_title']);
                 if(cart_item['item_option_'+a+'_price'] && !cart_item['item_option_'+a+'_title'].toLowerCase().includes('ship')){
                     r_cart_item.sub_total=r_cart_item.sub_total+parseFloat(cart_item['item_option_'+a+'_price']);
                 }
