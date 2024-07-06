@@ -9,11 +9,13 @@ module.exports = function(){
         var error=null;
         async.series([
             function(call){
+                biz9.o('firebase_key_file',firebase_key_file);
+                biz9.o('send_message',send_message);
+                biz9.o('topic',topic);
                 var firebase_admin = require("firebase-admin");
                 var firebase_init = firebase_admin.initializeApp({
                     credential: firebase_admin.credential.cert(require(firebase_key_file))
                 },"biz9-core-firebase-"+biz9.get_id());
-
                 const message = {
                     notification: {
                         title:send_message.title,

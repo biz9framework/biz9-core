@@ -101,8 +101,8 @@ module.exports = function(app_config,data_config){
                 callback(error,data);
             });
     }
-    module.drop=function(db,data_type,callback){
-        dataz.drop(db,data_type,function(error,data)
+    module.drop=function(db,title,callback){
+        dataz.drop(db,title,function(error,data)
             {
                 callback(error,data);
             });

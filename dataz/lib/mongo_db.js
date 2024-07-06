@@ -128,12 +128,12 @@ module.exports = function(){
                 callback(error,total_count,data_list);
             });
     }
-    module.drop=function(db,data_type,callback){
+    module.drop=function(db,title,callback){
         var error=null;
         var collection={};
         async function run() {
             if(dataz.db_client_connected(db)){
-                collection = db.collection(data_type);
+                collection = db.collection(title);
                 data = await collection.drop();
                 callback(null,data);
             }else{

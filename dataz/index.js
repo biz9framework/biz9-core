@@ -588,8 +588,8 @@ module.exports = function(data_config){
                 callback(error,data_list);
             });
     }
-    module.drop=function(db,data_type,callback){
-        data_mon.drop(db,data_type,function(error,data){
+    module.drop=function(db,title,callback){
+        data_mon.drop(db,title,function(error,data){
             callback(error,data);
         });
     }
